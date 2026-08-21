@@ -1,6 +1,14 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest'
-import { isValidEmbedUrl, extForMime, MAX_UPLOAD_BYTES } from './validate.js'
+import {
+  isValidEmbedUrl,
+  extForMime,
+  MAX_UPLOAD_BYTES,
+  isValidSlug,
+  slugify,
+  uniqueSlug,
+  validateVanPatch,
+} from './validate.js'
 
 describe('isValidEmbedUrl', () => {
   it('accepts the vendors we embed', () => {
@@ -52,5 +60,80 @@ describe('extForMime', () => {
 describe('MAX_UPLOAD_BYTES', () => {
   it('is 8MB', () => {
     expect(MAX_UPLOAD_BYTES).toBe(8 * 1024 * 1024)
+  })
+})
+
+describe('isValidSlug', () => {
+  it('accepts lowercase hyphenated slugs', () => {
+    expect(isValidSlug('tuff-mudder')).toBe(true)
+    expect(isValidSlug('van21')).toBe(true)
+  })
+
+  it('rejects anything that would not survive a URL', () => {
+    for (const bad of ['', 'Tuff Mudder', 'tuff_mudder', '-leading', 'trailing-', 'a--b', '../x']) {
+      expect(isValidSlug(bad)).toBe(false)
+    }
+    expect(isValidSlug('a'.repeat(61))).toBe(false)
+    expect(isValidSlug(null)).toBe(false)
+  })
+})
+
+describe('slugify', () => {
+  it('turns a display name into a slug', () => {
+    expect(slugify('Fierce Couple Deluxe')).toBe('fierce-couple-deluxe')
+    expect(slugify('  On-Site Caravans!  ')).toBe('on-site-caravans')
+    expect(slugify('18.6ft Family')).toBe('18-6ft-family')
+  })
+
+  it('never returns an empty slug', () => {
+    expect(slugify('!!!')).toBe('van')
+  })
+})
+
+describe('uniqueSlug', () => {
+  it('returns the base slug when it is free', () => {
+    expect(uniqueSlug('Little Wonder', ['tuff-mudder'])).toBe('little-wonder')
+  })
+
+  it('suffixes until it finds a free slug', () => {
+    expect(uniqueSlug('Little Wonder', ['little-wonder'])).toBe('little-wonder-2')
+    expect(uniqueSlug('Little Wonder', ['little-wonder', 'little-wonder-2'])).toBe(
+      'little-wonder-3',
+    )
+  })
+})
+
+describe('validateVanPatch', () => {
+  it('accepts an empty patch and a full valid one', () => {
+    expect(validateVanPatch({})).toBeNull()
+    expect(
+      validateVanPatch({
+        name: 'Tuff Mudder',
+        slug: 'tuff-mudder',
+        blurb: 'Small in size.',
+        description: ['One.', 'Two.'],
+        specs: ['12ft body'],
+      }),
+    ).toBeNull()
+  })
+
+  it('rejects over-long text', () => {
+    expect(validateVanPatch({ name: 'a'.repeat(81) })).toMatch(/name/)
+    expect(validateVanPatch({ blurb: 'a'.repeat(401) })).toMatch(/blurb/)
+  })
+
+  it('rejects a malformed slug', () => {
+    expect(validateVanPatch({ slug: 'Not A Slug' })).toMatch(/slug/)
+  })
+
+  it('rejects lists that are not lists of strings', () => {
+    expect(validateVanPatch({ description: 'not a list' })).toMatch(/description/)
+    expect(validateVanPatch({ specs: [1, 2] })).toMatch(/spec/)
+    expect(validateVanPatch({ specs: new Array(13).fill('x') })).toMatch(/specs/)
+    expect(validateVanPatch({ description: ['a'.repeat(2001)] })).toMatch(/paragraph/)
+  })
+
+  it('rejects a non-string where text is expected', () => {
+    expect(validateVanPatch({ name: 42 })).toMatch(/name/)
   })
 })
