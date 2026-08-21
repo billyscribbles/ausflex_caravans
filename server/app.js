@@ -4,6 +4,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { uploadsDir } from './store.js'
 import contentRoutes from './routes/content.js'
+import authRoutes from './routes/auth.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(root, 'dist')
@@ -32,6 +33,7 @@ export function createApp() {
   })
 
   app.use('/api', contentRoutes)
+  app.use('/api/auth', authRoutes)
 
   // Upload filenames are content-unique UUIDs, so an edited photo is always a
   // new URL and `immutable` can never serve a stale image.
