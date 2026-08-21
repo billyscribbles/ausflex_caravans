@@ -127,6 +127,40 @@ select {
   color: var(--color-accent);
 }
 
+/* Shared inner-page header — dark band under the navbar. */
+.page-hero {
+  background: var(--color-dark);
+  color: #fff;
+  padding: 84px 0 72px;
+}
+
+.page-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.6vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  color: #fff;
+  margin-bottom: 18px;
+}
+
+.page-hero__sub {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.68);
+  max-width: 640px;
+}
+
+.page-hero .section-eyebrow {
+  color: var(--color-accent);
+}
+
+@media (max-width: 768px) {
+  .page-hero {
+    padding: 56px 0 48px;
+  }
+}
+
 .glow-card {
   position: relative;
   border-radius: var(--radius-md);

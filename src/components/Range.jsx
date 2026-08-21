@@ -4,20 +4,22 @@ import { vans } from '../content/vans.js'
 import { useScrollIn } from '../lib/motion.js'
 import './Range.css'
 
-// Photo cards for the van range. Pass `limit` to show a subset (home page)
-// or leave it off for the full range (Our Vans page).
-export default function Range({ limit }) {
+// Photo cards for the van range. Pass `limit` to show a subset, or
+// `showHead={false}` when the page above already introduces the range.
+export default function Range({ limit, showHead = true }) {
   const scrollIn = useScrollIn()
   const items = limit ? vans.items.slice(0, limit) : vans.items
 
   return (
     <section className="range section" id="range">
       <div className="container">
-        <div className="range__head">
-          {vans.eyebrow && <span className="section-eyebrow">{vans.eyebrow}</span>}
-          <h2 className="section-label">{vans.heading}</h2>
-          {vans.sub && <p className="section-sub">{vans.sub}</p>}
-        </div>
+        {showHead && (
+          <div className="range__head">
+            {vans.eyebrow && <span className="section-eyebrow">{vans.eyebrow}</span>}
+            <h2 className="section-label">{vans.heading}</h2>
+            {vans.sub && <p className="section-sub">{vans.sub}</p>}
+          </div>
+        )}
 
         <div className="range__grid">
           {items.map((van, i) => (

@@ -31,11 +31,13 @@ export default function GalleryGrid({ content, dark = false, lightbox = false, i
   return (
     <section className={`gallery-grid section${dark ? ' section--dark' : ''}`} id={id}>
       <div className="container">
-        <div className="gallery-grid__head">
-          {content.eyebrow && <span className="section-eyebrow">{content.eyebrow}</span>}
-          <h2 className="section-label">{content.heading}</h2>
-          {content.sub && <p className="section-sub">{content.sub}</p>}
-        </div>
+        {content.heading && (
+          <div className="gallery-grid__head">
+            {content.eyebrow && <span className="section-eyebrow">{content.eyebrow}</span>}
+            <h2 className="section-label">{content.heading}</h2>
+            {content.sub && <p className="section-sub">{content.sub}</p>}
+          </div>
+        )}
 
         <div className="gallery-grid__mosaic">
           {content.items.map((photo, i) => {
