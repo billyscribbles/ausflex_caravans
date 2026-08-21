@@ -2,10 +2,11 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { uploadsDir } from './store.js'
+import { uploadsDir, read } from './store.js'
 import contentRoutes from './routes/content.js'
-import authRoutes from './routes/auth.js'
+import authRoutes, { requireAuth } from './routes/auth.js'
 import photoRoutes from './routes/photos.js'
+import tourRoutes from './routes/tours.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(root, 'dist')
@@ -36,6 +37,14 @@ export function createApp() {
   app.use('/api', contentRoutes)
   app.use('/api/auth', authRoutes)
   app.use('/api/photos', photoRoutes)
+  app.use('/api/tours', tourRoutes)
+
+  // Railway volumes are not backed up. This is the client's escape hatch for
+  // the metadata; the image files themselves need manual recovery.
+  app.get('/api/admin/export', requireAuth, (req, res) => {
+    res.set('Content-Disposition', 'attachment; filename="ausflex-content.json"')
+    res.json(read())
+  })
 
   // Upload filenames are content-unique UUIDs, so an edited photo is always a
   // new URL and `immutable` can never serve a stale image.

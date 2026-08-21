@@ -16,16 +16,16 @@ see the result on the live site immediately.
 
 ## 2. Decisions taken
 
-| Decision | Choice | Rationale |
-| --- | --- | --- |
-| Operator | Ausflex staff, publishing instantly | Client self-serve is the point; a redeploy gate defeats it |
-| Backend | Node/Express + Railway volume | Chosen over Supabase and a headless CMS: one vendor, one bill, no third party |
-| Metadata store | `content.json` on the volume | Two content types, one editor at a time — no concurrency to lose, no second service |
-| Image resizing | In the browser, before upload | No native module (Yarn PnP + Nixpacks risk); a 9MB phone photo uploads as ~300KB |
-| Auth | Single shared login | Client preference; named accounts remain a later config change |
-| Alt text | Optional | Missing alt renders `alt=""` (valid decorative markup), so a11y scores hold |
-| Managed collections | All three: interiors, exteriors, gallery page | — |
-| 360 tours | Multiple, listed | `/360` becomes a picker; home band shows the first |
+| Decision            | Choice                                        | Rationale                                                                           |
+| ------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Operator            | Ausflex staff, publishing instantly           | Client self-serve is the point; a redeploy gate defeats it                          |
+| Backend             | Node/Express + Railway volume                 | Chosen over Supabase and a headless CMS: one vendor, one bill, no third party       |
+| Metadata store      | `content.json` on the volume                  | Two content types, one editor at a time — no concurrency to lose, no second service |
+| Image resizing      | In the browser, before upload                 | No native module (Yarn PnP + Nixpacks risk); a 9MB phone photo uploads as ~300KB    |
+| Auth                | Single shared login                           | Client preference; named accounts remain a later config change                      |
+| Alt text            | Optional                                      | Missing alt renders `alt=""` (valid decorative markup), so a11y scores hold         |
+| Managed collections | All three: interiors, exteriors, gallery page | —                                                                                   |
+| 360 tours           | Multiple, listed                              | `/360` becomes a picker; home band shows the first                                  |
 
 ### Accepted trade-offs
 
@@ -144,21 +144,21 @@ URL, and consumers do not care which.
 
 All mutating routes require a valid session cookie and return 401 without one.
 
-| Method | Route | Auth | Purpose |
-| --- | --- | --- | --- |
-| GET | `/api/content` | public | Both collections, one payload, ETag + `max-age=60` |
-| POST | `/api/auth/login` | public | Password → session cookie |
-| GET | `/api/auth/session` | public | `{ authed: boolean }` |
-| POST | `/api/auth/logout` | auth | Clears the cookie |
-| POST | `/api/photos` | auth | Multipart upload → new row |
-| PATCH | `/api/photos/:id` | auth | `alt`, `caption`, `collection` |
-| POST | `/api/photos/reorder` | auth | Ordered array of ids for one collection |
-| DELETE | `/api/photos/:id` | auth | Removes row; unlinks the file only if it is under `/uploads/` |
-| POST | `/api/tours` | auth | New tour |
-| PATCH | `/api/tours/:id` | auth | `title`, `embedUrl`, `poster` |
-| POST | `/api/tours/reorder` | auth | Ordered array of ids |
-| DELETE | `/api/tours/:id` | auth | Removes row |
-| GET | `/api/admin/export` | auth | Downloads `content.json` as a backup |
+| Method | Route                 | Auth   | Purpose                                                       |
+| ------ | --------------------- | ------ | ------------------------------------------------------------- |
+| GET    | `/api/content`        | public | Both collections, one payload, ETag + `max-age=60`            |
+| POST   | `/api/auth/login`     | public | Password → session cookie                                     |
+| GET    | `/api/auth/session`   | public | `{ authed: boolean }`                                         |
+| POST   | `/api/auth/logout`    | auth   | Clears the cookie                                             |
+| POST   | `/api/photos`         | auth   | Multipart upload → new row                                    |
+| PATCH  | `/api/photos/:id`     | auth   | `alt`, `caption`, `collection`                                |
+| POST   | `/api/photos/reorder` | auth   | Ordered array of ids for one collection                       |
+| DELETE | `/api/photos/:id`     | auth   | Removes row; unlinks the file only if it is under `/uploads/` |
+| POST   | `/api/tours`          | auth   | New tour                                                      |
+| PATCH  | `/api/tours/:id`      | auth   | `title`, `embedUrl`, `poster`                                 |
+| POST   | `/api/tours/reorder`  | auth   | Ordered array of ids                                          |
+| DELETE | `/api/tours/:id`      | auth   | Removes row                                                   |
+| GET    | `/api/admin/export`   | auth   | Downloads `content.json` as a backup                          |
 
 Deleting a seeded row (`src` under `/images/`) removes the row only; the file stays
 in the build, harmlessly.
@@ -180,10 +180,10 @@ authenticated user can set it, but the check costs five lines.
 
 ## 5. Auth
 
-| Env var | Purpose |
-| --- | --- |
+| Env var               | Purpose                                                                  |
+| --------------------- | ------------------------------------------------------------------------ |
 | `ADMIN_PASSWORD_HASH` | scrypt hash with embedded salt, generated by `scripts/hash-password.mjs` |
-| `SESSION_SECRET` | HMAC key for signing the session cookie |
+| `SESSION_SECRET`      | HMAC key for signing the session cookie                                  |
 
 Login compares with `crypto.timingSafeEqual` and sets an HttpOnly, Secure,
 SameSite=Strict, signed cookie with a 7-day expiry.
@@ -203,7 +203,7 @@ rather than waterfalled behind it. Same-origin: no SDK, no API key, no CORS
 preflight.
 
 **Rendering.** Tiles show a fixed-aspect skeleton until data lands, then paint
-once. The static content files are *not* rendered first and swapped — photos
+once. The static content files are _not_ rendered first and swapped — photos
 visibly rearranging a beat after load looks broken exactly when the client is
 checking their own edit. Fixed aspect ratios mean the skeleton produces no layout
 shift.
@@ -232,8 +232,8 @@ drop zone, and one row per photo: thumbnail, alt field, caption field, up/down,
 delete. Fields save on blur with an inline confirmation.
 
 Because the `/gallery` mosaic tiles in blocks of nine (see `GalleryGrid.css`), the
-tab shows a live count hint — *"36 photos · 4 full blocks ✓"* versus *"38 photos ·
-last row will be short"*. Cheapest available guard against the client quietly
+tab shows a live count hint — _"36 photos · 4 full blocks ✓"_ versus _"38 photos ·
+last row will be short"_. Cheapest available guard against the client quietly
 breaking that layout.
 
 **360 Tours tab.** One row per tour: title, embed URL, poster, up/down, delete,
@@ -268,6 +268,7 @@ They are copywriting, not inventory, and are out of scope for this dashboard.
 ## 9. Testing
 
 **Server (Vitest + supertest)**
+
 - Store: atomic write, seed-on-first-boot, write-queue serialisation, malformed
   file recovery.
 - Auth: hash comparison, cookie signing and rejection of a forged cookie, rate
@@ -280,6 +281,7 @@ They are copywriting, not inventory, and are out of scope for this dashboard.
 - Embed URL validator: `javascript:` and off-allowlist hosts rejected.
 
 **Client**
+
 - `contentStore` falls back to static content when fetch rejects or returns
   malformed data.
 - Row → component-shape mapper.

@@ -25,32 +25,32 @@
 
 **Server (new)**
 
-| File | Responsibility |
-| --- | --- |
-| `server/seed.js` | Build the initial `content.json` shape from the static content files |
-| `server/store.js` | Load/cache `content.json`, atomic persist, serialised mutation queue |
-| `server/auth.js` | scrypt hashing, HMAC session tokens, login rate limiter |
-| `server/validate.js` | Embed-URL allowlist, MIME→extension mapping |
-| `server/app.js` | Express app assembly (exported without `listen` so supertest can mount it) |
-| `server/index.js` | Loads the store, starts `app.listen` |
-| `server/routes/content.js` | `GET /api/content` (public) |
-| `server/routes/auth.js` | login / logout / session |
-| `server/routes/photos.js` | photo CRUD, reorder, upload |
-| `server/routes/tours.js` | tour CRUD, reorder |
-| `scripts/hash-password.mjs` | One-off password hash generator |
+| File                        | Responsibility                                                             |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `server/seed.js`            | Build the initial `content.json` shape from the static content files       |
+| `server/store.js`           | Load/cache `content.json`, atomic persist, serialised mutation queue       |
+| `server/auth.js`            | scrypt hashing, HMAC session tokens, login rate limiter                    |
+| `server/validate.js`        | Embed-URL allowlist, MIME→extension mapping                                |
+| `server/app.js`             | Express app assembly (exported without `listen` so supertest can mount it) |
+| `server/index.js`           | Loads the store, starts `app.listen`                                       |
+| `server/routes/content.js`  | `GET /api/content` (public)                                                |
+| `server/routes/auth.js`     | login / logout / session                                                   |
+| `server/routes/photos.js`   | photo CRUD, reorder, upload                                                |
+| `server/routes/tours.js`    | tour CRUD, reorder                                                         |
+| `scripts/hash-password.mjs` | One-off password hash generator                                            |
 
 **Client (new)**
 
-| File | Responsibility |
-| --- | --- |
-| `src/lib/contentStore.js` | Module-scope fetch of `/api/content`, static fallback, `useContent()` hook |
-| `src/admin/api.js` | Typed-ish fetch wrappers for every `/api` route |
-| `src/admin/resizeImage.js` | Canvas resize + WebP encode before upload |
-| `src/admin/Login.jsx` | Password form |
-| `src/admin/PhotosTab.jsx` | Collection switcher, dropzone, photo rows |
-| `src/admin/ToursTab.jsx` | Tour rows + add form + export button |
-| `src/admin/admin.css` | All admin styling, built on existing theme tokens |
-| `src/pages/AdminPage.jsx` | Shell: session check, login-vs-dashboard, tab state |
+| File                       | Responsibility                                                             |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `src/lib/contentStore.js`  | Module-scope fetch of `/api/content`, static fallback, `useContent()` hook |
+| `src/admin/api.js`         | Typed-ish fetch wrappers for every `/api` route                            |
+| `src/admin/resizeImage.js` | Canvas resize + WebP encode before upload                                  |
+| `src/admin/Login.jsx`      | Password form                                                              |
+| `src/admin/PhotosTab.jsx`  | Collection switcher, dropzone, photo rows                                  |
+| `src/admin/ToursTab.jsx`   | Tour rows + add form + export button                                       |
+| `src/admin/admin.css`      | All admin styling, built on existing theme tokens                          |
+| `src/pages/AdminPage.jsx`  | Shell: session check, login-vs-dashboard, tab state                        |
 
 **Modified**
 
@@ -67,10 +67,12 @@
 The foundation everything else reads and writes. No HTTP yet.
 
 **Files:**
+
 - Create: `server/seed.js`, `server/store.js`, `server/store.test.js`
 - Modify: `vite.config.js` (Vitest `include`), `.gitignore`
 
 **Interfaces:**
+
 - Consumes: `gallery` from `src/content/gallery.js`, `tour` from `src/content/tour.js`
 - Produces:
   - `buildSeed(): { version: 1, photos: Photo[], tours: Tour[] }`
@@ -119,7 +121,7 @@ afterEach(async () => {
 })
 
 async function freshStore() {
-  return await import('./store.js?' + Math.random())
+  return await import('./store.js')
 }
 
 describe('store', () => {
@@ -198,7 +200,11 @@ describe('store', () => {
   it('keeps accepting mutations after one throws', async () => {
     const store = await freshStore()
     await store.load()
-    await expect(store.mutate(() => { throw new Error('boom') })).rejects.toThrow('boom')
+    await expect(
+      store.mutate(() => {
+        throw new Error('boom')
+      }),
+    ).rejects.toThrow('boom')
     await expect(store.mutate((c) => c.photos.length)).resolves.toBeGreaterThan(0)
   })
 })
@@ -343,9 +349,11 @@ git commit -m "feat(server): content store with atomic writes and first-boot see
 Pure functions — no Express yet, so every branch is cheap to test.
 
 **Files:**
+
 - Create: `server/auth.js`, `server/auth.test.js`, `scripts/hash-password.mjs`
 
 **Interfaces:**
+
 - Produces:
   - `hashPassword(password: string): Promise<string>` — returns `"<saltHex>:<keyHex>"`
   - `verifyPassword(password: string, stored: string): Promise<boolean>`
@@ -563,9 +571,11 @@ git commit -m "feat(server): scrypt password auth, HMAC sessions, login rate lim
 ### Task 3: Input validation
 
 **Files:**
+
 - Create: `server/validate.js`, `server/validate.test.js`
 
 **Interfaces:**
+
 - Produces:
   - `isValidEmbedUrl(value: string): boolean`
   - `extForMime(mime: string): string | null` — `'webp' | 'jpg' | 'png' | null`
@@ -696,10 +706,12 @@ git commit -m "feat(server): embed-URL allowlist and upload MIME validation"
 This is the task that takes production off `vite preview`. It must land whole or the site does not boot.
 
 **Files:**
+
 - Create: `server/app.js`, `server/index.js`, `server/routes/content.js`, `server/api.test.js`
 - Modify: `package.json` (deps + `start` + `dev:api`), `vite.config.js` (remove `preview`, add `server.proxy`)
 
 **Interfaces:**
+
 - Consumes: `read`, `load`, `uploadsDir` from `server/store.js`
 - Produces:
   - `createApp(): express.Application` — no `listen`, so supertest can mount it
@@ -736,9 +748,9 @@ beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), 'ausflex-api-'))
   process.env.DATA_DIR = dir
   vi.resetModules()
-  const store = await import('./store.js?' + Math.random())
+  const store = await import('./store.js')
   await store.load()
-  const { createApp } = await import('./app.js?' + Math.random())
+  const { createApp } = await import('./app.js')
   app = createApp()
 })
 
@@ -814,8 +826,7 @@ const router = Router()
 router.get('/content', (req, res) => {
   const content = read()
   const byOrder = (a, b) => a.sortOrder - b.sortOrder
-  const of = (collection) =>
-    content.photos.filter((p) => p.collection === collection).sort(byOrder)
+  const of = (collection) => content.photos.filter((p) => p.collection === collection).sort(byOrder)
 
   const body = JSON.stringify({
     gallery: {
@@ -974,10 +985,12 @@ git commit -m "feat(server): express app serving dist, uploads and /api/content"
 ### Task 5: Auth routes
 
 **Files:**
+
 - Create: `server/routes/auth.js`, `server/auth.routes.test.js`
 - Modify: `server/app.js` (mount + `requireAuth` export)
 
 **Interfaces:**
+
 - Produces:
   - `POST /api/auth/login` `{ password }` → 200 `{ ok: true }` + `ausflex_session` cookie · 401 wrong · 429 rate-limited
   - `GET /api/auth/session` → `{ authed: boolean }`
@@ -1006,13 +1019,13 @@ beforeEach(async () => {
   process.env.SESSION_SECRET = 'test-session-secret'
   vi.resetModules()
 
-  const { hashPassword, resetRateLimit } = await import('./auth.js?' + Math.random())
+  const { hashPassword, resetRateLimit } = await import('./auth.js')
   process.env.ADMIN_PASSWORD_HASH = await hashPassword(PASSWORD)
   resetRateLimit()
 
-  const store = await import('./store.js?' + Math.random())
+  const store = await import('./store.js')
   await store.load()
-  const { createApp } = await import('./app.js?' + Math.random())
+  const { createApp } = await import('./app.js')
   app = createApp()
 })
 
@@ -1082,9 +1095,9 @@ describe('when no password is configured', () => {
   it('boots and refuses every login rather than crashing', async () => {
     delete process.env.ADMIN_PASSWORD_HASH
     vi.resetModules()
-    const store = await import('./store.js?' + Math.random())
+    const store = await import('./store.js')
     await store.load()
-    const { createApp } = await import('./app.js?' + Math.random())
+    const { createApp } = await import('./app.js')
     const bare = createApp()
 
     await request(bare).post('/api/auth/login').send({ password: 'anything' }).expect(401)
@@ -1168,7 +1181,7 @@ import authRoutes from './routes/auth.js'
 and mount it directly after `app.use('/api', contentRoutes)`:
 
 ```js
-  app.use('/api/auth', authRoutes)
+app.use('/api/auth', authRoutes)
 ```
 
 - [ ] **Step 5: Run the tests and confirm they pass**
@@ -1188,10 +1201,12 @@ git commit -m "feat(server): login, session and logout routes"
 ### Task 6: Photo routes
 
 **Files:**
+
 - Create: `server/routes/photos.js`, `server/photos.routes.test.js`
 - Modify: `server/app.js` (mount)
 
 **Interfaces:**
+
 - Consumes: `requireAuth` from `server/routes/auth.js`; `read`, `mutate`, `uploadsDir` from `server/store.js`; `extForMime`, `MAX_UPLOAD_BYTES` from `server/validate.js`
 - Produces:
   - `POST /api/photos` — multipart, field `file`, plus `collection`, `alt`, `caption` → 201 `{ photo }`
@@ -1228,13 +1243,13 @@ beforeEach(async () => {
   process.env.SESSION_SECRET = 'test-session-secret'
   vi.resetModules()
 
-  const auth = await import('./auth.js?' + Math.random())
+  const auth = await import('./auth.js')
   process.env.ADMIN_PASSWORD_HASH = await auth.hashPassword(PASSWORD)
   auth.resetRateLimit()
 
-  store = await import('./store.js?' + Math.random())
+  store = await import('./store.js')
   await store.load()
-  const { createApp } = await import('./app.js?' + Math.random())
+  const { createApp } = await import('./app.js')
   app = createApp()
 })
 
@@ -1299,7 +1314,10 @@ describe('POST /api/photos', () => {
       .post('/api/photos')
       .set('Cookie', cookie)
       .field('collection', 'page')
-      .attach('file', Buffer.from('<html>hi</html>'), { filename: 'x.html', contentType: 'text/html' })
+      .attach('file', Buffer.from('<html>hi</html>'), {
+        filename: 'x.html',
+        contentType: 'text/html',
+      })
       .expect(400)
   })
 
@@ -1346,7 +1364,11 @@ describe('PATCH /api/photos/:id', () => {
 
   it('404s for an unknown id', async () => {
     const cookie = await login()
-    await request(app).patch('/api/photos/nope').set('Cookie', cookie).send({ alt: 'x' }).expect(404)
+    await request(app)
+      .patch('/api/photos/nope')
+      .set('Cookie', cookie)
+      .send({ alt: 'x' })
+      .expect(404)
   })
 })
 
@@ -1538,7 +1560,7 @@ import photoRoutes from './routes/photos.js'
 ```
 
 ```js
-  app.use('/api/photos', photoRoutes)
+app.use('/api/photos', photoRoutes)
 ```
 
 - [ ] **Step 5: Run the tests and confirm they pass**
@@ -1558,10 +1580,12 @@ git commit -m "feat(server): photo upload, edit, reorder and delete routes"
 ### Task 7: Tour routes and the backup export
 
 **Files:**
+
 - Create: `server/routes/tours.js`, `server/tours.routes.test.js`
 - Modify: `server/app.js` (mount tours + `/api/admin/export`)
 
 **Interfaces:**
+
 - Produces:
   - `POST /api/tours` `{ title, embedUrl, poster? }` → 201 `{ tour }`
   - `PATCH /api/tours/:id` `{ title?, embedUrl?, poster? }` → 200 `{ tour }`
@@ -1594,13 +1618,13 @@ beforeEach(async () => {
   process.env.SESSION_SECRET = 'test-session-secret'
   vi.resetModules()
 
-  const auth = await import('./auth.js?' + Math.random())
+  const auth = await import('./auth.js')
   process.env.ADMIN_PASSWORD_HASH = await auth.hashPassword(PASSWORD)
   auth.resetRateLimit()
 
-  store = await import('./store.js?' + Math.random())
+  store = await import('./store.js')
   await store.load()
-  const { createApp } = await import('./app.js?' + Math.random())
+  const { createApp } = await import('./app.js')
   app = createApp()
 })
 
@@ -1656,7 +1680,11 @@ describe('POST /api/tours', () => {
 
   it('requires a title', async () => {
     const cookie = await login()
-    await request(app).post('/api/tours').set('Cookie', cookie).send({ embedUrl: VALID }).expect(400)
+    await request(app)
+      .post('/api/tours')
+      .set('Cookie', cookie)
+      .send({ embedUrl: VALID })
+      .expect(400)
   })
 })
 
@@ -1814,20 +1842,20 @@ import { requireAuth } from './routes/auth.js'
 ```
 
 ```js
-import { uploadsDir, read } from './store.js'   // was: { uploadsDir }
+import { uploadsDir, read } from './store.js' // was: { uploadsDir }
 ```
 
 and mount, after the photo routes:
 
 ```js
-  app.use('/api/tours', tourRoutes)
+app.use('/api/tours', tourRoutes)
 
-  // Railway volumes are not backed up. This is the client's escape hatch for
-  // the metadata; the image files themselves need manual recovery.
-  app.get('/api/admin/export', requireAuth, (req, res) => {
-    res.set('Content-Disposition', 'attachment; filename="ausflex-content.json"')
-    res.json(read())
-  })
+// Railway volumes are not backed up. This is the client's escape hatch for
+// the metadata; the image files themselves need manual recovery.
+app.get('/api/admin/export', requireAuth, (req, res) => {
+  res.set('Content-Disposition', 'attachment; filename="ausflex-content.json"')
+  res.json(read())
+})
 ```
 
 - [ ] **Step 5: Run the tests and confirm they pass**
@@ -1852,9 +1880,11 @@ git commit -m "feat(server): tour CRUD with embed-URL validation, plus content e
 ### Task 8: Client content store
 
 **Files:**
+
 - Create: `src/lib/contentStore.js`, `src/test/contentStore.test.js`
 
 **Interfaces:**
+
 - Consumes: `gallery` from `src/content/gallery.js`, `tour` from `src/content/tour.js` (fallback only)
 - Produces:
   - `useContent(): { status: 'loading' | 'ready' | 'error', data: Content | null }`
@@ -1881,7 +1911,7 @@ const LIVE = {
 
 async function freshStore() {
   vi.resetModules()
-  return await import('../lib/contentStore.js?' + Math.random())
+  return await import('../lib/contentStore.js')
 }
 
 afterEach(() => {
@@ -1890,10 +1920,7 @@ afterEach(() => {
 
 describe('contentStore', () => {
   it('serves live data once the request resolves', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => LIVE }),
-    )
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => LIVE }))
     const store = await freshStore()
     const { result } = renderHook(() => store.useContent())
 
@@ -1997,8 +2024,10 @@ function set(next) {
 }
 
 function isWellFormed(json) {
-  return Boolean(json?.gallery?.interiors && json?.gallery?.exteriors && json?.gallery?.page) &&
+  return (
+    Boolean(json?.gallery?.interiors && json?.gallery?.exteriors && json?.gallery?.page) &&
     Array.isArray(json.tours)
+  )
 }
 
 if (typeof fetch !== 'undefined') {
@@ -2060,10 +2089,12 @@ git commit -m "feat(client): live content store with static fallback"
 Also fixes the orphaned `exteriors` collection by giving it a home on `/gallery`.
 
 **Files:**
+
 - Modify: `src/components/GalleryGrid.jsx`, `src/components/GalleryGrid.css`, `src/components/InteriorsRail.jsx`, `src/components/InteriorsRail.css`, `src/pages/Home.jsx`, `src/pages/GalleryPage.jsx`
 - Test: `src/test/components.test.jsx` (extend)
 
 **Interfaces:**
+
 - Consumes: `useCollection` from `src/lib/contentStore.js`
 - Produces: `GalleryGrid` and `InteriorsRail` both accept a new optional `loading` prop; when true they render fixed-aspect skeleton tiles instead of images. Their existing `content={{ eyebrow, heading, sub, items }}` shape is unchanged.
 
@@ -2266,10 +2297,12 @@ git commit -m "feat(client): gallery surfaces read live content, exteriors band 
 ### Task 10: Multiple 360 tours
 
 **Files:**
+
 - Modify: `src/components/VirtualTour.jsx`, `src/components/VirtualTour.css`, `src/pages/TourPage.jsx`
 - Test: `src/test/components.test.jsx` (extend)
 
 **Interfaces:**
+
 - Consumes: `useTours` from `src/lib/contentStore.js`
 - Produces: `VirtualTour` accepts `tours: Tour[]`. With `full`, it renders a picker — one button per tour, **exactly one iframe mounted at a time**. Without `full`, it renders the first tour only, keeping the existing launch-poster behaviour.
 
@@ -2280,7 +2313,12 @@ Append to `src/test/components.test.jsx`:
 ```js
 describe('VirtualTour with multiple tours', () => {
   const tours = [
-    { id: 'a', title: 'Explorer 21', embedUrl: 'https://kuula.co/share/a', poster: '/images/x.jpg' },
+    {
+      id: 'a',
+      title: 'Explorer 21',
+      embedUrl: 'https://kuula.co/share/a',
+      poster: '/images/x.jpg',
+    },
     { id: 'b', title: 'Sea Breeze', embedUrl: 'https://kuula.co/share/b', poster: '/images/y.jpg' },
   ]
 
@@ -2351,38 +2389,40 @@ export default function VirtualTour({ content = tour, tours = [], full = false }
 Replace the iframe's `src`/`title` with the current tour, and render the picker above the frame when `showPicker`:
 
 ```jsx
-          {showPicker && (
-            <div className="tour__picker" role="group" aria-label="Choose a tour">
-              {list.map((item, i) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`tour__pick${i === index ? ' tour__pick--active' : ''}`}
-                  aria-current={i === index ? 'true' : undefined}
-                  onClick={() => setIndex(i)}
-                >
-                  {item.title}
-                </button>
-              ))}
-            </div>
-          )}
+{
+  showPicker && (
+    <div className="tour__picker" role="group" aria-label="Choose a tour">
+      {list.map((item, i) => (
+        <button
+          key={item.id}
+          type="button"
+          className={`tour__pick${i === index ? ' tour__pick--active' : ''}`}
+          aria-current={i === index ? 'true' : undefined}
+          onClick={() => setIndex(i)}
+        >
+          {item.title}
+        </button>
+      ))}
+    </div>
+  )
+}
 ```
 
 ```jsx
-              <iframe
-                key={current.id}
-                className="tour__player"
-                src={current.embedUrl}
-                title={current.title}
-                allow="xr-spatial-tracking; gyroscope; accelerometer"
-                allowFullScreen
-              />
+<iframe
+  key={current.id}
+  className="tour__player"
+  src={current.embedUrl}
+  title={current.title}
+  allow="xr-spatial-tracking; gyroscope; accelerometer"
+  allowFullScreen
+/>
 ```
 
 and the poster branch uses `current.poster`:
 
 ```jsx
-                <img src={current.poster} alt="" loading="lazy" />
+<img src={current.poster} alt="" loading="lazy" />
 ```
 
 - [ ] **Step 4: Style the picker in `VirtualTour.css`**
@@ -2406,7 +2446,9 @@ and the poster branch uses `current.poster`:
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .tour__pick:hover {
@@ -2437,7 +2479,11 @@ export default function TourPage() {
   return (
     <main>
       {/* …SEO and page-hero unchanged… */}
-      <VirtualTour content={{ ...tour, eyebrow: null, heading: null, sub: null }} tours={tours} full />
+      <VirtualTour
+        content={{ ...tour, eyebrow: null, heading: null, sub: null }}
+        tours={tours}
+        full
+      />
       <DealerBanner />
     </main>
   )
@@ -2447,11 +2493,11 @@ export default function TourPage() {
 In `src/pages/Home.jsx`, pass the same list so the band shows the first live tour:
 
 ```jsx
-  const { tours } = useTours()
+const { tours } = useTours()
 ```
 
 ```jsx
-      <VirtualTour tours={tours} />
+<VirtualTour tours={tours} />
 ```
 
 - [ ] **Step 6: Run the tests**
@@ -2476,10 +2522,12 @@ git commit -m "feat(client): multi-tour picker on /360, single mounted player"
 ### Task 11: Admin shell, login, and the layout split
 
 **Files:**
+
 - Create: `src/admin/api.js`, `src/admin/Login.jsx`, `src/admin/admin.css`, `src/pages/AdminPage.jsx`, `src/test/admin.test.jsx`
 - Modify: `src/App.jsx`, `public/robots.txt`, `public/sitemap.xml`
 
 **Interfaces:**
+
 - Produces:
   - `src/admin/api.js` — `getSession()`, `login(password)`, `logout()`, `getContent()`, `uploadPhoto({file, collection, alt, caption})`, `patchPhoto(id, patch)`, `reorderPhotos(collection, ids)`, `deletePhoto(id)`, `createTour(body)`, `patchTour(id, patch)`, `reorderTours(ids)`, `deleteTour(id)`, `exportUrl`. Every function rejects with an `Error` carrying `.status`.
   - `AdminPage` — default export, rendered outside the site chrome.
@@ -2531,9 +2579,7 @@ describe('AdminPage', () => {
     )
     renderAdmin()
 
-    await waitFor(() =>
-      expect(screen.getByLabelText(/password/i)).toBeInTheDocument(),
-    )
+    await waitFor(() => expect(screen.getByLabelText(/password/i)).toBeInTheDocument())
     expect(screen.queryByRole('tab', { name: /photos/i })).not.toBeInTheDocument()
   })
 
@@ -2820,7 +2866,9 @@ export default function AdminPage() {
                 aria-labelledby={`tab-${t.id}`}
                 hidden={tab !== t.id}
               >
-                {tab === t.id && content && <p className="admin-status">Coming in the next task.</p>}
+                {tab === t.id && content && (
+                  <p className="admin-status">Coming in the next task.</p>
+                )}
               </div>
             ))}
           </>
@@ -2901,7 +2949,9 @@ there is no type-scale token.
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .admin-tab--active {
@@ -3089,26 +3139,26 @@ function SiteLayout() {
 and restructure the `Routes` block so every existing route becomes a child of `SiteLayout`, with `/admin` a sibling:
 
 ```jsx
-      <ErrorBoundary>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route element={<SiteLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/vans" element={<VansPage />} />
-              <Route path="/vans/:slug" element={<VanPage />} />
-              <Route path="/why-ausflex" element={<WhyPage />} />
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/360" element={<TourPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/privacy" element={<LegalPage type="privacy" />} />
-              <Route path="/terms" element={<LegalPage type="terms" />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-            <Route path="/admin" element={<AdminPage />} />
-          </Routes>
-        </Suspense>
-      </ErrorBoundary>
+<ErrorBoundary>
+  <Suspense fallback={<RouteFallback />}>
+    <Routes>
+      <Route element={<SiteLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/vans" element={<VansPage />} />
+        <Route path="/vans/:slug" element={<VanPage />} />
+        <Route path="/why-ausflex" element={<WhyPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/360" element={<TourPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<LegalPage type="privacy" />} />
+        <Route path="/terms" element={<LegalPage type="terms" />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+      <Route path="/admin" element={<AdminPage />} />
+    </Routes>
+  </Suspense>
+</ErrorBoundary>
 ```
 
 - [ ] **Step 8: Keep `/admin` out of search**
@@ -3141,10 +3191,12 @@ git commit -m "feat(admin): shell, shared-password login and chrome-free layout"
 ### Task 12: Photos tab
 
 **Files:**
+
 - Create: `src/admin/resizeImage.js`, `src/admin/PhotosTab.jsx`, `src/test/resizeImage.test.js`
 - Modify: `src/pages/AdminPage.jsx`, `src/admin/admin.css`, `src/test/admin.test.jsx`
 
 **Interfaces:**
+
 - Consumes: `uploadPhoto`, `patchPhoto`, `reorderPhotos`, `deletePhoto` from `src/admin/api.js`
 - Produces:
   - `fitWithin(width, height, maxEdge): { width, height }` — pure, unit-tested
@@ -3153,7 +3205,7 @@ git commit -m "feat(admin): shell, shared-password login and chrome-free layout"
 
 - [ ] **Step 1: Write the failing test for the pure sizing helper**
 
-The canvas encode path cannot be tested meaningfully in jsdom — `createImageBitmap` and a real `toBlob` are not implemented there. The arithmetic is extracted so it *can* be tested; the encode itself is verified by hand in Step 8.
+The canvas encode path cannot be tested meaningfully in jsdom — `createImageBitmap` and a real `toBlob` are not implemented there. The arithmetic is extracted so it _can_ be tested; the encode itself is verified by hand in Step 8.
 
 Create `src/test/resizeImage.test.js`:
 
@@ -3298,7 +3350,12 @@ export default function PhotosTab({ photos, onChange }) {
     const target = index + delta
     if (target < 0 || target >= next.length) return
     ;[next[index], next[target]] = [next[target], next[index]]
-    run(() => reorderPhotos(collection, next.map((p) => p.id)))
+    run(() =>
+      reorderPhotos(
+        collection,
+        next.map((p) => p.id),
+      ),
+    )
   }
 
   return (
@@ -3358,7 +3415,8 @@ export default function PhotosTab({ photos, onChange }) {
                 className="admin-input"
                 defaultValue={photo.alt}
                 onBlur={(e) => {
-                  if (e.target.value !== photo.alt) run(() => patchPhoto(photo.id, { alt: e.target.value }))
+                  if (e.target.value !== photo.alt)
+                    run(() => patchPhoto(photo.id, { alt: e.target.value }))
                 }}
               />
 
@@ -3377,26 +3435,54 @@ export default function PhotosTab({ photos, onChange }) {
             </div>
 
             <div className="admin-row__actions">
-              <button type="button" className="admin-button admin-button--quiet"
-                onClick={() => move(i, -1)} disabled={busy || i === 0}
-                aria-label={`Move photo ${i + 1} earlier`}>↑</button>
-              <button type="button" className="admin-button admin-button--quiet"
-                onClick={() => move(i, 1)} disabled={busy || i === items.length - 1}
-                aria-label={`Move photo ${i + 1} later`}>↓</button>
+              <button
+                type="button"
+                className="admin-button admin-button--quiet"
+                onClick={() => move(i, -1)}
+                disabled={busy || i === 0}
+                aria-label={`Move photo ${i + 1} earlier`}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="admin-button admin-button--quiet"
+                onClick={() => move(i, 1)}
+                disabled={busy || i === items.length - 1}
+                aria-label={`Move photo ${i + 1} later`}
+              >
+                ↓
+              </button>
 
               {confirming === photo.id ? (
                 <span className="admin-confirm">
-                  <button type="button" className="admin-button"
-                    onClick={() => { setConfirming(null); run(() => deletePhoto(photo.id)) }}>
+                  <button
+                    type="button"
+                    className="admin-button"
+                    onClick={() => {
+                      setConfirming(null)
+                      run(() => deletePhoto(photo.id))
+                    }}
+                  >
                     Confirm delete
                   </button>
-                  <button type="button" className="admin-button admin-button--quiet"
-                    onClick={() => setConfirming(null)}>Cancel</button>
+                  <button
+                    type="button"
+                    className="admin-button admin-button--quiet"
+                    onClick={() => setConfirming(null)}
+                  >
+                    Cancel
+                  </button>
                 </span>
               ) : (
-                <button type="button" className="admin-button admin-button--quiet"
+                <button
+                  type="button"
+                  className="admin-button admin-button--quiet"
                   onClick={() => setConfirming(photo.id)}
-                  aria-label={`Delete photo ${i + 1}`}>Delete</button>
+                  aria-label={`Delete photo ${i + 1}`}
+                >
+                  Delete
+                </button>
               )}
             </div>
           </li>
@@ -3416,16 +3502,14 @@ import PhotosTab from '../admin/PhotosTab.jsx'
 ```
 
 ```jsx
-                {tab === 'photos' && content && (
-                  <PhotosTab
-                    photos={[
-                      ...content.gallery.interiors,
-                      ...content.gallery.exteriors,
-                      ...content.gallery.page,
-                    ]}
-                    onChange={refresh}
-                  />
-                )}
+{
+  tab === 'photos' && content && (
+    <PhotosTab
+      photos={[...content.gallery.interiors, ...content.gallery.exteriors, ...content.gallery.page]}
+      onChange={refresh}
+    />
+  )
+}
 ```
 
 Note `/api/content` returns photos already grouped by collection, and each row still carries its own `collection` field, so flattening is lossless.
@@ -3433,57 +3517,77 @@ Note `/api/content` returns photos already grouped by collection, and each row s
 - [ ] **Step 7: Extend `src/test/admin.test.jsx`**
 
 ```jsx
-  it('lists photos for the selected collection with editable alt text', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
-        'GET /api/content': {
-          ok: true,
-          json: async () => ({
-            gallery: {
-              interiors: [],
-              exteriors: [],
-              page: [
-                { id: 'p1', collection: 'page', src: '/uploads/a.webp', alt: 'A van', caption: '', sortOrder: 0 },
-              ],
-            },
-            tours: [],
-          }),
-        },
-      }),
-    )
-    renderAdmin()
-
-    await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
-    expect(screen.getByText(/last row will be short/i)).toBeInTheDocument()
-  })
-
-  it('requires a second click to delete', async () => {
-    const user = userEvent.setup()
-    const spy = mockFetch({
+it('lists photos for the selected collection with editable alt text', async () => {
+  vi.stubGlobal(
+    'fetch',
+    mockFetch({
       'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
       'GET /api/content': {
         ok: true,
         json: async () => ({
           gallery: {
-            interiors: [], exteriors: [],
-            page: [{ id: 'p1', collection: 'page', src: '/uploads/a.webp', alt: 'A van', caption: '', sortOrder: 0 }],
+            interiors: [],
+            exteriors: [],
+            page: [
+              {
+                id: 'p1',
+                collection: 'page',
+                src: '/uploads/a.webp',
+                alt: 'A van',
+                caption: '',
+                sortOrder: 0,
+              },
+            ],
           },
           tours: [],
         }),
       },
-    })
-    vi.stubGlobal('fetch', spy)
-    renderAdmin()
+    }),
+  )
+  renderAdmin()
 
-    await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
-    await user.click(screen.getByRole('button', { name: /delete photo 1/i }))
+  await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
+  expect(screen.getByText(/last row will be short/i)).toBeInTheDocument()
+})
 
-    // Nothing is destroyed on the first click.
-    expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument()
-    expect(spy).not.toHaveBeenCalledWith('/api/photos/p1', expect.objectContaining({ method: 'DELETE' }))
+it('requires a second click to delete', async () => {
+  const user = userEvent.setup()
+  const spy = mockFetch({
+    'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+    'GET /api/content': {
+      ok: true,
+      json: async () => ({
+        gallery: {
+          interiors: [],
+          exteriors: [],
+          page: [
+            {
+              id: 'p1',
+              collection: 'page',
+              src: '/uploads/a.webp',
+              alt: 'A van',
+              caption: '',
+              sortOrder: 0,
+            },
+          ],
+        },
+        tours: [],
+      }),
+    },
   })
+  vi.stubGlobal('fetch', spy)
+  renderAdmin()
+
+  await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
+  await user.click(screen.getByRole('button', { name: /delete photo 1/i }))
+
+  // Nothing is destroyed on the first click.
+  expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument()
+  expect(spy).not.toHaveBeenCalledWith(
+    '/api/photos/p1',
+    expect.objectContaining({ method: 'DELETE' }),
+  )
+})
 ```
 
 - [ ] **Step 8: Verify the resize path by hand**
@@ -3506,10 +3610,12 @@ git commit -m "feat(admin): photos tab with browser-side resize, reorder and gua
 ### Task 13: Tours tab
 
 **Files:**
+
 - Create: `src/admin/ToursTab.jsx`
 - Modify: `src/pages/AdminPage.jsx`, `src/admin/admin.css`, `src/test/admin.test.jsx`
 
 **Interfaces:**
+
 - Consumes: `createTour`, `patchTour`, `reorderTours`, `deleteTour`, `exportUrl` from `src/admin/api.js`
 - Produces: `ToursTab({ tours, onChange })`
 
@@ -3518,55 +3624,67 @@ git commit -m "feat(admin): photos tab with browser-side resize, reorder and gua
 Append to `src/test/admin.test.jsx`:
 
 ```jsx
-  const TOURS_CONTENT = {
-    gallery: { interiors: [], exteriors: [], page: [] },
-    tours: [
-      { id: 't1', title: 'Explorer 21', embedUrl: 'https://kuula.co/share/a', poster: null, sortOrder: 0 },
-      { id: 't2', title: 'Sea Breeze', embedUrl: 'https://kuula.co/share/b', poster: null, sortOrder: 1 },
-    ],
-  }
+const TOURS_CONTENT = {
+  gallery: { interiors: [], exteriors: [], page: [] },
+  tours: [
+    {
+      id: 't1',
+      title: 'Explorer 21',
+      embedUrl: 'https://kuula.co/share/a',
+      poster: null,
+      sortOrder: 0,
+    },
+    {
+      id: 't2',
+      title: 'Sea Breeze',
+      embedUrl: 'https://kuula.co/share/b',
+      poster: null,
+      sortOrder: 1,
+    },
+  ],
+}
 
-  it('lists tours and marks the first as the one on the home page', async () => {
-    const user = userEvent.setup()
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
-        'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
-      }),
-    )
-    renderAdmin()
+it('lists tours and marks the first as the one on the home page', async () => {
+  const user = userEvent.setup()
+  vi.stubGlobal(
+    'fetch',
+    mockFetch({
+      'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+      'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
+    }),
+  )
+  renderAdmin()
 
-    await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /360/i }))
+  await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
+  await user.click(screen.getByRole('tab', { name: /360/i }))
 
-    expect(screen.getByDisplayValue('Explorer 21')).toBeInTheDocument()
-    // The home-page rule is visible rather than hidden.
-    expect(screen.getByText(/shown on the home page/i)).toBeInTheDocument()
-  })
+  expect(screen.getByDisplayValue('Explorer 21')).toBeInTheDocument()
+  // The home-page rule is visible rather than hidden.
+  expect(screen.getByText(/shown on the home page/i)).toBeInTheDocument()
+})
 
-  it('rejects an off-allowlist embed URL before sending it', async () => {
-    const user = userEvent.setup()
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
-        'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
-      }),
-    )
-    renderAdmin()
+it('rejects an off-allowlist embed URL before sending it', async () => {
+  const user = userEvent.setup()
+  vi.stubGlobal(
+    'fetch',
+    mockFetch({
+      'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+      'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
+    }),
+  )
+  renderAdmin()
 
-    await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /360/i }))
+  await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
+  await user.click(screen.getByRole('tab', { name: /360/i }))
 
-    await user.type(screen.getByLabelText(/tour name/i), 'Bad tour')
-    await user.type(screen.getByLabelText(/embed url/i), 'https://evil.example.com/x')
-    await user.click(screen.getByRole('button', { name: /add tour/i }))
+  await user.type(screen.getByLabelText(/tour name/i), 'Bad tour')
+  await user.type(screen.getByLabelText(/embed url/i), 'https://evil.example.com/x')
+  await user.click(screen.getByRole('button', { name: /add tour/i }))
 
-    await waitFor(() =>
-      expect(screen.getByRole('alert')).toHaveTextContent(/kuula\.co or matterport\.com/i),
-    )
-  })
+  await waitFor(() =>
+    expect(screen.getByRole('alert')).toHaveTextContent(/kuula\.co or matterport\.com/i),
+  )
+})
 ```
 
 - [ ] **Step 2: Run it and confirm it fails**
@@ -3675,26 +3793,54 @@ export default function ToursTab({ tours, onChange }) {
             </div>
 
             <div className="admin-row__actions">
-              <button type="button" className="admin-button admin-button--quiet"
-                onClick={() => move(i, -1)} disabled={busy || i === 0}
-                aria-label={`Move ${tourItem.title} earlier`}>↑</button>
-              <button type="button" className="admin-button admin-button--quiet"
-                onClick={() => move(i, 1)} disabled={busy || i === items.length - 1}
-                aria-label={`Move ${tourItem.title} later`}>↓</button>
+              <button
+                type="button"
+                className="admin-button admin-button--quiet"
+                onClick={() => move(i, -1)}
+                disabled={busy || i === 0}
+                aria-label={`Move ${tourItem.title} earlier`}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="admin-button admin-button--quiet"
+                onClick={() => move(i, 1)}
+                disabled={busy || i === items.length - 1}
+                aria-label={`Move ${tourItem.title} later`}
+              >
+                ↓
+              </button>
 
               {confirming === tourItem.id ? (
                 <span className="admin-confirm">
-                  <button type="button" className="admin-button"
-                    onClick={() => { setConfirming(null); run(() => deleteTour(tourItem.id)) }}>
+                  <button
+                    type="button"
+                    className="admin-button"
+                    onClick={() => {
+                      setConfirming(null)
+                      run(() => deleteTour(tourItem.id))
+                    }}
+                  >
                     Confirm delete
                   </button>
-                  <button type="button" className="admin-button admin-button--quiet"
-                    onClick={() => setConfirming(null)}>Cancel</button>
+                  <button
+                    type="button"
+                    className="admin-button admin-button--quiet"
+                    onClick={() => setConfirming(null)}
+                  >
+                    Cancel
+                  </button>
                 </span>
               ) : (
-                <button type="button" className="admin-button admin-button--quiet"
+                <button
+                  type="button"
+                  className="admin-button admin-button--quiet"
                   onClick={() => setConfirming(tourItem.id)}
-                  aria-label={`Delete ${tourItem.title}`}>Delete</button>
+                  aria-label={`Delete ${tourItem.title}`}
+                >
+                  Delete
+                </button>
               )}
             </div>
           </li>
@@ -3704,24 +3850,44 @@ export default function ToursTab({ tours, onChange }) {
       <form className="admin-add" onSubmit={onAdd}>
         <h2 className="admin-add__title">Add a tour</h2>
 
-        <label className="admin-field" htmlFor="new-title">Tour name</label>
-        <input id="new-title" className="admin-input" value={title}
-          onChange={(e) => setTitle(e.target.value)} required />
+        <label className="admin-field" htmlFor="new-title">
+          Tour name
+        </label>
+        <input
+          id="new-title"
+          className="admin-input"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
 
-        <label className="admin-field" htmlFor="new-url">Embed URL</label>
-        <input id="new-url" className="admin-input" value={embedUrl}
+        <label className="admin-field" htmlFor="new-url">
+          Embed URL
+        </label>
+        <input
+          id="new-url"
+          className="admin-input"
+          value={embedUrl}
           onChange={(e) => setEmbedUrl(e.target.value)}
-          placeholder="https://kuula.co/share/collection/…" required />
+          placeholder="https://kuula.co/share/collection/…"
+          required
+        />
 
-        <button className="admin-button" type="submit" disabled={busy}>Add tour</button>
+        <button className="admin-button" type="submit" disabled={busy}>
+          Add tour
+        </button>
       </form>
 
-      {error && <p className="admin-error" role="alert">{error}</p>}
+      {error && (
+        <p className="admin-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <p className="admin-hint">
         Railway volumes are not backed up automatically.{' '}
-        <a href={exportUrl}>Download a copy of your content</a> now and then, and keep your
-        original photos.
+        <a href={exportUrl}>Download a copy of your content</a> now and then, and keep your original
+        photos.
       </p>
     </div>
   )
@@ -3735,9 +3901,9 @@ import ToursTab from '../admin/ToursTab.jsx'
 ```
 
 ```jsx
-                {tab === 'tours' && content && (
-                  <ToursTab tours={content.tours} onChange={refresh} />
-                )}
+{
+  tab === 'tours' && content && <ToursTab tours={content.tours} onChange={refresh} />
+}
 ```
 
 - [ ] **Step 5: Run the tests**
@@ -3757,6 +3923,7 @@ git commit -m "feat(admin): tours tab with URL validation, reorder and content e
 ### Task 14: Environment, docs, and full verification
 
 **Files:**
+
 - Modify: `.env.example`, `README.md`, `docs/ENVIRONMENTS.md`
 
 - [ ] **Step 1: Document the new environment variables**
@@ -3858,7 +4025,7 @@ With the server running, at `http://localhost:4173/admin`:
 3. Edit an alt text; reload the public page and confirm it changed.
 4. Reorder two photos; confirm the public order matches.
 5. Delete an uploaded photo; confirm the file is gone from `.data/uploads`.
-6. Delete a *seeded* photo; confirm the row disappears and `public/images/` is untouched.
+6. Delete a _seeded_ photo; confirm the row disappears and `public/images/` is untouched.
 7. Add a second tour; confirm `/360` shows a picker and `/` shows the first tour.
 8. Paste a non-Kuula URL; confirm it is refused.
 9. Sign out; confirm `/admin` returns to the login form and a `DELETE` via curl returns 401.
@@ -3881,7 +4048,7 @@ Expected: lint, format, test, build and Lighthouse all pass. A red check means t
 
 ## Deployment prerequisite
 
-**Before the first deploy of this branch**, on *each* Railway environment:
+**Before the first deploy of this branch**, on _each_ Railway environment:
 
 1. Create a volume mounted at `/data`.
 2. Set `DATA_DIR=/data`, `ADMIN_PASSWORD_HASH=<generated>`, `SESSION_SECRET=<generated>`.
