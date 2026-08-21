@@ -218,15 +218,19 @@ describe('VanPage — live content', () => {
     const { VanPage, HelmetProvider } = await loadWith(
       Promise.resolve({ ok: true, json: async () => bare }),
     )
-    renderVanPage(VanPage, HelmetProvider, 'bare-van')
+    const { container } = renderVanPage(VanPage, HelmetProvider, 'bare-van')
 
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: 'Bare Van' })).toBeInTheDocument(),
     )
-    // No <img> at all beats an <img src={null}>.
-    for (const img of screen.queryAllByRole('img')) {
-      expect(img.getAttribute('src')).toBeTruthy()
-    }
+    // BARE_VAN.imageAlt is '', which gives an <img alt=""> the implicit role
+    // presentation/none rather than img — queryAllByRole('img') would never see
+    // it either way, so it can't tell a guarded <img> apart from a reintroduced
+    // <img src={null}>. Query the DOM directly instead, scoped to the van's own
+    // image slots: ContactCTA (rendered on every VanPage) has its own unrelated
+    // background <img>, so a page-wide query would pass or fail independent of
+    // the guard under test.
+    expect(container.querySelectorAll('.van__main-image img, .van__floorplan img').length).toBe(0)
   })
 })
 
