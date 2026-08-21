@@ -64,16 +64,21 @@
   cursor: pointer;
 }
 
+/* `--poster-scale` trims a thumbnail that ships its own baked-in letterbox:
+ * some YouTube stills are a cinematic frame windowboxed inside 16:9, and
+ * object-fit alone leaves those bars sitting inside our frame. Content sets
+ * the factor; the hover lift multiplies it rather than replacing it. */
 .video__poster img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(var(--poster-scale, 1));
   transition: transform var(--transition-slow);
 }
 
 .video__poster:hover img,
 .video__poster:focus-visible img {
-  transform: scale(1.03);
+  transform: scale(calc(var(--poster-scale, 1) * 1.03));
 }
 
 /* Grounds the bottom-left corner so the spec plate holds its contrast over

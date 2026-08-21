@@ -12,18 +12,23 @@ import './VideoEmbed.css'
 // over it and the copy above is one line, so the frame carries the section. A
 // thumbnail facade stands in until the visitor presses play, so the page stays
 // light.
-export default function VideoEmbed() {
+//
+// `content` is the band's own block so the same stage can carry a different
+// film on another page — /why-ausflex passes the Tough Test segment. The plate
+// and the closing link are both optional: a block with no `model` or `cta`
+// renders as the frame alone.
+export default function VideoEmbed({ content = video, className = '', id = 'video' }) {
   const scrollIn = useScrollIn()
   const [playing, setPlaying] = useState(false)
 
   return (
-    <section className="video section section--dark" id="video">
+    <section className={`video section section--dark${className ? ` ${className}` : ''}`} id={id}>
       <div className="container video__head">
-        {video.eyebrow && <span className="section-eyebrow">{video.eyebrow}</span>}
+        {content.eyebrow && <span className="section-eyebrow">{content.eyebrow}</span>}
         <h2 className="display-statement video__heading">
-          {video.heading} <em>{video.headingAccent}</em>
+          {content.heading} <em>{content.headingAccent}</em>
         </h2>
-        {video.sub && <p className="video__sub">{video.sub}</p>}
+        {content.sub && <p className="video__sub">{content.sub}</p>}
       </div>
 
       <div className="container">
@@ -32,8 +37,8 @@ export default function VideoEmbed() {
             {playing ? (
               <iframe
                 className="video__player"
-                src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
-                title={video.title}
+                src={`https://www.youtube-nocookie.com/embed/${content.youtubeId}?autoplay=1&rel=0`}
+                title={content.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />
@@ -41,11 +46,12 @@ export default function VideoEmbed() {
               <button
                 type="button"
                 className="video__poster"
-                aria-label={`Play video: ${video.title}`}
+                aria-label={`Play video: ${content.title}`}
                 onClick={() => setPlaying(true)}
+                style={content.posterScale ? { '--poster-scale': content.posterScale } : undefined}
               >
                 <img
-                  src={`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                  src={`https://i.ytimg.com/vi/${content.youtubeId}/maxresdefault.jpg`}
                   alt=""
                   loading="lazy"
                 />
@@ -59,11 +65,11 @@ export default function VideoEmbed() {
 
           {/* Sits over the frame but outside the button, so the spec plate is
            * read as content rather than folded into the play label. */}
-          {!playing && (
+          {!playing && content.model && (
             <div className="video__plate">
-              <span className="metaline video__plate-model">{video.model}</span>
+              <span className="metaline video__plate-model">{content.model}</span>
               <dl className="video__specs">
-                {video.specs.map((s) => (
+                {content.specs.map((s) => (
                   <div key={s.label} className="video__spec">
                     <dt>{s.label}</dt>
                     <dd>{s.value}</dd>
@@ -75,14 +81,14 @@ export default function VideoEmbed() {
         </motion.div>
       </div>
 
-      {video.cta && (
+      {content.cta && (
         <div className="container">
           {/* The rule lives on this inner row, not on the container: a
            * border on the padded wrapper would start a gutter's width left
            * of every other element on the page. */}
           <div className="video__foot">
-            <Link to={video.cta.to} className="video__cta">
-              {video.cta.label} →
+            <Link to={content.cta.to} className="video__cta">
+              {content.cta.label} →
             </Link>
           </div>
         </div>
