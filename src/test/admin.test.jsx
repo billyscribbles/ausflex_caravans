@@ -334,4 +334,97 @@ describe('AdminPage — vans', () => {
       expect(global.fetch).toHaveBeenCalledWith('/api/vans/van-1', { method: 'DELETE' }),
     )
   })
+
+  async function openEditor(handlers = {}) {
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => WITH_VAN },
+        ...handlers,
+      }),
+    )
+    renderAdmin()
+    await userEvent.click(await screen.findByRole('tab', { name: /vans/i }))
+    await userEvent.click(await screen.findByRole('button', { name: /edit tuff mudder/i }))
+  }
+
+  it('opens the editor with the van already filled in', async () => {
+    await openEditor()
+
+    expect(await screen.findByLabelText(/van name/i)).toHaveValue('Tuff Mudder')
+    expect(screen.getByLabelText(/web address/i)).toHaveValue('tuff-mudder')
+    expect(screen.getByLabelText(/short blurb/i)).toHaveValue('Small in size but big in features.')
+    // Paragraphs round-trip through one textarea, blank-line separated.
+    expect(screen.getByLabelText(/full description/i)).toHaveValue(
+      'First paragraph.\n\nSecond paragraph.',
+    )
+  })
+
+  it('saves a text field on blur', async () => {
+    await openEditor({
+      'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: VAN }) },
+    })
+
+    const field = await screen.findByLabelText(/van length/i)
+    await userEvent.clear(field)
+    await userEvent.type(field, '13ft')
+    await userEvent.tab()
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1',
+        expect.objectContaining({ method: 'PATCH', body: JSON.stringify({ length: '13ft' }) }),
+      ),
+    )
+  })
+
+  it('splits the description textarea into paragraphs on save', async () => {
+    await openEditor({
+      'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: VAN }) },
+    })
+
+    const field = await screen.findByLabelText(/full description/i)
+    await userEvent.clear(field)
+    await userEvent.type(field, 'One.{Enter}{Enter}Two.')
+    await userEvent.tab()
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1',
+        expect.objectContaining({ body: JSON.stringify({ description: ['One.', 'Two.'] }) }),
+      ),
+    )
+  })
+
+  it('adds and removes a spec', async () => {
+    await openEditor({
+      'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: VAN }) },
+    })
+
+    await userEvent.type(await screen.findByLabelText(/new spec/i), 'Solar ready')
+    await userEvent.click(screen.getByRole('button', { name: /add spec/i }))
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1',
+        expect.objectContaining({
+          body: JSON.stringify({ specs: ['12ft body', 'Single axle', 'Solar ready'] }),
+        }),
+      ),
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /remove 12ft body/i }))
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1',
+        expect.objectContaining({ body: JSON.stringify({ specs: ['Single axle'] }) }),
+      ),
+    )
+  })
+
+  it('warns that changing the web address breaks the old link', async () => {
+    await openEditor()
+    expect(await screen.findByText(/breaks the old link/i)).toBeInTheDocument()
+  })
 })
