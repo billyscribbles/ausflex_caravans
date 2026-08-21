@@ -2,9 +2,11 @@ import SEO from '../lib/seo.jsx'
 import Range from '../components/Range.jsx'
 import FAQ from '../components/FAQ.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
-import { vans } from '../content/vans.js'
+import { useVans } from '../lib/contentStore.js'
 
 export default function VansPage() {
+  const { vans } = useVans()
+
   return (
     <main>
       <SEO

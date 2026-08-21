@@ -1,3 +1,11 @@
+/* Held while the range is in flight, so a dashboard-created van never flashes
+ * the 404 page on a direct load. */
+.van__loading {
+  padding: var(--space-3xl) 0;
+  text-align: center;
+  color: var(--color-muted);
+}
+
 .van__breadcrumb {
   font-family: var(--font-mono);
   font-size: 11px;
