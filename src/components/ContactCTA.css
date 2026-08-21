@@ -170,8 +170,12 @@
   .cta {
     padding-block: var(--space-4xl);
   }
+  /* One column from here down: two auto columns squeeze the direct lines hard
+   * enough at tablet widths to break the phone number mid-word. */
   .cta__row {
     margin-top: var(--space-2xl);
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 }
 
