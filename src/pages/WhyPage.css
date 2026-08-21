@@ -34,8 +34,8 @@
 .why__warranty-term {
   font-family: var(--font-display);
   font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   color: var(--color-accent-dark);
   min-width: 96px;
 }
@@ -47,16 +47,15 @@
 
 .why__specs-panel {
   background: var(--color-dark);
-  color: #fff;
-  border-radius: var(--radius-lg);
+  color: var(--color-bone);
   padding: 40px;
 }
 
 .why__specs-heading {
   font-family: var(--font-display);
   font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.035em;
+  font-weight: 400;
+  letter-spacing: -0.015em;
   margin-bottom: 24px;
 }
 
@@ -69,9 +68,9 @@
   position: relative;
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--color-bone-soft);
   padding: 11px 0 11px 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--color-hairline-dark);
 }
 
 .why__specs-list li:first-child {
@@ -101,9 +100,8 @@
 
 .why__photo {
   margin: 0;
-  border-radius: var(--radius-md);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(243, 239, 233, 0.04);
 }
 
 .why__photo img {
@@ -116,22 +114,19 @@
 .why__cta {
   display: inline-flex;
   margin-top: 40px;
-  padding: 15px 30px;
+  padding: 19px 38px;
   border-radius: var(--radius-full);
   background: var(--color-accent);
   color: var(--color-dark-deep);
+  font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition:
-    background var(--transition-fast),
-    transform var(--transition-fast);
+  transition: background var(--transition-fast);
 }
 
 .why__cta:hover {
-  background: #cbb08a;
-  transform: translateY(-2px);
+  background: var(--color-bone);
 }
 
 @media (max-width: 900px) {

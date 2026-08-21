@@ -15,12 +15,12 @@
 
 .about__highlight {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.4;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.5;
   color: var(--color-text);
-  border-top: 1px solid var(--color-border-strong);
+  border-top: 1px solid var(--color-rule);
   padding-top: 24px;
   margin-top: 30px;
   max-width: 54ch;
@@ -29,9 +29,9 @@
 .about__cta {
   display: inline-block;
   margin-top: 26px;
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-accent-dark);
   transition: color var(--transition-fast);
@@ -43,10 +43,9 @@
 
 .about__image {
   margin: 0;
-  border-radius: var(--radius-lg);
   overflow: hidden;
   position: sticky;
-  top: 100px;
+  top: 120px;
 }
 
 .about__image img {

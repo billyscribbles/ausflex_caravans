@@ -49,10 +49,10 @@
   position: absolute;
   left: 16px;
   bottom: 13px;
-  color: #fff;
+  color: var(--color-bone);
+  font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
   pointer-events: none;

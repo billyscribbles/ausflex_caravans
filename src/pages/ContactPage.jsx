@@ -1,11 +1,8 @@
-import { MapPin, Clock, Phone, Mail } from 'lucide-react'
 import SEO from '../lib/seo.jsx'
-import { site } from '../config/site.config.js'
 import Contact from '../components/Contact.jsx'
 import './ContactPage.css'
 
 export default function ContactPage() {
-  const { contact } = site
   return (
     <main>
       <SEO
@@ -24,43 +21,6 @@ export default function ContactPage() {
           </p>
         </div>
       </header>
-
-      <section className="contact-info">
-        <div className="container contact-info__grid">
-          <div className="contact-info__item">
-            <MapPin size={20} strokeWidth={1.8} aria-hidden="true" />
-            <h2>Our location</h2>
-            <p>
-              <a href={contact.mapUrl} target="_blank" rel="noopener noreferrer">
-                {contact.location}
-              </a>
-            </p>
-          </div>
-          <div className="contact-info__item">
-            <Clock size={20} strokeWidth={1.8} aria-hidden="true" />
-            <h2>Our hours</h2>
-            <p>
-              {contact.hours.map((h) => (
-                <span key={h}>{h}</span>
-              ))}
-            </p>
-          </div>
-          <div className="contact-info__item">
-            <Phone size={20} strokeWidth={1.8} aria-hidden="true" />
-            <h2>Call us</h2>
-            <p>
-              <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
-            </p>
-          </div>
-          <div className="contact-info__item">
-            <Mail size={20} strokeWidth={1.8} aria-hidden="true" />
-            <h2>Email us</h2>
-            <p>
-              <a href={`mailto:${contact.email}`}>{contact.email}</a>
-            </p>
-          </div>
-        </div>
-      </section>
 
       <Contact />
     </main>

@@ -9,9 +9,13 @@ export default function LegalPage({ type = 'privacy' }) {
   return (
     <main className="legal">
       <SEO title={doc.title} path={`/${type}`} />
-      <div className="container legal__inner">
-        <h1 className="legal__title">{doc.title}</h1>
-        {doc.updated && <p className="legal__updated">{doc.updated}</p>}
+      <header className="page-hero">
+        <div className="container legal__inner">
+          <h1 className="page-hero__title">{doc.title}</h1>
+          {doc.updated && <p className="legal__updated">{doc.updated}</p>}
+        </div>
+      </header>
+      <div className="container legal__inner legal__content">
         {doc.sections.map((s) => (
           <section key={s.heading} className="legal__section">
             <h2 className="legal__heading">{s.heading}</h2>

@@ -1,67 +1,80 @@
+/* Dark chrome band — matches the 404 page so the fixed nav stays legible. */
 .errorboundary {
-  min-height: 70vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
-  padding: 96px 0;
+  padding: 160px 0 96px;
+  background: var(--color-dark-deep);
+  color: var(--color-bone);
 }
 
 .errorboundary__inner {
   text-align: center;
 }
 
+.errorboundary .section-eyebrow {
+  color: var(--color-accent);
+}
+
 .errorboundary__title {
   font-family: var(--font-display);
-  font-size: clamp(36px, 5vw, 56px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
-  margin: 16px 0 12px;
-  font-optical-sizing: auto;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--color-bone);
+  margin: 8px 0 16px;
 }
 
 .errorboundary__sub {
   font-size: 17px;
-  color: var(--color-muted);
-  margin-bottom: 32px;
+  line-height: 1.8;
+  color: var(--color-bone-muted);
+  margin-bottom: 40px;
 }
 
 .errorboundary__actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .errorboundary__btn {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  background: var(--color-accent);
-  padding: 12px 28px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-dark-deep);
+  background: var(--color-bone);
+  padding: 17px 34px;
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-accent);
   transition: background var(--transition-fast);
 }
 
 .errorboundary__btn:hover {
-  background: var(--color-accent-dark);
+  background: var(--color-accent);
 }
 
 .errorboundary__link {
   display: inline-flex;
   align-items: center;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-accent);
-  padding: 12px 26px;
+  padding: 17px 34px;
   border-radius: var(--radius-full);
-  border: 1.5px solid var(--color-accent);
+  border: 1px solid var(--color-bronze-outline);
   transition:
     background var(--transition-fast),
-    color var(--transition-fast);
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .errorboundary__link:hover {
   background: var(--color-accent);
-  color: #fff;
+  border-color: var(--color-accent);
+  color: var(--color-dark-deep);
 }
