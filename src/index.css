@@ -97,6 +97,27 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Orphan control for running copy. Headings already balance individually;
+ * paragraphs get `pretty`, which only rewrites the last two lines and so
+ * can't restripe a whole block the way `balance` would. */
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+/* The mono micro-type carries lengths, phone numbers, step indices and years.
+ * Proportional digits made "18.6FT" and "21.6FT" sit at different widths in
+ * the same column; lining figures keep the numerals on a shared grid. */
+.section-eyebrow,
+.stats__item,
+.range__length,
+.range__index,
+.footer__contact-info,
+.footer__bottom {
+  font-variant-numeric: tabular-nums;
+}
+
 ::selection {
   background: var(--color-accent);
   color: var(--color-text);
@@ -141,6 +162,25 @@ select {
 .section--dark {
   background: var(--color-dark);
   color: var(--color-bone);
+}
+
+/* Seam control between adjacent bands.
+ *
+ * A section pays for its air twice: its own padding-bottom plus the next
+ * section's padding-top. Where the background changes, that double step is
+ * what makes the band read as a new chapter, so it stays. Where two bands
+ * share the same ground, nothing marks the seam and the two steps collapse
+ * into a single field of flat cream — 240px of it between the tour and the
+ * craft band, and again before the interiors rail.
+ *
+ * So: same-ground seams run one step of the ladder from each side, and only
+ * colour changes get the full double step. */
+.section:not(.section--dark) + .section:not(.section--dark) {
+  padding-top: var(--space-3xl);
+}
+
+.section:not(.section--dark):has(+ .section:not(.section--dark)) {
+  padding-bottom: var(--space-3xl);
 }
 
 /* Bronze reads at 2.5:1 on cream — far below the 3:1 non-text minimum — so
@@ -266,6 +306,65 @@ select {
   }
   .section {
     padding: var(--space-3xl) 0;
+  }
+}
+
+/* Press feedback for every action primitive on the site.
+ *
+ * Each of these already had a hover, and none had a pressed state, so a click
+ * produced no acknowledgement until the next page painted. One shared rule
+ * rather than the same three lines in eleven files — the list is the site's
+ * full set of buttons and button-shaped links, so a new one has to be added
+ * here to feel like the rest.
+ *
+ * transform only: it composites, so the press can't cost a layout pass. */
+.hero__cta-primary:active,
+.hero__cta-secondary:active,
+.navbar__cta:active,
+.navbar__mobile-cta:active,
+.cta__button:active,
+.contact__submit:active:not(:disabled),
+.dealer__cta:active,
+.video__play:active,
+.why__cta:active,
+.van__enquire:active,
+.notfound__cta:active,
+.errorboundary__btn:active,
+.errorboundary__link:active,
+.footer__social:active,
+.gallery-grid__close:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* Inline text links move a shade less — they have no box to compress. */
+.feature__cta:active,
+.tour__cta:active,
+.video__cta:active,
+.about__cta:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__cta-primary:active,
+  .hero__cta-secondary:active,
+  .navbar__cta:active,
+  .navbar__mobile-cta:active,
+  .cta__button:active,
+  .contact__submit:active:not(:disabled),
+  .dealer__cta:active,
+  .video__play:active,
+  .why__cta:active,
+  .van__enquire:active,
+  .notfound__cta:active,
+  .errorboundary__btn:active,
+  .errorboundary__link:active,
+  .footer__social:active,
+  .gallery-grid__close:active,
+  .feature__cta:active,
+  .tour__cta:active,
+  .video__cta:active,
+  .about__cta:active {
+    transform: none;
   }
 }
 

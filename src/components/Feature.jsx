@@ -10,17 +10,22 @@ export default function Feature() {
   return (
     <section className="feature section" id="craft">
       <div className="container">
-        {feature.eyebrow && <span className="section-eyebrow">{feature.eyebrow}</span>}
-        <h2 className="section-label feature__heading">{feature.heading}</h2>
+        <div className="feature__head">
+          <div>
+            {feature.eyebrow && <span className="section-eyebrow">{feature.eyebrow}</span>}
+            <h2 className="section-label feature__heading">{feature.heading}</h2>
+          </div>
+          {feature.body && <p className="section-sub feature__intro">{feature.body}</p>}
+        </div>
 
         <div className="feature__grid">
-          <div className="feature__image">
-            <img src={feature.image} alt={feature.imageAlt} loading="lazy" />
+          <div className="feature__media">
+            <div className="feature__image">
+              <img src={feature.image} alt={feature.imageAlt} loading="lazy" />
+            </div>
           </div>
 
           <motion.div className="feature__rows" {...scrollIn(0)}>
-            {feature.body && <p className="feature__body">{feature.body}</p>}
-
             {feature.points.map((p, i) => (
               <div key={p.title} className="feature__row">
                 <span className="feature__row-no" aria-hidden="true">

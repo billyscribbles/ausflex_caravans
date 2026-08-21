@@ -41,70 +41,70 @@ export default function Contact() {
   return (
     <section className="contact section" id="contact">
       <div className="container contact__inner">
-        <div className="contact__lead">
+        <div className="contact__head">
           <span className="section-eyebrow">{contactSection.eyebrow}</span>
           <h2 className="section-label contact__heading">{contactSection.heading}</h2>
           <p className="contact__sub">{contactSection.sub}</p>
-
-          <dl className="contact__details">
-            {contact.phone && (
-              <div className="contact__detail">
-                <dt>Call us</dt>
-                <dd>
-                  <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
-                </dd>
-                {contact.hours?.map((line) => (
-                  <dd key={line}>{line}</dd>
-                ))}
-              </div>
-            )}
-            {contact.location && (
-              <div className="contact__detail">
-                <dt>Our location</dt>
-                <dd>
-                  <a href={contact.mapUrl} target="_blank" rel="noopener noreferrer">
-                    {contact.location}
-                  </a>
-                </dd>
-              </div>
-            )}
-            {contact.email && (
-              <div className="contact__detail">
-                <dt>Email</dt>
-                <dd>
-                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
-                </dd>
-              </div>
-            )}
-            {(social.facebook || social.instagram) && (
-              <div className="contact__detail">
-                <dt>Follow us</dt>
-                <dd className="contact__socials">
-                  {social.facebook && (
-                    <a
-                      href={social.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Facebook"
-                    >
-                      <Facebook size={17} strokeWidth={1.8} />
-                    </a>
-                  )}
-                  {social.instagram && (
-                    <a
-                      href={social.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Instagram"
-                    >
-                      <Instagram size={17} strokeWidth={1.8} />
-                    </a>
-                  )}
-                </dd>
-              </div>
-            )}
-          </dl>
         </div>
+
+        <dl className="contact__details">
+          {contact.phone && (
+            <div className="contact__detail">
+              <dt>Call us</dt>
+              <dd>
+                <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
+              </dd>
+              {contact.hours?.map((line) => (
+                <dd key={line}>{line}</dd>
+              ))}
+            </div>
+          )}
+          {contact.location && (
+            <div className="contact__detail">
+              <dt>Our location</dt>
+              <dd>
+                <a href={contact.mapUrl} target="_blank" rel="noopener noreferrer">
+                  {contact.location}
+                </a>
+              </dd>
+            </div>
+          )}
+          {contact.email && (
+            <div className="contact__detail">
+              <dt>Email</dt>
+              <dd>
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              </dd>
+            </div>
+          )}
+          {(social.facebook || social.instagram) && (
+            <div className="contact__detail">
+              <dt>Follow us</dt>
+              <dd className="contact__socials">
+                {social.facebook && (
+                  <a
+                    href={social.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={17} strokeWidth={1.8} />
+                  </a>
+                )}
+                {social.instagram && (
+                  <a
+                    href={social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={17} strokeWidth={1.8} />
+                  </a>
+                )}
+              </dd>
+            </div>
+          )}
+        </dl>
 
         <form className="contact__form" onSubmit={handleSubmit}>
           <div className="contact__form-head">

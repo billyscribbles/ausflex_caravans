@@ -31,12 +31,36 @@
   color: var(--color-muted);
 }
 
+/* Tablet: four one-per-line rows made the strip taller than the copy above it,
+ * so it pairs up. Each item stacks its value over its label — side by side in
+ * a half-width column, the label had nowhere to go. */
 @media (max-width: 768px) {
   .stats {
     padding: var(--space-md) 0;
   }
   .stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md) var(--space-sm);
+  }
+  .stats__item {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+/* Phone: a half column is ~150px, and mono at this tracking breaks a label
+ * like "manufacturing heritage" across three lines in it. Back to full-width
+ * rows, value and label on one line. */
+@media (max-width: 620px) {
+  .stats__grid {
+    grid-template-columns: 1fr;
     gap: var(--space-xs);
+  }
+  .stats__item {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-2xs);
   }
 }

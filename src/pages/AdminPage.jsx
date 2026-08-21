@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import Login from '../admin/Login.jsx'
+import PhotosTab from '../admin/PhotosTab.jsx'
+import ToursTab from '../admin/ToursTab.jsx'
 import { getSession, getContent, logout } from '../admin/api.js'
 import '../admin/admin.css'
 
@@ -81,8 +83,18 @@ export default function AdminPage() {
                 aria-labelledby={`tab-${t.id}`}
                 hidden={tab !== t.id}
               >
-                {tab === t.id && content && (
-                  <p className="admin-status">Coming in the next task.</p>
+                {t.id === tab && content && t.id === 'photos' && (
+                  <PhotosTab
+                    photos={[
+                      ...content.gallery.interiors,
+                      ...content.gallery.exteriors,
+                      ...content.gallery.page,
+                    ]}
+                    onChange={refresh}
+                  />
+                )}
+                {t.id === tab && content && t.id === 'tours' && (
+                  <ToursTab tours={content.tours} onChange={refresh} />
                 )}
               </div>
             ))}

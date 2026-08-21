@@ -12,23 +12,29 @@
   gap: var(--gap-grid);
 }
 
+/* Rules, not boxes. Everything else on this site separates with a hairline —
+ * the range meta, the feature rows, the warranty table — so three bordered
+ * white cards with a quote glyph on top were the one place it reached for a
+ * container instead. A top rule per column does the same job in the site's
+ * own language, and drops a card, a border, a fill and an icon from the band. */
 .testimonials__card {
-  padding: var(--space-lg);
+  padding: var(--space-md) 0 0;
+  border-top: 1px solid var(--color-rule);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.testimonials__quote-icon {
-  color: var(--color-accent-dark);
-}
-
 .testimonials__quote {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 1.7;
-  color: var(--color-text-soft);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  text-wrap: pretty;
+  /* Pushes the attribution to the bottom of every column, so the three names
+   * sit on one line however long the quotes above them run. */
   flex-grow: 1;
 }
 

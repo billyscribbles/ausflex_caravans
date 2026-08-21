@@ -50,12 +50,26 @@
   align-items: start;
 }
 
+/* 17px matches every other prose block on the site — this was the one column
+ * still set at 16. The gap between paragraphs was 16px against a 30px line, so
+ * five of them ran together into one grey slab; a full line of air between
+ * them is what makes the column read as paragraphs. */
 .about__paragraph {
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: 17px;
+  line-height: 1.8;
   color: var(--color-text-soft);
   max-width: 62ch;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+/* Standing lead: the opening paragraph carries the page, so it takes a size
+ * of its own rather than starting the wall flush with everything after it. */
+.about__paragraph:first-of-type {
+  font-size: 20px;
+  line-height: 1.65;
+  color: var(--color-text);
+  max-width: 54ch;
+  margin-bottom: var(--space-lg);
 }
 
 .about__highlight {

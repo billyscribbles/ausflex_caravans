@@ -1,5 +1,11 @@
-.faq__inner {
-  max-width: 900px;
+/* The wrapper carries .container, so capping it at 900px also inherited that
+ * rule's `margin: 0 auto` and centred the whole band — the FAQ sat 214px inside
+ * the spine the range grid above and the CTA below both sit on. Leaving the
+ * container alone and capping the two blocks inside it keeps the short measure
+ * without taking the block off the page's left edge at any width. */
+.faq__head,
+.faq__list {
+  max-width: 800px;
 }
 
 .faq__head {

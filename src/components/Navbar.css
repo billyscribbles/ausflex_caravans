@@ -12,9 +12,15 @@
   background: var(--color-dark-deep);
 }
 
+/* Mirrors .container's max-width and gutter — same as .footer__main — so the
+ * logo sits on the page's left edge and the CTA on its right at every width.
+ * Hardcoding the gutter here put the logo 104px inside the content column past
+ * 1712px, and 8px outside it between 768 and 1024. */
 .navbar__inner {
   height: var(--nav-h);
-  padding: 0 56px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,6 +61,7 @@
 /* Full-height hit area rather than the 21px text box, so the pointer target
  * matches what the bar looks like it offers. */
 .navbar__link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: var(--nav-h);
@@ -71,7 +78,27 @@
   color: var(--color-accent);
 }
 
+/* Current page. Colour alone would read as a hover that got stuck, so the
+ * bronze rule under the label does the actual telling — it sits on the bar's
+ * optical baseline rather than the text box, which is why it is positioned
+ * off the full-height link instead of being a border on the text. */
+.navbar__link[aria-current='page'] {
+  color: var(--color-bone);
+}
+
+.navbar__link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(50% - 0.9em);
+  height: 1px;
+  background: var(--color-accent);
+}
+
 .navbar__cta {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 400;
@@ -140,9 +167,11 @@
   border-bottom: 1px solid var(--color-hairline-dark);
 }
 
+/* Rows run the full bar width but their text starts on the page gutter, so the
+ * open menu keeps the same left edge as the logo above it. */
 .navbar__mobile-link {
   display: block;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) var(--gutter);
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.16em;
@@ -156,9 +185,18 @@
   color: var(--color-accent);
 }
 
+/* No room for a rule under a full-width row, so the current page is marked by
+ * a bronze edge on the gutter side and the brighter foreground. */
+.navbar__mobile-link[aria-current='page'] {
+  color: var(--color-bone);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
 .navbar__mobile-cta {
-  margin: var(--space-md);
+  display: block;
+  margin: var(--space-md) var(--gutter);
   font-family: var(--font-mono);
+  /* Fills the row it sits in, matching the links above it. */
   font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -175,10 +213,6 @@
 }
 
 @media (max-width: 1200px) {
-  .navbar__inner {
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-  }
   .navbar__links {
     gap: var(--space-md);
   }
@@ -193,10 +227,6 @@
   }
   .navbar__mobile {
     display: flex;
-  }
-  .navbar__inner {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
   }
   .navbar__logo-img {
     height: 28px;

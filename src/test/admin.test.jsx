@@ -125,4 +125,57 @@ describe('AdminPage', () => {
     await waitFor(() => expect(screen.getByRole('tab', { name: /photos/i })).toBeInTheDocument())
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  const ONE_PHOTO = {
+    gallery: {
+      interiors: [],
+      exteriors: [],
+      page: [
+        {
+          id: 'p1',
+          collection: 'page',
+          src: '/uploads/a.webp',
+          alt: 'A van',
+          caption: '',
+          sortOrder: 0,
+        },
+      ],
+    },
+    tours: [],
+  }
+
+  it('lists photos for the selected collection with editable alt text', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => ONE_PHOTO },
+      }),
+    )
+    renderAdmin()
+
+    await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
+    // One photo is not a multiple of nine, so the mosaic warning shows.
+    expect(screen.getByText(/last row will be short/i)).toBeInTheDocument()
+  })
+
+  it('requires a second click to delete', async () => {
+    const user = userEvent.setup()
+    const spy = mockFetch({
+      'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+      'GET /api/content': { ok: true, json: async () => ONE_PHOTO },
+    })
+    vi.stubGlobal('fetch', spy)
+    renderAdmin()
+
+    await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: /delete photo 1/i }))
+
+    // Nothing is destroyed on the first click.
+    expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument()
+    expect(spy).not.toHaveBeenCalledWith(
+      '/api/photos/p1',
+      expect.objectContaining({ method: 'DELETE' }),
+    )
+  })
 })

@@ -1,3 +1,9 @@
+/* The craft band above closes at the tighter --space-4xl rhythm, so the rail
+ * meets it there. A full 160+160 seam between the two read as dead cream. */
+.interiors-rail.section {
+  padding-top: var(--space-4xl);
+}
+
 .interiors-rail__head {
   display: flex;
   align-items: flex-end;

@@ -1,33 +1,71 @@
-.feature__heading {
-  max-width: 700px;
+/* The player-and-copy bands either side of this one run a step tighter than
+ * the standard ladder (see VideoEmbed.css); the craft band joins them so the
+ * seam down into the interiors rail reads as a break, not a gap. */
+.feature.section {
+  padding-block: var(--space-4xl);
+}
+
+/* Heading left, intro right, bottom-aligned — same head shape as the
+ * interiors rail. Holding the intro up here does two jobs: it fills the
+ * top-right of the band, and it takes a paragraph out of the rows column,
+ * which was the taller of the two.
+ *
+ * Columns deliberately match .feature__grid, so the intro sits on the same
+ * left edge as the numbered rows below it and the whole band reads on one
+ * two-column spine. */
+.feature__head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1fr);
+  align-items: end;
+  column-gap: var(--gap-grid-wide);
   margin-bottom: var(--gap-section-head);
+}
+
+.feature__heading {
+  margin-bottom: 0;
+}
+
+/* Optical baseline match against the heading's descender line. */
+.feature__intro {
+  padding-bottom: 6px;
 }
 
 .feature__grid {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1fr);
   gap: var(--gap-grid-wide);
-  align-items: start;
+  align-items: stretch;
+}
+
+/* Four rows always outrun a fixed-aspect photo, so the media column stretches
+ * to the full grid-row height and the photo pins inside it. Without this the
+ * left half bottomed out under the image and left ~340px of bare cream beside
+ * the last two rows. */
+.feature__media {
+  grid-column: 1;
+  min-height: 420px;
 }
 
 .feature__image {
-  aspect-ratio: 5 / 4;
+  position: sticky;
+  top: calc(var(--nav-h) + var(--space-xl));
+  /* Fills the column, but never taller than one screen so it can never be
+   * cropped by the fold. The source is a 3:4 portrait, so this is a far
+   * gentler crop than the landscape box it used to sit in. */
+  height: min(100%, calc(100svh - var(--nav-h) - var(--space-3xl)));
   overflow: hidden;
   background: var(--color-bg-alt);
 }
 
+/* Out of flow so the photo's own 3:4 proportions can't set the grid row
+ * height — the rows column decides how tall the band is, and the photo fills
+ * whatever that comes to. */
 .feature__image img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.feature__body {
-  font-size: 16px;
-  line-height: 1.85;
-  color: var(--color-muted);
-  max-width: 52ch;
-  padding-bottom: var(--space-lg);
 }
 
 .feature__row {
@@ -36,6 +74,11 @@
   display: grid;
   grid-template-columns: 44px 1fr;
   gap: var(--space-md);
+}
+
+/* Closes the list so the CTA hangs off a rule instead of floating. */
+.feature__row:last-of-type {
+  border-bottom: 1px solid var(--color-rule);
 }
 
 .feature__row-no {
@@ -59,13 +102,15 @@
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-muted);
-  max-width: 52ch;
+  /* Wider than the old 52ch: the column gained room when the intro moved up,
+   * and the extra measure drops most rows from three lines to two. */
+  max-width: 62ch;
 }
 
 /* Inline text links get vertical padding so the tap target clears 24px. */
 .feature__cta {
   display: inline-block;
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
   padding: var(--space-2xs) 0;
   font-family: var(--font-mono);
   font-size: 12px;
@@ -80,8 +125,32 @@
 }
 
 @media (max-width: 1024px) {
+  .feature__head {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-md);
+  }
+
+  .feature__intro {
+    padding-bottom: 0;
+  }
+
   .feature__grid {
     grid-template-columns: 1fr;
     gap: var(--gap-grid-wide);
+  }
+
+  /* Stacked, the photo is its own beat again — back to a plain portrait
+   * block, and nothing to pin against. */
+  .feature__media {
+    min-height: 0;
+  }
+
+  /* Still positioned, so the absolute img stays contained — but `top` has to
+   * be cleared or relative positioning would inherit the sticky offset. */
+  .feature__image {
+    position: relative;
+    top: auto;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
 }

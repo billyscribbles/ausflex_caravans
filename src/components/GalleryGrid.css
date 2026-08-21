@@ -3,13 +3,26 @@
   margin-bottom: var(--gap-section-head);
 }
 
+/* The mosaic tiles in blocks of 9 that fill exactly 4 rows of 3 columns:
+ *   [tall][ 2 ][ 3 ]     tall = 9n+1 (spans 2 rows)
+ *   [tall][ wide  ]      wide = 9n+4 and 9n+8 (span 2 columns)
+ *   [ 5  ][ 6 ][ 7 ]
+ *   [  wide  ][ 9 ]
+ * Any other rhythm pushes a wide tile off its row and leaves a hole behind
+ * it, so keep item counts on a multiple of 9. `dense` is the safety net if
+ * a collection ever drifts off that count. */
 .gallery-grid__mosaic {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 250px;
+  grid-auto-flow: row dense;
   gap: var(--space-sm);
 }
 
+/* Hairline for the same reason as the range cards: a mosaic mixing white
+ * studio plates with lifestyle shots loses its grid wherever a pale photo
+ * meets the page. The inset shadow rides above the image so it survives the
+ * hover scale. */
 .gallery-grid__tile {
   position: relative;
   margin: 0;
@@ -18,11 +31,24 @@
   background: var(--color-bg-alt);
 }
 
-.gallery-grid__mosaic .gallery-grid__tile:first-child {
+.gallery-grid__tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.section--dark .gallery-grid__tile::after {
+  box-shadow: inset 0 0 0 1px var(--color-hairline-dark);
+}
+
+.gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 1) {
   grid-row: span 2;
 }
 
-.gallery-grid__mosaic .gallery-grid__tile:nth-child(6n + 4) {
+.gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 4),
+.gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 8) {
   grid-column: span 2;
 }
 
@@ -109,10 +135,11 @@
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 210px;
   }
-  .gallery-grid__mosaic .gallery-grid__tile:first-child {
+  .gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 1) {
     grid-row: span 1;
   }
-  .gallery-grid__mosaic .gallery-grid__tile:nth-child(6n + 4) {
+  .gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 4),
+  .gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 8) {
     grid-column: auto;
   }
 }

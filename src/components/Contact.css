@@ -1,8 +1,20 @@
+/* Rows are named so the slack has somewhere to go. The form spans rows 2-3 and
+ * is taller than the details plus the map, and grid hands that overflow to the
+ * flexible track — without `1fr` on row 3 it was splitting the difference and
+ * opening a 140px hole between the details and the map. */
 .contact__inner {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: var(--gap-grid-wide);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.6fr);
+  grid-template-rows: auto auto 1fr;
+  gap: var(--gap-section-head) var(--gap-grid-wide);
   align-items: start;
+}
+
+/* The section head spans both columns: as a column it left a dead gutter
+ * between the copy and the form, as a full-width head the air beside it
+ * reads the same as every other section head on the site. */
+.contact__head {
+  grid-column: 1 / -1;
 }
 
 .contact__heading {
@@ -16,13 +28,15 @@
   max-width: 52ch;
 }
 
-/* 2×2 info grid — mono labels over readable body-size values. */
+/* 2×2 info grid — mono labels over readable body-size values. Placed
+ * explicitly so the map can sit under it in column one while the form
+ * spans both rows — the DOM keeps form-before-map for the stacked view. */
 .contact__details {
-  margin-top: var(--gap-section-head);
+  grid-column: 1;
+  grid-row: 2;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-xl) var(--space-xl);
-  max-width: 560px;
 }
 
 .contact__detail dt {
@@ -54,15 +68,18 @@
 .contact__socials {
   display: flex;
   gap: var(--space-2xs);
-  padding-top: 2px;
 }
 
-.contact__socials a {
+/* Scoped to .contact__detail so it outweighs the `dd a` rule above — that one
+ * is inline-block with vertical padding, which pins the icon to the top-left
+ * of the 44px box instead of centring it. */
+.contact__detail .contact__socials a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
+  padding: 0;
   border: 1px solid var(--color-border-strong);
   color: var(--color-text-soft);
   transition:
@@ -70,13 +87,15 @@
     border-color var(--transition-fast);
 }
 
-.contact__socials a:hover {
+.contact__detail .contact__socials a:hover {
   color: var(--color-accent-dark);
   border-color: var(--color-accent-dark);
 }
 
 /* Filled panel, underline-only fields — no border, no shadows. */
 .contact__form {
+  grid-column: 2;
+  grid-row: 2 / span 2;
   background: var(--color-bg-alt);
   padding: var(--space-xl) var(--space-lg);
   display: flex;
@@ -213,11 +232,17 @@
 
 /* No filter/backdrop-filter on or over the iframe: Chromium stops painting
  * the embed's map canvas under either, so the map ships in native colors. */
+/* Two-column: the form spans rows 2-3 and always outruns the details block, so
+ * grid grows row 3 to fit it. A fixed aspect ratio here left the map short of
+ * that row and the left column stopped ~90px above the form; stretching it
+ * instead means both columns bottom out on the same line. The stacked layouts
+ * below have no second column to answer to, so they take a ratio again. */
 .contact__map {
-  grid-column: 1 / -1;
-  margin-top: var(--space-md);
+  grid-column: 1;
+  grid-row: 3;
+  align-self: stretch;
+  min-height: 240px;
   border: 1px solid var(--color-border-strong);
-  aspect-ratio: 21 / 9;
 }
 
 .contact__map iframe {
@@ -228,15 +253,32 @@
 }
 
 @media (max-width: 1024px) {
-  .contact__map {
-    aspect-ratio: 16 / 10;
-  }
   .contact__inner {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
     gap: var(--gap-section-head);
   }
+  .contact__head,
+  .contact__details,
+  .contact__form,
+  .contact__map {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  /* Nothing to bottom-align against once stacked, so the map takes a ratio
+   * again instead of stretching. */
+  .contact__map {
+    align-self: auto;
+    min-height: 0;
+  }
+  /* Stacked: the details share the form's measure so the column reads as
+   * one block rather than a 2-up spread across the full container. */
+  .contact__details,
   .contact__form {
     max-width: 560px;
+  }
+  .contact__map {
+    aspect-ratio: 16 / 10;
   }
 }
 
