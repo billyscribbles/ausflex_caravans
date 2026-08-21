@@ -16,8 +16,11 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true })
 })
 
+// vi.resetModules() in beforeEach clears the registry, so this re-evaluates
+// store.js against the new DATA_DIR. Do NOT cache-bust with a query string —
+// that forks the registry and hands app.js a different, unloaded instance.
 async function freshStore() {
-  return await import('./store.js?' + Math.random())
+  return await import('./store.js')
 }
 
 describe('store', () => {

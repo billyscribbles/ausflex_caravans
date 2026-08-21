@@ -11,21 +11,13 @@ export default defineConfig({
     react(),
     analyze && visualizer({ filename: 'dist/bundle-stats.html', gzipSize: true }),
   ].filter(Boolean),
-  preview: {
-    host: '0.0.0.0',
-    port: 4173,
-    // Railway assigns a per-deploy *.up.railway.app subdomain plus any custom
-    // domains. The leading dot makes Vite treat this as a wildcard, so we
-    // don't have to update the config every deploy.
-    allowedHosts: ['.up.railway.app'],
-    // Baseline security headers — `yarn start` serves this preview config in
-    // production on Railway. CSP and HSTS are deliberately omitted: CSP needs
-    // a per-site allowlist (GA, Formspree) and HSTS is a host-level decision.
-    headers: {
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  server: {
+    // `yarn dev` serves the SPA; the API and uploads come from `yarn dev:api`.
+    // Production is Express (server/index.js), which owns the security headers
+    // the old `preview` block used to set.
+    proxy: {
+      '/api': 'http://localhost:3001',
+      '/uploads': 'http://localhost:3001',
     },
   },
   build: {

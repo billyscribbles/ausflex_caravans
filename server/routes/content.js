@@ -1,0 +1,33 @@
+import { Router } from 'express'
+import { createHash } from 'node:crypto'
+import { read } from '../store.js'
+
+const router = Router()
+
+// One payload for the whole site: three photo collections plus the tour list.
+// Served from memory, so this is cheap enough to hit on every page load.
+router.get('/content', (req, res) => {
+  const content = read()
+  const byOrder = (a, b) => a.sortOrder - b.sortOrder
+  const of = (collection) => content.photos.filter((p) => p.collection === collection).sort(byOrder)
+
+  const body = JSON.stringify({
+    gallery: {
+      interiors: of('interiors'),
+      exteriors: of('exteriors'),
+      page: of('page'),
+    },
+    tours: [...content.tours].sort(byOrder),
+  })
+
+  const etag = `W/"${createHash('sha1').update(body).digest('hex')}"`
+  res.set('Cache-Control', 'public, max-age=60')
+  res.set('ETag', etag)
+  if (req.headers['if-none-match'] === etag) {
+    res.status(304).end()
+    return
+  }
+  res.type('application/json').send(body)
+})
+
+export default router
