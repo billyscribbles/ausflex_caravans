@@ -9,7 +9,7 @@
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
     "start": "yarn node server/index.js",
-    "dev:api": "PORT=3001 DATA_DIR=./.data yarn node server/index.js",
+    "dev:api": "PORT=3001 DATA_DIR=./.data yarn node --env-file=.env server/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
