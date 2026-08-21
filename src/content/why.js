@@ -29,7 +29,10 @@ export const why = {
     { term: '2 years', item: 'Backing plate warranty' },
   ],
   images: [
-    { src: '/images/chassis-1.jpg', alt: 'Heavy-duty galvanised caravan chassis on the factory floor' },
+    {
+      src: '/images/chassis-1.jpg',
+      alt: 'Heavy-duty galvanised caravan chassis on the factory floor',
+    },
     { src: '/images/chassis-2.jpg', alt: 'Chassis rails and suspension cradle in detail' },
     { src: '/images/chassis-3.jpg', alt: 'Completed chassis with suspension fitted' },
   ],

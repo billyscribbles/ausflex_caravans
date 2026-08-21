@@ -34,7 +34,8 @@ export const vans = {
       name: 'Little Wonder',
       length: '17ft',
       tag: 'Couples touring',
-      blurb: 'The 17-foot Little Wonder offers all the luxury of home, perfect for couple getaways.',
+      blurb:
+        'The 17-foot Little Wonder offers all the luxury of home, perfect for couple getaways.',
       description: [
         'The Little Wonder proves you do not need a big van to travel in comfort. Inside its seventeen feet you get a queen or double bed, full kitchen, lounge and ensuite, wrapped in the finishes Ausflex is known for.',
         'Light to tow and easy to park, it is the van for couples who want to get away often and stay comfortable when they do.',
@@ -62,7 +63,8 @@ export const vans = {
       name: 'Family Adventurer',
       length: '18.6ft',
       tag: 'Family touring',
-      blurb: 'With an option for 2 or 3 bunks, the 18.6-foot Family Adventurer has room for all the family.',
+      blurb:
+        'With an option for 2 or 3 bunks, the 18.6-foot Family Adventurer has room for all the family.',
       description: [
         'The Family Adventurer packs beds for the whole crew into a van that still tows like a tourer. Choose two or three bunks alongside the main bed, with a full kitchen, dinette and ensuite.',
         'It is the van for families who want to show the kids the country without leaving comfort at home.',

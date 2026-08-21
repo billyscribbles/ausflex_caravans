@@ -18,7 +18,10 @@ export default function GalleryPage() {
           <p className="page-hero__sub">{gallery.page.sub}</p>
         </div>
       </header>
-      <GalleryGrid content={{ ...gallery.page, eyebrow: null, heading: null, sub: null }} lightbox />
+      <GalleryGrid
+        content={{ ...gallery.page, eyebrow: null, heading: null, sub: null }}
+        lightbox
+      />
       <DealerBanner />
     </main>
   )

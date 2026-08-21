@@ -10,7 +10,7 @@ export default function Hero() {
           className="hero__image"
           src={hero.image}
           alt={hero.imageAlt || ''}
-          fetchPriority="high"
+          fetchpriority="high"
         />
       )}
       <div className="hero__scrim" aria-hidden="true" />

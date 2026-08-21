@@ -91,9 +91,15 @@ export const gallery = {
       { src: '/images/gallery-ex-fierce-1.jpg', alt: 'Fierce 18G van, rear view in green' },
       { src: '/images/gallery-ex-fierce-2.jpg', alt: 'Fierce hybrid at the factory' },
       { src: '/images/gallery-ex-fierce-3.jpg', alt: 'Fierce 18G rear panel and wheels' },
-      { src: '/images/lifestyle-towing-road.jpg', alt: 'Four-wheel drive towing an Ausflex van in the rain' },
+      {
+        src: '/images/lifestyle-towing-road.jpg',
+        alt: 'Four-wheel drive towing an Ausflex van in the rain',
+      },
       { src: '/images/factory-team.jpg', alt: 'Dinette under construction on the factory floor' },
-      { src: '/images/factory-build.jpg', alt: 'The Ausflex team on the factory floor during a build' },
+      {
+        src: '/images/factory-build.jpg',
+        alt: 'The Ausflex team on the factory floor during a build',
+      },
       { src: '/images/gallery-ex-dark.jpg', alt: 'Black off-road van, front three-quarter view' },
     ],
   },

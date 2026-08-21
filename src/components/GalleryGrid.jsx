@@ -44,9 +44,7 @@ export default function GalleryGrid({ content, dark = false, lightbox = false, i
             const media = (
               <>
                 <img src={photo.src} alt={lightbox ? '' : photo.alt} loading="lazy" />
-                {photo.caption && (
-                  <span className="gallery-grid__caption">{photo.caption}</span>
-                )}
+                {photo.caption && <span className="gallery-grid__caption">{photo.caption}</span>}
               </>
             )
             return (

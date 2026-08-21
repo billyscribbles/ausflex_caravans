@@ -38,7 +38,7 @@ export default function VanPage() {
       <section className="van__showcase">
         <div className="container">
           <div className="van__main-image">
-            <img src={van.image} alt={van.imageAlt} fetchPriority="high" />
+            <img src={van.image} alt={van.imageAlt} fetchpriority="high" />
           </div>
           {van.specs?.length > 0 && (
             <ul className="van__specs">

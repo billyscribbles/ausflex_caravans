@@ -43,10 +43,7 @@ export default function Footer() {
           <div className="footer__contact-info">
             {contact.location && <span className="footer__location">{contact.location}</span>}
             {contact.phone && (
-              <a
-                href={`tel:${contact.phone.replace(/\s/g, '')}`}
-                className="footer__phone"
-              >
+              <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="footer__phone">
                 {contact.phone}
               </a>
             )}
