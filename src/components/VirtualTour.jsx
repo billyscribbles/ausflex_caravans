@@ -10,9 +10,21 @@ import './VirtualTour.css'
 // the player wide beside it, and only mounts Kuula once the visitor launches
 // it, so the page stays light. The /360 page passes `full` to drop the copy
 // column and load the tour immediately at full container width.
-export default function VirtualTour({ content = tour, full = false }) {
+//
+// `tours` is the managed list from the admin dashboard. The full page renders a
+// picker across it; the home band shows the first one. Either way exactly one
+// iframe is mounted — several Kuula players at once would be punishing.
+export default function VirtualTour({ content = tour, tours = [], full = false }) {
   const scrollIn = useScrollIn()
   const [active, setActive] = useState(full)
+  const [index, setIndex] = useState(0)
+
+  // Falls back to the static content file's single tour before live data lands.
+  const list = tours.length
+    ? tours
+    : [{ id: 'static', title: content.title, embedUrl: content.src, poster: content.poster }]
+  const current = list[Math.min(index, list.length - 1)]
+  const showPicker = full && list.length > 1
 
   return (
     <section className="tour section" id="tour">
@@ -27,17 +39,34 @@ export default function VirtualTour({ content = tour, full = false }) {
           )}
 
           <motion.div className={`tour__frame${full ? ' tour__frame--full' : ''}`} {...scrollIn(0)}>
+            {showPicker && (
+              <div className="tour__picker" role="group" aria-label="Choose a tour">
+                {list.map((item, i) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`tour__pick${i === index ? ' tour__pick--active' : ''}`}
+                    aria-current={i === index ? 'true' : undefined}
+                    onClick={() => setIndex(i)}
+                  >
+                    {item.title}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {active ? (
               <iframe
+                key={current.id}
                 className="tour__player"
-                src={content.src}
-                title={content.title}
+                src={current.embedUrl}
+                title={current.title}
                 allow="xr-spatial-tracking; gyroscope; accelerometer"
                 allowFullScreen
               />
             ) : (
               <button type="button" className="tour__poster" onClick={() => setActive(true)}>
-                <img src={content.poster} alt="" loading="lazy" />
+                <img src={current.poster} alt="" loading="lazy" />
                 <span className="tour__launch">
                   <Rotate3d size={18} strokeWidth={1.5} aria-hidden="true" />
                   {content.launchLabel}

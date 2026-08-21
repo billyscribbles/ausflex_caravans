@@ -2,8 +2,11 @@ import SEO from '../lib/seo.jsx'
 import VirtualTour from '../components/VirtualTour.jsx'
 import DealerBanner from '../components/DealerBanner.jsx'
 import { tour } from '../content/tour.js'
+import { useTours } from '../lib/contentStore.js'
 
 export default function TourPage() {
+  const { tours } = useTours()
+
   return (
     <main>
       <SEO
@@ -18,7 +21,11 @@ export default function TourPage() {
           <p className="page-hero__sub">{tour.page.sub}</p>
         </div>
       </header>
-      <VirtualTour content={{ ...tour, eyebrow: null, heading: null, sub: null }} full />
+      <VirtualTour
+        content={{ ...tour, eyebrow: null, heading: null, sub: null }}
+        tours={tours}
+        full
+      />
       <DealerBanner />
     </main>
   )

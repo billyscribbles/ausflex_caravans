@@ -157,3 +157,37 @@
     padding: var(--space-xs) var(--space-md);
   }
 }
+
+/* Tour picker: one button per tour, only the active one has a mounted player.
+   Mono + uppercase matches .section-eyebrow, so it reads as part of the
+   existing system rather than a new control style. */
+.tour__picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-md);
+}
+
+.tour__pick {
+  padding: var(--space-2xs) var(--space-xs);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tour__pick:hover {
+  border-color: var(--color-border-strong);
+}
+
+.tour__pick--active {
+  border-color: var(--color-accent-dark);
+  color: var(--color-accent-dark);
+}
