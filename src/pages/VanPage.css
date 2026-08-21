@@ -4,10 +4,12 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-bone-muted);
-  margin-bottom: 26px;
+  margin-bottom: var(--space-md);
 }
 
 .van__breadcrumb a {
+  display: inline-block;
+  padding: var(--space-2xs) 0;
   color: var(--color-bone-soft);
   transition: color var(--transition-fast);
 }
@@ -16,8 +18,15 @@
   color: var(--color-accent);
 }
 
-.van__hero {
-  padding-bottom: 140px;
+/* The showcase image lifts into the ink band by --van-overlap, so the band
+ * needs that much extra bottom padding to keep its own copy clear of it.
+ * One variable keeps the pair in step at every width. */
+.van {
+  --van-overlap: 90px;
+}
+
+.page-hero.van__hero {
+  padding-bottom: calc(var(--space-2xl) + var(--van-overlap));
 }
 
 .van__showcase {
@@ -25,7 +34,7 @@
 }
 
 .van__main-image {
-  margin-top: -90px;
+  margin-top: calc(var(--van-overlap) * -1);
   border: 1px solid var(--color-border);
   overflow: hidden;
 }
@@ -39,26 +48,26 @@
 .van__specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
+  gap: var(--space-2xs);
+  margin-top: var(--space-md);
 }
 
 .van__spec {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-text-soft);
   background: var(--color-bg-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  padding: 8px 16px;
+  padding: var(--space-2xs) var(--space-sm);
 }
 
 .van__detail-grid {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
-  gap: 72px;
+  gap: var(--gap-grid-wide);
   align-items: start;
 }
 
@@ -67,13 +76,15 @@
   line-height: 1.75;
   color: var(--color-text-soft);
   max-width: 60ch;
-  margin-bottom: 18px;
+  margin-bottom: var(--space-sm);
 }
 
 .van__enquire {
   display: inline-flex;
-  margin-top: 14px;
-  padding: 19px 38px;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-sm);
+  padding: 17px var(--space-lg);
   border-radius: var(--radius-full);
   background: var(--color-text);
   color: var(--color-bg);
@@ -96,7 +107,7 @@
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: var(--space-md);
 }
 
 .van__floorplan img {
@@ -104,26 +115,29 @@
 }
 
 .van__floorplan figcaption {
-  margin-top: 16px;
+  margin-top: var(--space-sm);
   font-size: 13px;
+  line-height: 1.7;
   color: var(--color-muted);
 }
 
 .van__photos .section-label {
-  margin-bottom: 40px;
+  margin-bottom: var(--gap-section-head);
 }
 
+/* min() on the track floor: at 320px a hard 300px minimum overflowed the
+ * container instead of collapsing to one column. */
 .van__photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: var(--space-sm);
 }
 
 .van__photo {
   position: relative;
   margin: 0;
   overflow: hidden;
-  background: rgba(243, 239, 233, 0.04);
+  background: var(--color-hairline-dark);
 }
 
 .van__photo img {
@@ -134,24 +148,37 @@
   object-fit: cover;
 }
 
+/* Gradient ground rather than a text-shadow, so the caption holds its
+ * contrast over a pale photo. Matches GalleryGrid. */
 .van__photo figcaption {
   position: absolute;
-  left: 16px;
-  bottom: 13px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-lg) var(--space-sm) var(--space-xs);
+  background: linear-gradient(0deg, var(--color-scrim), var(--color-scrim-none));
   color: var(--color-bone);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
 }
 
-@media (max-width: 900px) {
-  .van__hero {
-    padding-bottom: 110px;
+@media (max-width: 1024px) {
+  .van {
+    --van-overlap: 64px;
   }
   .van__detail-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--space-xl);
+  }
+}
+
+@media (max-width: 560px) {
+  .van {
+    --van-overlap: 40px;
+  }
+  .van__enquire {
+    width: 100%;
   }
 }

@@ -15,4 +15,5 @@ export function applyTheme() {
   set('radius', theme.radii)
   set('shadow', theme.shadows)
   set('transition', theme.transitions)
+  set('space', theme.space)
 }

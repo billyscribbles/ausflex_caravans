@@ -1,24 +1,26 @@
 .testimonials__head {
   max-width: 720px;
-  margin-bottom: 56px;
+  margin-bottom: var(--gap-section-head);
 }
 
+/* auto-fit rather than a fixed column count: the cards reflow at whatever
+ * width they actually run out of room, so there is no 900px cliff where
+ * three columns become one. */
 .testimonials__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: var(--gap-grid);
 }
 
 .testimonials__card {
-  padding: 32px;
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-md);
 }
 
 .testimonials__quote-icon {
-  color: var(--color-accent);
-  opacity: 0.6;
+  color: var(--color-accent-dark);
 }
 
 .testimonials__quote {
@@ -45,10 +47,4 @@
   text-transform: uppercase;
   color: var(--color-muted);
   margin-top: 4px;
-}
-
-@media (max-width: 900px) {
-  .testimonials__grid {
-    grid-template-columns: 1fr;
-  }
 }

@@ -1,12 +1,40 @@
-.video__head {
-  max-width: 760px;
-  margin-bottom: 48px;
+/* The player carries the mass here, so this band runs one step tighter than
+ * the standard section rhythm — that keeps the whole thing inside one desktop
+ * fold. It rejoins the ladder at 768px. */
+.video.section {
+  padding-block: var(--space-4xl);
+}
+
+/* Player wide on the left, copy in a narrow column on the right. The player
+ * spans both rows, so the copy hangs off its top edge and the CTA sits on its
+ * bottom edge — the slack falls between them. DOM order is copy, player, CTA,
+ * which is also the order the stacked layout wants. */
+.video__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  grid-template-rows: auto 1fr;
+  column-gap: var(--gap-grid-wide);
+}
+
+.video__copy {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+}
+
+.video__heading {
+  font-size: clamp(30px, 3.3vw, 46px);
+  margin-bottom: var(--space-md);
+}
+
+.video__sub {
+  margin-bottom: 0;
 }
 
 .video__frame {
   position: relative;
-  max-width: 960px;
-  margin: 0 auto;
+  grid-column: 1;
+  grid-row: 1 / -1;
   aspect-ratio: 16 / 9;
   border: 1px solid var(--color-hairline-dark);
   overflow: hidden;
@@ -73,14 +101,16 @@
 }
 
 .video__cta-row {
-  max-width: 960px;
-  margin: 0 auto;
-  text-align: right;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-hairline-dark);
 }
 
 .video__cta {
   display: inline-block;
-  margin-top: 26px;
+  padding: var(--space-2xs) 0;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -93,9 +123,26 @@
   color: var(--color-bone);
 }
 
-@media (max-width: 900px) {
-  .video__head {
-    margin-bottom: 36px;
+@media (max-width: 1024px) {
+  .video__grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    row-gap: var(--space-xl);
+  }
+  .video__copy,
+  .video__frame,
+  .video__cta-row {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .video__heading {
+    font-size: clamp(32px, 5vw, 46px);
+  }
+}
+
+@media (max-width: 768px) {
+  .video.section {
+    padding-block: var(--space-3xl);
   }
   .video__play {
     width: 60px;

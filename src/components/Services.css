@@ -1,6 +1,6 @@
 .services__head {
-  max-width: 760px;
-  margin-bottom: 60px;
+  max-width: 62ch;
+  margin-bottom: var(--gap-section-head);
 }
 
 .services__grid {
@@ -9,9 +9,9 @@
 }
 
 .services__pillar {
-  padding: 4px 32px 8px 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
-  padding-left: 28px;
+  padding: 4px var(--space-lg) var(--space-2xs) 0;
+  border-left: 1px solid var(--color-hairline-dark);
+  padding-left: var(--space-md);
 }
 
 .services__pillar:first-child {
@@ -22,7 +22,7 @@
 .services__icon {
   display: inline-flex;
   color: var(--color-accent);
-  margin-bottom: 18px;
+  margin-bottom: var(--space-sm);
 }
 
 .services__title {
@@ -30,20 +30,20 @@
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #fff;
-  margin-bottom: 10px;
+  color: var(--color-bone);
+  margin-bottom: var(--space-2xs);
 }
 
 .services__body {
   font-size: 14px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.75;
+  color: var(--color-bone-muted);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .services__grid {
     grid-template-columns: 1fr 1fr;
-    gap: 36px 0;
+    gap: var(--space-lg) 0;
   }
   .services__pillar:nth-child(odd) {
     border-left: none;
@@ -57,15 +57,17 @@
 @media (max-width: 560px) {
   .services__grid {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 0;
   }
   .services__pillar {
     border-left: none;
-    padding: 0 0 28px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0 0 var(--space-md);
+    border-bottom: 1px solid var(--color-hairline-dark);
+    margin-bottom: var(--space-md);
   }
   .services__pillar:last-child {
     border-bottom: none;
     padding-bottom: 0;
+    margin-bottom: 0;
   }
 }

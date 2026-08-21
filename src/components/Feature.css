@@ -1,12 +1,12 @@
 .feature__heading {
   max-width: 700px;
-  margin-bottom: 96px;
+  margin-bottom: var(--gap-section-head);
 }
 
 .feature__grid {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
-  gap: 80px;
+  gap: var(--gap-grid-wide);
   align-items: start;
 }
 
@@ -26,16 +26,16 @@
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-muted);
-  max-width: 420px;
-  padding-bottom: 30px;
+  max-width: 52ch;
+  padding-bottom: var(--space-lg);
 }
 
 .feature__row {
-  padding: 30px 0;
+  padding: var(--space-lg) 0;
   border-top: 1px solid var(--color-rule);
   display: grid;
   grid-template-columns: 44px 1fr;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
 .feature__row-no {
@@ -52,19 +52,21 @@
   font-weight: 400;
   letter-spacing: -0.015em;
   color: var(--color-text);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-xs);
 }
 
 .feature__row-body {
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-muted);
-  max-width: 420px;
+  max-width: 52ch;
 }
 
+/* Inline text links get vertical padding so the tap target clears 24px. */
 .feature__cta {
   display: inline-block;
-  margin-top: 30px;
+  margin-top: var(--space-md);
+  padding: var(--space-2xs) 0;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -78,11 +80,8 @@
 }
 
 @media (max-width: 1024px) {
-  .feature__heading {
-    margin-bottom: 64px;
-  }
   .feature__grid {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: var(--gap-grid-wide);
   }
 }

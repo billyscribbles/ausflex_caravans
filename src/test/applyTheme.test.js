@@ -11,6 +11,7 @@ const groups = {
   radius: theme.radii,
   shadow: theme.shadows,
   transition: theme.transitions,
+  space: theme.space,
 }
 
 describe('applyTheme — theme.config → CSS custom properties', () => {

@@ -1,7 +1,7 @@
 .contact__inner {
   display: grid;
   grid-template-columns: 1fr 420px;
-  gap: 90px;
+  gap: var(--gap-grid-wide);
   align-items: start;
 }
 
@@ -13,25 +13,25 @@
   font-size: 17px;
   line-height: 1.8;
   color: var(--color-muted);
-  max-width: 440px;
+  max-width: 52ch;
 }
 
 /* 2×2 info grid — mono labels over readable body-size values. */
 .contact__details {
-  margin-top: 64px;
+  margin-top: var(--gap-section-head);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 44px 48px;
+  gap: var(--space-xl) var(--space-xl);
   max-width: 560px;
 }
 
 .contact__detail dt {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-accent-dark);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-xs);
 }
 
 .contact__detail dd {
@@ -41,6 +41,8 @@
 }
 
 .contact__detail dd a {
+  display: inline-block;
+  padding: var(--space-2xs) 0;
   color: var(--color-text-soft);
   transition: color var(--transition-fast);
 }
@@ -51,7 +53,7 @@
 
 .contact__socials {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2xs);
   padding-top: 2px;
 }
 
@@ -59,8 +61,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--color-border-strong);
   color: var(--color-text-soft);
   transition:
@@ -76,17 +78,17 @@
 /* Filled panel, underline-only fields — no border, no shadows. */
 .contact__form {
   background: var(--color-bg-alt);
-  padding: 44px 40px;
+  padding: var(--space-xl) var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
 .contact__form-head {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-2xs);
 }
 
 .contact__form-head h3 {
@@ -100,9 +102,9 @@
 
 .contact__form-head p {
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--color-muted);
-  max-width: 320px;
+  max-width: 42ch;
 }
 
 .contact__field {
@@ -111,17 +113,19 @@
   gap: 2px;
 }
 
+/* 11px is the site's floor for mono micro-labels; this one was the only 10px. */
 .contact__field span {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-muted);
 }
 
+/* 12px of vertical padding puts the field at a 44px tap target. */
 .contact__field input,
 .contact__field textarea {
-  padding: 10px 0;
+  padding: var(--space-xs) 0;
   border: none;
   border-bottom: 1px solid var(--color-border-strong);
   background: transparent;
@@ -156,12 +160,12 @@
 }
 
 .contact__submit {
-  margin-top: 8px;
+  margin-top: var(--space-2xs);
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 17px 30px;
+  gap: var(--space-2xs);
+  padding: 17px var(--space-lg);
   border-radius: var(--radius-full);
   background: var(--color-text);
   color: var(--color-bg);
@@ -192,26 +196,26 @@
 .contact__status--success,
 .contact__status--error {
   display: block;
-  padding: 12px 16px;
+  padding: var(--space-xs) var(--space-sm);
 }
 
 .contact__status--success {
   background: var(--color-accent-light);
   color: var(--color-text);
-  border: 1px solid var(--color-accent);
+  border: 1px solid var(--color-accent-dark);
 }
 
 .contact__status--error {
-  background: rgba(178, 58, 46, 0.08);
-  color: #8c2e23;
-  border: 1px solid rgba(178, 58, 46, 0.35);
+  background: var(--color-danger-surface);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger-border);
 }
 
 /* No filter/backdrop-filter on or over the iframe: Chromium stops painting
  * the embed's map canvas under either, so the map ships in native colors. */
 .contact__map {
   grid-column: 1 / -1;
-  margin-top: 24px;
+  margin-top: var(--space-md);
   border: 1px solid var(--color-border-strong);
   aspect-ratio: 21 / 9;
 }
@@ -229,25 +233,26 @@
   }
   .contact__inner {
     grid-template-columns: 1fr;
-    gap: 56px;
+    gap: var(--gap-section-head);
   }
   .contact__form {
     max-width: 560px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 560px) {
   .contact__form {
-    padding: 28px 22px;
+    padding: var(--space-md);
   }
-  .contact__details {
-    margin-top: 40px;
-    gap: 32px 28px;
-  }
-}
-
-@media (max-width: 440px) {
   .contact__details {
     grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  .contact__map {
+    aspect-ratio: 4 / 3;
+  }
+  .contact__submit {
+    align-self: stretch;
+    justify-content: center;
   }
 }

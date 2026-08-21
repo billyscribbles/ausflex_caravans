@@ -30,6 +30,16 @@ export const theme = {
     'bone-faint': 'rgba(243, 239, 233, 0.45)',
     'hairline-dark': 'rgba(243, 239, 233, 0.1)',
     'bronze-outline': 'rgba(201, 168, 124, 0.5)',
+    // Form error state — AA on its own surface (8.26:1).
+    danger: '#7d281e',
+    'danger-surface': '#f7ece9',
+    'danger-border': 'rgba(125, 40, 30, 0.28)',
+    // Scrims over photography, all ramps of dark-deep so overlaid captions and
+    // the hero stage share one black. -none is the transparent gradient end.
+    'scrim-strong': 'rgba(18, 16, 13, 0.94)',
+    scrim: 'rgba(18, 16, 13, 0.85)',
+    'scrim-soft': 'rgba(18, 16, 13, 0.78)',
+    'scrim-none': 'rgba(18, 16, 13, 0)',
   },
   fonts: {
     display: "'Archivo', 'Helvetica Neue', system-ui, sans-serif",
@@ -52,5 +62,21 @@ export const theme = {
     fast: '160ms ease',
     base: '240ms ease',
     slow: '420ms cubic-bezier(0.22, 1, 0.36, 1)',
+  },
+  // 4px-based ladder. Every margin, padding and grid gap picks a step from
+  // here — no loose values in component CSS. The viewport-responsive roles
+  // built on top of it (--gap-section-head, --nav-h) live in index.css, since
+  // these land as inline :root styles that a media query cannot override.
+  space: {
+    '2xs': '8px',
+    xs: '12px',
+    sm: '16px',
+    md: '24px',
+    lg: '32px',
+    xl: '48px',
+    '2xl': '64px',
+    '3xl': '80px',
+    '4xl': '120px',
+    '5xl': '160px',
   },
 }

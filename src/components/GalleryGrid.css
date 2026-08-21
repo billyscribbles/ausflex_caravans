@@ -1,13 +1,13 @@
 .gallery-grid__head {
   max-width: 760px;
-  margin-bottom: 52px;
+  margin-bottom: var(--gap-section-head);
 }
 
 .gallery-grid__mosaic {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 250px;
-  gap: 14px;
+  gap: var(--space-sm);
 }
 
 .gallery-grid__tile {
@@ -45,16 +45,20 @@
   cursor: zoom-in;
 }
 
+/* A text-shadow alone left the caption at the mercy of whatever the photo
+ * happened to be; the gradient guarantees dark ground under every caption. */
 .gallery-grid__caption {
   position: absolute;
-  left: 16px;
-  bottom: 13px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-lg) var(--space-sm) var(--space-xs);
+  background: linear-gradient(0deg, var(--color-scrim), var(--color-scrim-none));
   color: var(--color-bone);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
   pointer-events: none;
 }
 
@@ -62,11 +66,11 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(12, 10, 8, 0.94);
+  background: var(--color-scrim-strong);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: var(--space-lg);
 }
 
 .gallery-grid__lightbox img {
@@ -80,27 +84,27 @@
 
 .gallery-grid__close {
   position: absolute;
-  top: 20px;
-  right: 24px;
+  top: var(--space-md);
+  right: var(--space-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
+  border: 1px solid var(--color-bone-faint);
+  color: var(--color-bone);
   transition:
     border-color var(--transition-fast),
     background var(--transition-fast);
 }
 
 .gallery-grid__close:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-bone);
+  background: var(--color-hairline-dark);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .gallery-grid__mosaic {
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 210px;
@@ -117,5 +121,8 @@
   .gallery-grid__mosaic {
     grid-template-columns: 1fr;
     grid-auto-rows: 240px;
+  }
+  .gallery-grid__lightbox {
+    padding: var(--space-md);
   }
 }

@@ -2,20 +2,20 @@
 .stats {
   border-top: 1px solid var(--color-hairline);
   border-bottom: 1px solid var(--color-hairline);
-  padding: 30px 0;
+  padding: var(--space-lg) 0;
 }
 
 .stats__grid {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 14px 40px;
+  gap: var(--space-sm) var(--space-lg);
 }
 
 .stats__item {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: var(--space-2xs);
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -31,12 +31,12 @@
   color: var(--color-muted);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .stats {
-    padding: 24px 0;
+    padding: var(--space-md) 0;
   }
   .stats__grid {
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-xs);
   }
 }

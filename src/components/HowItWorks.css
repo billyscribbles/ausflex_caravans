@@ -1,7 +1,7 @@
 .hiw__grid {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 80px;
+  gap: var(--gap-grid-wide);
   align-items: start;
 }
 
@@ -12,17 +12,17 @@
 }
 
 .hiw__sub {
-  margin-top: 24px;
+  margin-top: var(--space-md);
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-bone-muted);
-  max-width: 380px;
+  max-width: 42ch;
 }
 
 .hiw__steps {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 48px 60px;
+  gap: var(--space-xl) var(--gap-grid-wide);
 }
 
 .hiw__number {
@@ -30,7 +30,7 @@
   font-size: 11px;
   letter-spacing: 0.2em;
   color: var(--color-accent);
-  margin-bottom: 18px;
+  margin-bottom: var(--space-sm);
 }
 
 .hiw__title {
@@ -39,7 +39,7 @@
   font-weight: 400;
   letter-spacing: -0.015em;
   color: var(--color-bone);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-xs);
 }
 
 .hiw__body {
@@ -51,13 +51,13 @@
 @media (max-width: 1024px) {
   .hiw__grid {
     grid-template-columns: 1fr;
-    gap: 56px;
+    gap: var(--gap-section-head);
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 560px) {
   .hiw__steps {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--space-xl);
   }
 }

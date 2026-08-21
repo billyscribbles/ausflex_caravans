@@ -72,8 +72,8 @@ export const vans = {
         'The Family Adventurer packs beds for the whole crew into a van that still tows like a tourer. Choose two or three bunks alongside the main bed, with a full kitchen, dinette and ensuite.',
         'It is the van for families who want to show the kids the country without leaving comfort at home.',
       ],
-      image: '/images/gallery-ex-cream.jpg',
-      imageAlt: 'Ausflex 18.6ft Family Adventurer in cream and black outside the factory',
+      image: '/images/exterior-family-adventurer-studio.jpg',
+      imageAlt: 'Ausflex 18.6ft Family Adventurer Off Road in cream and black, full side profile',
       floorplan: '/images/plan-family-adventurer.jpg',
       floorplanAlt: 'Floor plan of the 18.6ft Family Adventurer with bunks',
       photos: [

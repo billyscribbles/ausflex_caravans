@@ -1,12 +1,41 @@
-.tour__head {
-  max-width: 760px;
-  margin-bottom: 48px;
+/* Matches the video band's tighter rhythm — see VideoEmbed.css. */
+.tour.section {
+  padding-block: var(--space-4xl);
+}
+
+/* Mirror of the video band: copy in a narrow column on the left, player wide
+ * on the right, CTA settling on the player's bottom edge. On /360 the copy is
+ * dropped and the grid collapses to a block so the tour runs full width. */
+.tour__grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  column-gap: var(--gap-grid-wide);
+}
+
+.tour__grid--full {
+  display: block;
+}
+
+.tour__copy {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+}
+
+.tour__heading {
+  font-size: clamp(30px, 3.3vw, 46px);
+  margin-bottom: var(--space-md);
+}
+
+.tour__sub {
+  margin-bottom: 0;
 }
 
 .tour__frame {
   position: relative;
-  max-width: 960px;
-  margin: 0 auto;
+  grid-column: 2;
+  grid-row: 1 / -1;
   aspect-ratio: 16 / 9;
   border: 1px solid var(--color-hairline);
   overflow: hidden;
@@ -15,7 +44,6 @@
 
 /* /360 page: the tour is the page — full container width, taller frame. */
 .tour__frame--full {
-  max-width: none;
   aspect-ratio: auto;
   height: min(72vh, 720px);
 }
@@ -58,8 +86,8 @@
   transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 15px 24px;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-md);
   background: var(--color-accent);
   color: var(--color-dark-deep);
   font-family: var(--font-mono);
@@ -78,14 +106,54 @@
   transform: translate(-50%, -50%) scale(1.04);
 }
 
-@media (max-width: 900px) {
-  .tour__head {
-    margin-bottom: 36px;
+.tour__cta-row {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
+}
+
+.tour__cta {
+  display: inline-block;
+  padding: var(--space-2xs) 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent-dark);
+  transition: color var(--transition-fast);
+}
+
+.tour__cta:hover {
+  color: var(--color-text);
+}
+
+@media (max-width: 1024px) {
+  .tour__grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    row-gap: var(--space-xl);
+  }
+  .tour__copy,
+  .tour__frame,
+  .tour__cta-row {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .tour__heading {
+    font-size: clamp(32px, 5vw, 46px);
+  }
+}
+
+@media (max-width: 768px) {
+  .tour.section {
+    padding-block: var(--space-3xl);
   }
   .tour__frame--full {
     height: min(60vh, 520px);
   }
   .tour__launch {
-    padding: 12px 18px;
+    padding: var(--space-xs) var(--space-md);
   }
 }

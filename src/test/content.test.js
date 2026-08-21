@@ -12,6 +12,7 @@ import { legal } from '../content/legal.js'
 import { video } from '../content/video.js'
 import { tour } from '../content/tour.js'
 import { contactSection } from '../content/contact.js'
+import { contactCta } from '../content/cta.js'
 import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
@@ -93,6 +94,13 @@ describe('content — section copy contract', () => {
     expect(contactSection.formSub).toBeTruthy()
     expect(contactSection.submitLabel).toBeTruthy()
     expect(site.contact.mapEmbedUrl).toContain('output=embed')
+  })
+
+  it('cta band points at the contact page', () => {
+    expect(contactCta.heading).toBeTruthy()
+    expect(contactCta.body).toBeTruthy()
+    expect(contactCta.cta.label).toBeTruthy()
+    expect(contactCta.cta.to).toBe('/contact')
   })
 
   it('legal has privacy and terms, each with sections', () => {

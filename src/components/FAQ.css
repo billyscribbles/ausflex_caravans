@@ -3,7 +3,7 @@
 }
 
 .faq__head {
-  margin-bottom: 64px;
+  margin-bottom: var(--gap-section-head);
 }
 
 .faq__list {
@@ -25,14 +25,14 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 26px 0;
+  padding: var(--space-md) 0;
   text-align: left;
   font-family: var(--font-display);
   font-size: 19px;
   font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--color-text);
-  gap: 24px;
+  gap: var(--space-md);
   transition: color var(--transition-fast);
 }
 
@@ -51,9 +51,15 @@
 }
 
 .faq__answer-inner {
-  padding: 0 48px 28px 0;
+  padding: 0 var(--space-xl) var(--space-md) 0;
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-muted);
   max-width: 68ch;
+}
+
+@media (max-width: 560px) {
+  .faq__answer-inner {
+    padding-right: 0;
+  }
 }
