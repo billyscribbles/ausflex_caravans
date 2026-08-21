@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom'
 import { useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
@@ -38,6 +38,7 @@ const AboutPage = lazyWithRetry(() => import('./pages/AboutPage.jsx'))
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'))
 const LegalPage = lazyWithRetry(() => import('./pages/LegalPage.jsx'))
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'))
+const AdminPage = lazyWithRetry(() => import('./pages/AdminPage.jsx'))
 
 // Resets scroll on navigation and reports the page view to analytics.
 function RouteChange() {
@@ -57,10 +58,11 @@ function RouteChange() {
   return null
 }
 
-export default function App() {
+// The marketing chrome. /admin renders outside it — it is a tool, not a page
+// of the site.
+function SiteLayout() {
   return (
-    <BrowserRouter>
-      <RouteChange />
+    <>
       <a href="#main" className="skip-link">
         Skip to content
       </a>
@@ -68,9 +70,21 @@ export default function App() {
       {/* Skip-link target. Each routed page renders its own <main> landmark;
           this wrapper just gives the skip link a stable, focusable anchor. */}
       <div id="main" tabIndex={-1}>
-        <ErrorBoundary>
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
+        <Outlet />
+      </div>
+      <Footer />
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <RouteChange />
+      <ErrorBoundary>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route element={<SiteLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/vans" element={<VansPage />} />
               <Route path="/vans/:slug" element={<VanPage />} />
@@ -82,11 +96,11 @@ export default function App() {
               <Route path="/privacy" element={<LegalPage type="privacy" />} />
               <Route path="/terms" element={<LegalPage type="terms" />} />
               <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </div>
-      <Footer />
+            </Route>
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }

@@ -1,0 +1,213 @@
+/* Admin dashboard. Deliberately plain — this is an internal tool, and its job
+   is to be legible and hard to misuse, not to look like the site. */
+
+.admin {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md) var(--space-3xl);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+
+.admin-status {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin: var(--space-sm) 0;
+}
+
+/* Login */
+
+.admin-login {
+  max-width: 360px;
+  margin: var(--space-3xl) auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-login__title,
+.admin-header__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-md);
+}
+
+/* Header + tabs */
+
+.admin-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: var(--space-2xs);
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+.admin-tab {
+  padding: var(--space-2xs) var(--space-sm);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-tab--active {
+  border-color: var(--color-accent-dark);
+  color: var(--color-accent-dark);
+}
+
+/* Fields */
+
+.admin-field {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: var(--space-xs) 0 var(--space-2xs);
+}
+
+.admin-input {
+  width: 100%;
+  padding: var(--space-2xs) var(--space-xs);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+.admin-input:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+
+.admin-button {
+  padding: var(--space-2xs) var(--space-sm);
+  border: 1px solid var(--color-accent-dark);
+  background: var(--color-accent-dark);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.admin-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-button--quiet {
+  background: transparent;
+  border-color: var(--color-rule);
+  color: var(--color-text-soft);
+}
+
+/* Errors — reuses the form error tokens the contact form already uses. */
+
+.admin-error {
+  margin: var(--space-sm) 0 0;
+  padding: var(--space-2xs) var(--space-xs);
+  border: 1px solid var(--color-danger-border);
+  background: var(--color-danger-surface);
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+
+.admin-hint {
+  margin: var(--space-2xs) 0 var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* Rows */
+
+.admin-list {
+  list-style: none;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+}
+
+.admin-row {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: var(--space-sm);
+  align-items: start;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.admin-thumb {
+  width: 96px;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--color-bg-alt);
+}
+
+.admin-row__fields {
+  min-width: 0;
+}
+
+.admin-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  justify-content: flex-end;
+}
+
+.admin-confirm {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.admin-toolbar {
+  max-width: 320px;
+}
+
+.admin-panel {
+  margin-top: var(--space-md);
+}
+
+.admin-add {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
+}
+
+.admin-add__title {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  /* The thumbnail column collapses before the fields become unusable. */
+  .admin-row {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .admin-row__actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
