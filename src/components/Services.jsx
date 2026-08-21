@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion'
-import { Sparkles, Code, Search, ShoppingBag, Mail, MessageCircle } from 'lucide-react'
+import { MapPin, ShieldCheck, Wrench, Mountain } from 'lucide-react'
 import { services } from '../content/services.js'
 import { useScrollIn } from '../lib/motion.js'
 import './Services.css'
 
-const ICONS = { Sparkles, Code, Search, ShoppingBag, Mail, MessageCircle }
+const ICONS = { MapPin, ShieldCheck, Wrench, Mountain }
 
 export default function Services() {
   const scrollIn = useScrollIn()
   return (
-    <section className="services section">
+    <section className="services section section--dark">
       <div className="container">
         <div className="services__head">
           {services.eyebrow && <span className="section-eyebrow">{services.eyebrow}</span>}
@@ -19,11 +19,11 @@ export default function Services() {
 
         <div className="services__grid">
           {services.items.map((item, i) => {
-            const Icon = ICONS[item.icon] || Sparkles
+            const Icon = ICONS[item.icon] || ShieldCheck
             return (
-              <motion.div key={item.title} className="services__card glow-card" {...scrollIn(i)}>
+              <motion.div key={item.title} className="services__pillar" {...scrollIn(i)}>
                 <div className="services__icon">
-                  <Icon size={22} strokeWidth={1.8} />
+                  <Icon size={24} strokeWidth={1.6} />
                 </div>
                 <h3 className="services__title">{item.title}</h3>
                 <p className="services__body">{item.body}</p>

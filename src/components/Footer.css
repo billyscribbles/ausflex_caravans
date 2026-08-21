@@ -1,5 +1,5 @@
 .footer {
-  background: var(--color-dark);
+  background: var(--color-dark-deep);
   color: #fff;
 }
 
@@ -8,7 +8,7 @@
   margin: 0 auto;
   padding: 80px 32px 48px;
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
+  grid-template-columns: 1.6fr 1fr 1.2fr 1.2fr;
   gap: 48px;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .footer__logo-img {
-  height: 28px;
+  height: 32px;
   width: auto;
 }
 
@@ -77,12 +77,20 @@
 }
 
 .footer__location,
+.footer__phone,
 .footer__email {
   font-size: 15px;
 }
 
 .footer__location {
   color: rgba(255, 255, 255, 0.6);
+}
+.footer__phone {
+  color: rgba(255, 255, 255, 0.75);
+  transition: color var(--transition-fast);
+}
+.footer__phone:hover {
+  color: #fff;
 }
 .footer__email {
   color: var(--color-accent);

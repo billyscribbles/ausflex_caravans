@@ -1,27 +1,33 @@
-.contact__inner {
-  max-width: 720px;
+.contact {
+  background: var(--color-bg);
 }
 
-.contact__head {
-  text-align: center;
-  margin-bottom: 48px;
+.contact__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 72px;
+  align-items: start;
 }
 
 .contact__head .section-sub {
-  margin-left: auto;
-  margin-right: auto;
+  margin-bottom: 0;
 }
 
 .contact__form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--shadow-md);
 }
 
 .contact__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 18px;
 }
 
 .contact__field {
@@ -31,19 +37,20 @@
 }
 
 .contact__field span {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.65);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
 }
 
 .contact__field input,
 .contact__field textarea {
-  padding: 14px 16px;
+  padding: 13px 15px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-size: 15px;
   font-family: var(--font-body);
   transition:
@@ -52,10 +59,16 @@
   resize: vertical;
 }
 
+.contact__field input::placeholder,
+.contact__field textarea::placeholder {
+  color: var(--color-muted);
+}
+
 .contact__field input:focus,
 .contact__field textarea:focus {
-  border-color: var(--color-accent);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-accent-dark);
+  background: #fff;
+  outline: none;
 }
 
 /* Honeypot — kept in the DOM and focusable for bots, hidden from humans/AT. */
@@ -70,18 +83,17 @@
 
 .contact__submit {
   align-self: flex-start;
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 14px 30px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 15px 30px;
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-accent);
   transition:
     background var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+    transform var(--transition-fast);
 }
 
 .contact__submit:hover:not(:disabled) {
@@ -107,19 +119,29 @@
 }
 
 .contact__status--success {
-  background: rgba(12, 140, 129, 0.15);
-  color: var(--color-accent-light);
-  border: 1px solid rgba(12, 140, 129, 0.4);
+  background: var(--color-accent-light);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
 }
 
 .contact__status--error {
-  background: rgba(255, 100, 100, 0.1);
-  color: #ffb3b3;
-  border: 1px solid rgba(255, 100, 100, 0.3);
+  background: rgba(178, 58, 46, 0.08);
+  color: #8c2e23;
+  border: 1px solid rgba(178, 58, 46, 0.35);
+}
+
+@media (max-width: 900px) {
+  .contact__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
 }
 
 @media (max-width: 600px) {
   .contact__row {
     grid-template-columns: 1fr;
+  }
+  .contact__form {
+    padding: 24px 20px;
   }
 }

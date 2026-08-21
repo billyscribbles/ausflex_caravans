@@ -1,0 +1,121 @@
+.gallery-grid__head {
+  max-width: 760px;
+  margin-bottom: 52px;
+}
+
+.gallery-grid__mosaic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 250px;
+  gap: 14px;
+}
+
+.gallery-grid__tile {
+  position: relative;
+  margin: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.gallery-grid__mosaic .gallery-grid__tile:first-child {
+  grid-row: span 2;
+}
+
+.gallery-grid__mosaic .gallery-grid__tile:nth-child(6n + 4) {
+  grid-column: span 2;
+}
+
+.gallery-grid__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.gallery-grid__tile:hover img {
+  transform: scale(1.04);
+}
+
+.gallery-grid__zoom {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  cursor: zoom-in;
+}
+
+.gallery-grid__caption {
+  position: absolute;
+  left: 16px;
+  bottom: 13px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.gallery-grid__lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(12, 10, 8, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.gallery-grid__lightbox img {
+  max-width: min(1200px, 94vw);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.gallery-grid__close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.gallery-grid__close:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 900px) {
+  .gallery-grid__mosaic {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 210px;
+  }
+  .gallery-grid__mosaic .gallery-grid__tile:first-child {
+    grid-row: span 1;
+  }
+  .gallery-grid__mosaic .gallery-grid__tile:nth-child(6n + 4) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .gallery-grid__mosaic {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 240px;
+  }
+}

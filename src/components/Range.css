@@ -1,0 +1,109 @@
+.range__head {
+  max-width: 760px;
+  margin-bottom: 56px;
+}
+
+.range__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.range__card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition:
+    transform var(--transition-slow),
+    box-shadow var(--transition-slow),
+    border-color var(--transition-base);
+}
+
+.range__card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border-strong);
+}
+
+.range__card-link {
+  display: block;
+  height: 100%;
+}
+
+.range__image {
+  aspect-ratio: 1.55;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  padding: 18px;
+}
+
+.range__image img {
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  transition: transform var(--transition-slow);
+}
+
+.range__card:hover .range__image img {
+  transform: scale(1.04);
+}
+
+.range__body {
+  padding: 24px 26px 26px;
+}
+
+.range__tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent-dark);
+  margin-bottom: 8px;
+}
+
+.range__name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.range__blurb {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-muted);
+  margin-bottom: 18px;
+}
+
+.range__more {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  transition: color var(--transition-fast);
+}
+
+.range__card:hover .range__more {
+  color: var(--color-accent-dark);
+}
+
+@media (max-width: 1024px) {
+  .range__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .range__grid {
+    grid-template-columns: 1fr;
+  }
+}

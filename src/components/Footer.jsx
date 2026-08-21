@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Linkedin, Instagram, Twitter } from 'lucide-react'
+import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
 import { site } from '../config/site.config.js'
 import './Footer.css'
 
@@ -42,12 +42,31 @@ export default function Footer() {
           <div className="footer__col-title">Contact</div>
           <div className="footer__contact-info">
             {contact.location && <span className="footer__location">{contact.location}</span>}
+            {contact.phone && (
+              <a
+                href={`tel:${contact.phone.replace(/\s/g, '')}`}
+                className="footer__phone"
+              >
+                {contact.phone}
+              </a>
+            )}
             {contact.email && (
               <a href={`mailto:${contact.email}`} className="footer__email">
                 {contact.email}
               </a>
             )}
             <div className="footer__socials">
+              {social.facebook && (
+                <a
+                  href={social.facebook}
+                  className="footer__social"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={18} strokeWidth={1.8} />
+                </a>
+              )}
               {social.linkedin && (
                 <a
                   href={social.linkedin}
