@@ -7,6 +7,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import VirtualTour from '../components/VirtualTour.jsx'
+import GalleryGrid from '../components/GalleryGrid.jsx'
+import InteriorsRail from '../components/InteriorsRail.jsx'
 import { site } from '../config/site.config.js'
 import { tour } from '../content/tour.js'
 
@@ -95,5 +97,35 @@ describe('VirtualTour with multiple tours', () => {
     renderTour({ tours })
     expect(screen.queryByRole('button', { name: /Sea Breeze/ })).not.toBeInTheDocument()
     expect(document.querySelectorAll('iframe').length).toBe(0)
+  })
+})
+
+describe('gallery skeletons', () => {
+  it('GalleryGrid renders placeholder tiles while loading and no images', () => {
+    const { container } = render(
+      <GalleryGrid content={{ heading: 'Gallery', items: [] }} loading />,
+    )
+    expect(container.querySelectorAll('.gallery-grid__tile--skeleton').length).toBeGreaterThan(0)
+    expect(container.querySelectorAll('img').length).toBe(0)
+  })
+
+  it('GalleryGrid renders real tiles once loading is false', () => {
+    const items = [{ id: '1', src: '/uploads/a.webp', alt: 'A van' }]
+    const { container } = render(<GalleryGrid content={{ heading: 'Gallery', items }} />)
+    expect(container.querySelectorAll('.gallery-grid__tile--skeleton').length).toBe(0)
+    expect(container.querySelector('img').getAttribute('src')).toBe('/uploads/a.webp')
+  })
+
+  it('renders alt="" for a photo with no alt text rather than inventing one', () => {
+    const items = [{ id: '1', src: '/uploads/a.webp', alt: '' }]
+    const { container } = render(<GalleryGrid content={{ heading: 'Gallery', items }} />)
+    expect(container.querySelector('img').getAttribute('alt')).toBe('')
+  })
+
+  it('InteriorsRail renders skeleton cards while loading', () => {
+    const { container } = render(
+      <InteriorsRail content={{ heading: 'Interiors', items: [] }} loading />,
+    )
+    expect(container.querySelectorAll('.interiors-rail__card--skeleton').length).toBeGreaterThan(0)
   })
 })

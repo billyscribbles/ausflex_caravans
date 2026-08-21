@@ -9,9 +9,10 @@ import InteriorsRail from '../components/InteriorsRail.jsx'
 import HowItWorks from '../components/HowItWorks.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
 import { gallery } from '../content/gallery.js'
-import { useTours } from '../lib/contentStore.js'
+import { useCollection, useTours } from '../lib/contentStore.js'
 
 export default function Home() {
+  const interiors = useCollection('interiors')
   const { tours } = useTours()
 
   return (
@@ -23,7 +24,11 @@ export default function Home() {
       <VideoEmbed />
       <VirtualTour tours={tours} />
       <Feature />
-      <InteriorsRail content={gallery.interiors} id="interiors" />
+      <InteriorsRail
+        content={{ ...gallery.interiors, items: interiors.items }}
+        loading={interiors.loading}
+        id="interiors"
+      />
       <HowItWorks />
       <ContactCTA />
     </main>

@@ -4,9 +4,20 @@ import { X } from 'lucide-react'
 import { useScrollIn } from '../lib/motion.js'
 import './GalleryGrid.css'
 
+// One full mosaic block — see GalleryGrid.css, which tiles in nines.
+const SKELETON_TILES = 9
+
 // Reusable photo mosaic. `content` is { eyebrow, heading, sub, items }.
 // `dark` renders on the charcoal band; `lightbox` makes tiles click-to-enlarge.
-export default function GalleryGrid({ content, dark = false, lightbox = false, id }) {
+// `loading` holds the grid's shape with placeholder tiles until live content
+// arrives, so the page never reflows when photos land.
+export default function GalleryGrid({
+  content,
+  dark = false,
+  lightbox = false,
+  loading = false,
+  id,
+}) {
   const scrollIn = useScrollIn()
   const [active, setActive] = useState(null)
   const lastTrigger = useRef(null)
@@ -40,33 +51,45 @@ export default function GalleryGrid({ content, dark = false, lightbox = false, i
         )}
 
         <div className="gallery-grid__mosaic">
-          {content.items.map((photo, i) => {
-            const media = (
-              <>
-                <img src={photo.src} alt={lightbox ? '' : photo.alt} loading="lazy" />
-                {photo.caption && <span className="gallery-grid__caption">{photo.caption}</span>}
-              </>
-            )
-            return (
-              <motion.figure key={photo.src} className="gallery-grid__tile" {...scrollIn(i % 6)}>
-                {lightbox ? (
-                  <button
-                    type="button"
-                    className="gallery-grid__zoom"
-                    aria-label={`Enlarge photo: ${photo.alt}`}
-                    onClick={(e) => {
-                      lastTrigger.current = e.currentTarget
-                      setActive(i)
-                    }}
-                  >
-                    {media}
-                  </button>
-                ) : (
-                  media
-                )}
-              </motion.figure>
-            )
-          })}
+          {loading &&
+            Array.from({ length: SKELETON_TILES }, (_, i) => (
+              <div
+                key={`skeleton-${i}`}
+                className="gallery-grid__tile gallery-grid__tile--skeleton"
+              />
+            ))}
+          {!loading &&
+            content.items.map((photo, i) => {
+              const media = (
+                <>
+                  <img src={photo.src} alt={lightbox ? '' : photo.alt} loading="lazy" />
+                  {photo.caption && <span className="gallery-grid__caption">{photo.caption}</span>}
+                </>
+              )
+              return (
+                <motion.figure
+                  key={photo.id ?? photo.src}
+                  className="gallery-grid__tile"
+                  {...scrollIn(i % 6)}
+                >
+                  {lightbox ? (
+                    <button
+                      type="button"
+                      className="gallery-grid__zoom"
+                      aria-label={`Enlarge photo: ${photo.alt}`}
+                      onClick={(e) => {
+                        lastTrigger.current = e.currentTarget
+                        setActive(i)
+                      }}
+                    >
+                      {media}
+                    </button>
+                  ) : (
+                    media
+                  )}
+                </motion.figure>
+              )
+            })}
         </div>
       </div>
 

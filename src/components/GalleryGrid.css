@@ -153,3 +153,9 @@
     padding: var(--space-md);
   }
 }
+
+/* Placeholder tiles hold the mosaic's shape while live content loads, so the
+   grid never reflows when photos arrive. */
+.gallery-grid__tile--skeleton {
+  background: var(--color-bg-alt);
+}

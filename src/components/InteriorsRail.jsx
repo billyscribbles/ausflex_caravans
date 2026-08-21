@@ -4,7 +4,9 @@ import './InteriorsRail.css'
 
 // Horizontal photo rail. `content` is { eyebrow, heading, sub, items } —
 // the same shape GalleryGrid reads, so collections are interchangeable.
-export default function InteriorsRail({ content, id }) {
+const SKELETON_CARDS = 6
+
+export default function InteriorsRail({ content, loading = false, id }) {
   const scrollIn = useScrollIn()
 
   return (
@@ -27,16 +29,28 @@ export default function InteriorsRail({ content, id }) {
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
         tabIndex={0}
       >
-        {content.items.map((photo, i) => (
-          <motion.figure key={photo.src} className="interiors-rail__card" {...scrollIn(i % 3)}>
-            <div className="interiors-rail__frame">
-              <img src={photo.src} alt={photo.alt} loading="lazy" />
-            </div>
-            {photo.caption && (
-              <figcaption className="interiors-rail__caption">{photo.caption}</figcaption>
-            )}
-          </motion.figure>
-        ))}
+        {loading &&
+          Array.from({ length: SKELETON_CARDS }, (_, i) => (
+            <div
+              key={`skeleton-${i}`}
+              className="interiors-rail__card interiors-rail__card--skeleton"
+            />
+          ))}
+        {!loading &&
+          content.items.map((photo, i) => (
+            <motion.figure
+              key={photo.id ?? photo.src}
+              className="interiors-rail__card"
+              {...scrollIn(i % 3)}
+            >
+              <div className="interiors-rail__frame">
+                <img src={photo.src} alt={photo.alt} loading="lazy" />
+              </div>
+              {photo.caption && (
+                <figcaption className="interiors-rail__caption">{photo.caption}</figcaption>
+              )}
+            </motion.figure>
+          ))}
       </div>
     </section>
   )

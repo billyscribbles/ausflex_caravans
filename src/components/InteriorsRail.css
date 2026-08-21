@@ -82,3 +82,8 @@
     display: none;
   }
 }
+
+/* Placeholder cards hold the rail's shape while live content loads. */
+.interiors-rail__card--skeleton {
+  background: var(--color-bg-alt);
+}
