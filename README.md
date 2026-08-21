@@ -98,10 +98,46 @@ SDK is present. The template bundles no SDK. To enable it, either:
 
 Until then `reportError` is silent in production and logs to the console in development.
 
+## Admin dashboard
+
+Ausflex staff manage gallery photos and 360° tours at **`/admin`**, publishing to the live
+site with no redeploy. It is `noindex`, disallowed in `robots.txt`, and lazy-loaded as its
+own chunk, so none of it reaches public visitors.
+
+Photos and tour metadata live in `content.json` on a Railway volume, alongside the uploaded
+images. On first boot the server seeds that file from `src/content/gallery.js` and
+`tour.js`, so a fresh environment opens with the photo set that ships in the repo. Those
+static files stay in place as the runtime fallback: if the API is unreachable the site
+renders them rather than an empty gallery.
+
+**Setup.** Generate a password hash and a session secret, then set them in Railway:
+
+```bash
+yarn node scripts/hash-password.mjs 'the-password'   # -> ADMIN_PASSWORD_HASH
+openssl rand -hex 32                                 # -> SESSION_SECRET
+```
+
+Login is a single shared password, rate-limited to 10 attempts per IP per 15 minutes. The
+server boots fine without a hash configured — logins simply always fail — so CI needs no
+secrets.
+
+**Local development** needs two terminals: `yarn dev` for the SPA and `yarn dev:api` for the
+server. Vite proxies `/api` and `/uploads` to port 3001, and the store defaults to a
+gitignored `./.data`.
+
+Uploads are resized and re-encoded to WebP in the browser before they are sent, so a 9MB
+phone photo arrives as roughly 300KB. Alt text is optional; a photo without it renders
+`alt=""`, which is correct markup for a decorative image and keeps the accessibility score
+intact.
+
 ## Deployment
 
-Ready for Railway out of the box (`railway.json` included). `yarn start` serves the
-production build on port 4173 with baseline security headers (see `vite.config.js`).
+Ready for Railway out of the box (`railway.json` included). `yarn start` boots the Express
+server (`server/index.js`), which serves the production build on port 4173 with baseline
+security headers and the admin API.
+
+**This site needs a Railway volume mounted at `/data`** — without it the client's uploaded
+photos are silently discarded on every deploy. See [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md).
 
 Ask Claude to "deploy to Railway" — the `railway-deploy` skill drives project creation, env
 vars, deploy, and domain generation via the Railway MCP.

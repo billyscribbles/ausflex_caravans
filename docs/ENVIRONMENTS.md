@@ -26,6 +26,26 @@ fast-forwarding the `production` branch.
 
 ---
 
+## Admin dashboard storage
+
+Both environments need a **Railway volume mounted at `/data`**, plus
+`ADMIN_PASSWORD_HASH`, `SESSION_SECRET` and `DATA_DIR=/data`.
+
+Without the volume the server writes to ephemeral container disk and **every
+photo the client uploads is lost on the next deploy**, silently. Create the
+volume before the first deploy of this feature.
+
+Staging and production have separate volumes and therefore separate content.
+Each self-seeds from the static content files on first boot, so a fresh
+environment opens with the photo set that ships in the repo. The client edits
+production.
+
+Railway volumes are not backed up automatically. The dashboard's export link
+downloads `content.json`; the uploaded image files themselves would need manual
+recovery, so tell the client to keep their originals.
+
+---
+
 ## Git branch model
 
 - **`main`** — integration branch. Protected. Every merge lands on staging

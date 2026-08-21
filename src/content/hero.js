@@ -11,9 +11,9 @@ export const hero = {
   secondaryCta: null,
   aside:
     'Australian made for Australian conditions. Ausflex Caravans are engineered for comfort, built for tough adventures, and designed to keep you moving.',
-  image: '/images/hero-exterior-wordmark.jpg',
+  image: '/images/hero-exterior-wordmark-v2.jpg',
   imageSrcset:
-    '/images/hero-exterior-wordmark-960.jpg 960w, /images/hero-exterior-wordmark.jpg 1774w',
+    '/images/hero-exterior-wordmark-v2-960.jpg 960w, /images/hero-exterior-wordmark-v2.jpg 1774w',
   imageSizes: '100vw',
   imageAlt:
     'Ausflex caravan in bronze and black on wet ground below a dark mountain range, entry door open and the Ausflex wordmark glowing across the sky behind it',

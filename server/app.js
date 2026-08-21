@@ -1,5 +1,6 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import compression from 'compression'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { uploadsDir, read } from './store.js'
@@ -18,6 +19,10 @@ export function createApp() {
   // when Express trusts the proxy. The login rate limiter keys on req.ip.
   app.set('trust proxy', 1)
   app.disable('x-powered-by')
+
+  // vite preview compressed responses; this server replaces it, so it has to
+  // do the same or the HTML/JS/CSS ship uncompressed.
+  app.use(compression())
 
   app.use(express.json({ limit: '256kb' }))
   app.use(cookieParser())
