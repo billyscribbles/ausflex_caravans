@@ -1,20 +1,70 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { Images, Sofa, Caravan, Compass, Download, LogOut } from 'lucide-react'
 import Login from '../admin/Login.jsx'
 import PhotosTab from '../admin/PhotosTab.jsx'
 import ToursTab from '../admin/ToursTab.jsx'
-import { getSession, getContent, logout } from '../admin/api.js'
+import { getSession, getContent, logout, exportUrl } from '../admin/api.js'
 import '../admin/admin.css'
 
-const TABS = [
-  { id: 'photos', label: 'Photos' },
-  { id: 'tours', label: '360 Tours' },
+// The sidebar is the whole information architecture: every destination is one
+// click, and each one says where on the live site it lands. The photo
+// collections used to hide behind a <select> inside the panel — a dashboard
+// puts them in the rail.
+const NAV = [
+  {
+    group: 'Photos',
+    items: [
+      {
+        id: 'page',
+        label: 'Gallery page',
+        icon: Images,
+        kind: 'photos',
+        where: 'The mosaic on /gallery.',
+      },
+      {
+        id: 'interiors',
+        label: 'Interiors rail',
+        icon: Sofa,
+        kind: 'photos',
+        where: 'The scrolling rail on the home page.',
+      },
+      {
+        id: 'exteriors',
+        label: 'Exteriors',
+        icon: Caravan,
+        kind: 'photos',
+        where: 'The band above the mosaic on /gallery.',
+      },
+    ],
+  },
+  {
+    group: 'Tours',
+    items: [
+      {
+        id: 'tours',
+        label: '360 tours',
+        icon: Compass,
+        kind: 'tours',
+        where: 'The /360 page, and the first tour on the home page.',
+      },
+    ],
+  },
 ]
+
+const VIEWS = NAV.flatMap((section) => section.items)
+
+function countFor(view, content) {
+  if (!content) return null
+  return view.kind === 'tours' ? content.tours.length : content.gallery[view.id].length
+}
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(null)
-  const [tab, setTab] = useState('photos')
+  const [viewId, setViewId] = useState('page')
   const [content, setContent] = useState(null)
+
+  const view = VIEWS.find((v) => v.id === viewId)
 
   const refresh = useCallback(async () => {
     setContent(await getContent())
@@ -30,6 +80,26 @@ export default function AdminPage() {
     if (authed) refresh()
   }, [authed, refresh])
 
+  const count = countFor(view, content)
+
+  // Inactive tabs are taken out of the tab order, so the arrow keys have to
+  // carry keyboard users between them — the tablist contract.
+  function onNavKeyDown(event) {
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[event.key]
+    const jump = { Home: 0, End: VIEWS.length - 1 }[event.key]
+    let nextIndex = null
+    if (step) {
+      nextIndex = (VIEWS.findIndex((v) => v.id === viewId) + step + VIEWS.length) % VIEWS.length
+    } else if (jump !== undefined) {
+      nextIndex = jump
+    }
+    if (nextIndex === null) return
+    event.preventDefault()
+    const next = VIEWS[nextIndex]
+    setViewId(next.id)
+    document.getElementById(`tab-${next.id}`)?.focus()
+  }
+
   return (
     <>
       <Helmet>
@@ -37,70 +107,118 @@ export default function AdminPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <main className="admin">
-        {authed === null && <p className="admin-status">Loading…</p>}
+      {authed === null && (
+        <main className="admin-boot">
+          <p className="admin-status">Loading…</p>
+        </main>
+      )}
 
-        {authed === false && <Login onSuccess={() => setAuthed(true)} />}
+      {authed === false && <Login onSuccess={() => setAuthed(true)} />}
 
-        {authed === true && (
-          <>
-            <header className="admin-header">
-              <h1 className="admin-header__title">Ausflex admin</h1>
+      {authed === true && (
+        <div className="admin-shell">
+          <aside className="admin-rail">
+            <div className="admin-rail__brand">
+              <span className="admin-rail__mark">Ausflex</span>
+              <span className="admin-rail__kicker">Content manager</span>
+            </div>
+
+            <div
+              className="admin-rail__nav"
+              role="tablist"
+              aria-orientation="vertical"
+              aria-label="Dashboard sections"
+            >
+              {NAV.map((section) => (
+                <div className="admin-rail__group" key={section.group}>
+                  <p className="admin-rail__group-label">{section.group}</p>
+                  {section.items.map((item) => {
+                    const Icon = item.icon
+                    const active = item.id === viewId
+                    const n = countFor(item, content)
+                    return (
+                      <button
+                        key={item.id}
+                        role="tab"
+                        type="button"
+                        id={`tab-${item.id}`}
+                        aria-selected={active}
+                        aria-controls="admin-panel"
+                        tabIndex={active ? 0 : -1}
+                        className={`admin-navitem${active ? ' admin-navitem--active' : ''}`}
+                        onClick={() => setViewId(item.id)}
+                        onKeyDown={onNavKeyDown}
+                      >
+                        <Icon className="admin-navitem__icon" size={16} aria-hidden="true" />
+                        <span className="admin-navitem__label">{item.label}</span>
+                        {n !== null && <span className="admin-navitem__count">{n}</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
+
+            <div className="admin-rail__foot">
+              <a className="admin-railaction" href={exportUrl}>
+                <Download size={15} aria-hidden="true" />
+                Download backup
+              </a>
               <button
-                className="admin-button admin-button--quiet"
+                className="admin-railaction"
                 type="button"
                 onClick={async () => {
                   await logout()
                   setAuthed(false)
                 }}
               >
+                <LogOut size={15} aria-hidden="true" />
                 Sign out
               </button>
+            </div>
+          </aside>
+
+          {/* The only scrolling region. The rail stays put. */}
+          <main className="admin-main">
+            <header className="admin-topbar">
+              <div>
+                <h1 className="admin-topbar__title">{view.label}</h1>
+                <p className="admin-topbar__where">{view.where}</p>
+              </div>
+              {count !== null && (
+                <p className="admin-topbar__count">
+                  {count} {view.kind === 'tours' ? 'tour' : 'photo'}
+                  {count === 1 ? '' : 's'}
+                </p>
+              )}
             </header>
 
-            <div className="admin-tabs" role="tablist" aria-label="Admin sections">
-              {TABS.map((t) => (
-                <button
-                  key={t.id}
-                  role="tab"
-                  type="button"
-                  id={`tab-${t.id}`}
-                  aria-selected={tab === t.id}
-                  aria-controls={`panel-${t.id}`}
-                  className={`admin-tab${tab === t.id ? ' admin-tab--active' : ''}`}
-                  onClick={() => setTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
+            <div
+              className="admin-panel"
+              role="tabpanel"
+              id="admin-panel"
+              aria-labelledby={`tab-${viewId}`}
+              tabIndex={-1}
+            >
+              {!content && <p className="admin-status">Loading content…</p>}
 
-            {TABS.map((t) => (
-              <div
-                key={t.id}
-                role="tabpanel"
-                id={`panel-${t.id}`}
-                aria-labelledby={`tab-${t.id}`}
-                hidden={tab !== t.id}
-              >
-                {t.id === tab && content && t.id === 'photos' && (
-                  <PhotosTab
-                    photos={[
-                      ...content.gallery.interiors,
-                      ...content.gallery.exteriors,
-                      ...content.gallery.page,
-                    ]}
-                    onChange={refresh}
-                  />
-                )}
-                {t.id === tab && content && t.id === 'tours' && (
-                  <ToursTab tours={content.tours} onChange={refresh} />
-                )}
-              </div>
-            ))}
-          </>
-        )}
-      </main>
+              {content && view.kind === 'photos' && (
+                <PhotosTab
+                  key={view.id}
+                  collection={view.id}
+                  label={view.label}
+                  photos={content.gallery[view.id]}
+                  onChange={refresh}
+                />
+              )}
+
+              {content && view.kind === 'tours' && (
+                <ToursTab tours={content.tours} onChange={refresh} />
+              )}
+            </div>
+          </main>
+        </div>
+      )}
     </>
   )
 }

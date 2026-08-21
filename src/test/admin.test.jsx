@@ -42,7 +42,7 @@ describe('AdminPage', () => {
     renderAdmin()
 
     await waitFor(() => expect(screen.getByLabelText(/password/i)).toBeInTheDocument())
-    expect(screen.queryByRole('tab', { name: /photos/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: /gallery page/i })).not.toBeInTheDocument()
   })
 
   it('shows the dashboard when already authenticated', async () => {
@@ -55,7 +55,9 @@ describe('AdminPage', () => {
     )
     renderAdmin()
 
-    await waitFor(() => expect(screen.getByRole('tab', { name: /photos/i })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('tab', { name: /gallery page/i })).toBeInTheDocument(),
+    )
     expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument()
   })
 
@@ -122,7 +124,9 @@ describe('AdminPage', () => {
       }),
     )
     const { container } = renderAdmin()
-    await waitFor(() => expect(screen.getByRole('tab', { name: /photos/i })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('tab', { name: /gallery page/i })).toBeInTheDocument(),
+    )
     expect(await axe(container)).toHaveNoViolations()
   })
 

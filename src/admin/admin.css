@@ -1,76 +1,316 @@
-/* Admin dashboard. Deliberately plain — this is an internal tool, and its job
-   is to be legible and hard to misuse, not to look like the site. */
+/* Ausflex content manager.
+ *
+ * A dashboard, not a page of the site: a fixed dark rail on the left, a single
+ * scrolling content column on the right. The rail borrows the site's chrome
+ * (charcoal + bone, IBM Plex Mono micro-labels, square corners, hairlines
+ * instead of shadows) so it reads as Ausflex; the content canvas stays cream
+ * and near-white so the caravan photos are judged on their own colour rather
+ * than through a tinted surface.
+ *
+ * Colour is Restrained: warm neutrals carry the whole surface, and bronze is
+ * spent only on the current selection, the primary action and focus.
+ *
+ * Structural sizes (rail width, tile floor) live here rather than in
+ * theme.config.js for the same reason --nav-h and --gutter live in index.css:
+ * they are layout mechanics, not brand tokens a client would ever swap.
+ */
 
-.admin {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--space-xl) var(--space-md) var(--space-3xl);
-  font-family: var(--font-body);
+.admin-shell {
+  --rail-w: 264px;
+  --pad-x: var(--space-xl);
+  --tile-min: 264px;
+
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--color-bg);
   color: var(--color-text);
+  font-family: var(--font-body);
 }
 
-.admin-status {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--color-muted);
-  margin: var(--space-sm) 0;
-}
+/* ---------------------------------------------------------------- Left rail */
 
-/* Login */
+/* The site-wide focus ring is accent-dark, tuned for the cream page; on
+   charcoal it only just clears 3:1. The rail swaps in the lighter bronze,
+   which reads at 6.2:1 against this ground. */
+.admin-rail {
+  --color-focus: var(--color-accent);
 
-.admin-login {
-  max-width: 360px;
-  margin: var(--space-3xl) auto;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  padding: var(--space-lg) 0 var(--space-md);
+  background: var(--color-charcoal);
+  border-right: 1px solid var(--color-dark-deep);
+  color: var(--color-bone);
 }
 
-.admin-login__title,
-.admin-header__title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
+.admin-rail__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-md) var(--space-lg);
+}
+
+.admin-rail__mark {
+  font-size: 1.125rem;
   font-weight: 600;
-  margin: 0 0 var(--space-md);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-/* Header + tabs */
-
-.admin-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-rule);
-}
-
-.admin-tabs {
-  display: flex;
-  gap: var(--space-2xs);
-  margin: var(--space-md) 0 var(--space-lg);
-}
-
-.admin-tab {
-  padding: var(--space-2xs) var(--space-sm);
-  border: 1px solid var(--color-rule);
-  background: transparent;
-  color: var(--color-text-soft);
+.admin-rail__kicker,
+.admin-rail__group-label {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: var(--color-bone-muted);
+}
+
+/* The nav is the only part of the rail allowed to scroll, so the brand block
+   and the sign-out foot stay reachable however many collections exist. */
+.admin-rail__nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--space-2xs);
+}
+
+.admin-rail__group + .admin-rail__group {
+  margin-top: var(--space-md);
+}
+
+.admin-rail__group-label {
+  padding: 0 var(--space-2xs) var(--space-2xs);
+}
+
+.admin-navitem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-2xs) var(--space-xs);
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--color-bone-soft);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  text-align: left;
   cursor: pointer;
   transition:
-    border-color var(--transition-fast),
+    background var(--transition-fast),
     color var(--transition-fast);
 }
 
-.admin-tab--active {
+.admin-navitem:hover {
+  background: rgba(243, 239, 233, 0.06);
+  color: var(--color-bone);
+}
+
+/* Selection reads on three channels at once — ground, bronze text and the
+   rule — so it survives both a colourblind reader and a glance from a metre
+   back. The 2px edge is the selected-row marker every side nav uses; it is a
+   state indicator, not a decorative side stripe. */
+.admin-navitem--active {
+  border-left-color: var(--color-accent);
+  background: rgba(243, 239, 233, 0.08);
+  color: var(--color-accent);
+}
+
+.admin-navitem__icon {
+  flex: none;
+}
+
+.admin-navitem__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-navitem__count {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-bone-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-navitem--active .admin-navitem__count {
+  color: var(--color-accent);
+}
+
+.admin-rail__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-md);
+  padding: var(--space-md) var(--space-2xs) 0;
+  border-top: 1px solid var(--color-hairline-dark);
+}
+
+.admin-railaction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-2xs) var(--space-xs);
+  border: 0;
+  background: transparent;
+  color: var(--color-bone-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.admin-railaction:hover {
+  color: var(--color-bone);
+}
+
+/* ------------------------------------------------------- Scrolling content */
+
+/* The one scroll container in the dashboard. Everything else is fixed. */
+.admin-main {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--pad-x);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.admin-topbar__title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.admin-topbar__where {
+  margin-top: 2px;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.admin-topbar__count {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-panel {
+  padding: var(--space-lg) var(--pad-x) var(--space-3xl);
+}
+
+.admin-panel:focus {
+  outline: none;
+}
+
+/* ------------------------------------------------------- Cards and controls */
+
+.admin-card {
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+.admin-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+/* The dropzone is its own element rather than a dashed box inside a card —
+   one border, not two. */
+.admin-uploader {
+  margin-bottom: var(--space-lg);
+}
+
+.admin-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-md);
+  border: 1px dashed var(--color-border-strong);
+  background: var(--color-bg-alt);
+  color: var(--color-muted);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-drop:hover,
+.admin-drop--over {
   border-color: var(--color-accent-dark);
+  background: var(--color-accent-light);
   color: var(--color-accent-dark);
 }
 
-/* Fields */
+/* The file input is .sr-only, so the ring has to land on its label instead. */
+.admin-drop:has(+ input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.admin-drop__lead {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.admin-drop--over .admin-drop__lead {
+  color: var(--color-accent-dark);
+}
+
+.admin-drop__meta {
+  font-size: 0.8125rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.admin-form__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.admin-form__cell {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------- Fields */
 
 .admin-field {
   display: block;
@@ -82,33 +322,59 @@
   margin: var(--space-xs) 0 var(--space-2xs);
 }
 
+.admin-field:first-child {
+  margin-top: 0;
+}
+
 .admin-input {
   width: 100%;
   padding: var(--space-2xs) var(--space-xs);
   border: 1px solid var(--color-border);
-  background: var(--color-bg-card);
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 0.9375rem;
+  transition: border-color var(--transition-fast);
+}
+
+.admin-input:hover {
+  border-color: var(--color-border-strong);
 }
 
 .admin-input:focus-visible {
   outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+  outline-offset: 1px;
+  border-color: var(--color-accent-dark);
 }
 
-/* Buttons */
+.admin-input::placeholder {
+  color: var(--color-muted);
+  opacity: 0.7;
+}
+
+/* ------------------------------------------------------------------ Buttons */
 
 .admin-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
   padding: var(--space-2xs) var(--space-sm);
   border: 1px solid var(--color-accent-dark);
   background: var(--color-accent-dark);
   color: var(--color-bg);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: opacity var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.admin-button:hover:not(:disabled) {
+  background: var(--color-text);
+  border-color: var(--color-text);
 }
 
 .admin-button:disabled {
@@ -116,16 +382,185 @@
   cursor: not-allowed;
 }
 
-.admin-button--quiet {
-  background: transparent;
-  border-color: var(--color-rule);
-  color: var(--color-text-soft);
+.admin-button--block {
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
 }
 
-/* Errors — reuses the form error tokens the contact form already uses. */
+/* Square 28px control for the per-tile actions. Quiet until pointed at, so a
+   grid of forty photos is not forty rows of shouting icons. */
+.admin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-icon:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.admin-icon:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.admin-icon--danger:hover:not(:disabled) {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-surface);
+  color: var(--color-danger);
+}
+
+/* ---------------------------------------------------------------- The grid */
+
+.admin-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
+  gap: var(--space-md);
+}
+
+.admin-grid--wide {
+  --tile-min: 380px;
+}
+
+.admin-tile {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast);
+}
+
+.admin-tile:hover,
+.admin-tile:focus-within {
+  border-color: var(--color-border-strong);
+}
+
+/* Every frame is the same 3:2 window whatever the photo's own proportions, so
+   a row of tiles lines up. min-height:0 stops the flex column's content-based
+   minimum from letting a tall image stretch the frame past its ratio, and the
+   image is taken out of flow so it can never contribute height at all. */
+.admin-tile__frame {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.admin-tile__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Position in the running order, over the image where it cannot be confused
+   with the photo's own caption. */
+.admin-tile__ordinal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 3px var(--space-2xs);
+  background: var(--color-scrim);
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-tile__ordinal--inline {
+  position: static;
+  background: var(--color-bg-alt);
+  color: var(--color-muted);
+}
+
+.admin-tile__body {
+  padding: var(--space-sm);
+  flex: 1;
+}
+
+.admin-tile__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-xs);
+}
+
+.admin-badge {
+  padding: 3px var(--space-2xs);
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+}
+
+.admin-tile__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-2xs) var(--space-2xs) var(--space-xs);
+  border-top: 1px solid var(--color-hairline);
+}
+
+.admin-tile__order {
+  display: flex;
+  gap: 2px;
+}
+
+.admin-confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  width: 100%;
+}
+
+.admin-confirm__q {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-danger);
+}
+
+/* ------------------------------------------------------ Messages and states */
+
+.admin-status {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.admin-status--live,
+.admin-hint {
+  margin-top: var(--space-xs);
+}
+
+.admin-hint {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
 
 .admin-error {
-  margin: var(--space-sm) 0 0;
+  margin-top: var(--space-xs);
   padding: var(--space-2xs) var(--space-xs);
   border: 1px solid var(--color-danger-border);
   background: var(--color-danger-surface);
@@ -133,81 +568,197 @@
   font-size: 0.875rem;
 }
 
-.admin-hint {
-  margin: var(--space-2xs) 0 var(--space-sm);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+/* Empty states say what the next action does, not that there is nothing. */
+.admin-empty {
+  padding: var(--space-2xl) var(--space-md);
+  border: 1px dashed var(--color-border);
+  color: var(--color-muted);
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.admin-note {
+  max-width: 68ch;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-hairline);
+  font-size: 0.875rem;
   color: var(--color-muted);
 }
 
-/* Rows */
+/* ------------------------------------------------------- Boot and sign-in */
 
-.admin-list {
-  list-style: none;
-  margin: var(--space-md) 0 0;
-  padding: 0;
-}
-
-.admin-row {
-  display: grid;
-  grid-template-columns: 96px 1fr auto;
-  gap: var(--space-sm);
-  align-items: start;
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--color-hairline);
-}
-
-.admin-thumb {
-  width: 96px;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-  background: var(--color-bg-alt);
-}
-
-.admin-row__fields {
-  min-width: 0;
-}
-
-.admin-row__actions {
+.admin-boot,
+.admin-gate {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2xs);
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--space-lg);
+  background: var(--color-bg);
 }
 
-.admin-confirm {
-  display: flex;
-  gap: var(--space-2xs);
+.admin-login {
+  width: 100%;
+  max-width: 360px;
+  padding: var(--space-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
 }
 
-.admin-toolbar {
-  max-width: 320px;
+.admin-login__kicker {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
 }
 
-.admin-panel {
+.admin-login__title {
+  margin-bottom: var(--space-md);
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.admin-login .admin-button {
   margin-top: var(--space-md);
 }
 
-.admin-add {
-  margin-top: var(--space-xl);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--color-rule);
-}
+/* ------------------------------------------------------------- Responsive */
 
-.admin-add__title {
-  font-family: var(--font-display);
-  font-size: 1.125rem;
-  margin: 0;
-}
-
-@media (max-width: 640px) {
-  /* The thumbnail column collapses before the fields become unusable. */
-  .admin-row {
-    grid-template-columns: 64px 1fr;
+/* Below the site's 1024px breakpoint the rail unpins and becomes a horizontal
+   strip above the content: the same nav, the same order, no drawer to learn.
+   The page scrolls as one column from here down. */
+@media (max-width: 1024px) {
+  .admin-shell {
+    --pad-x: var(--space-md);
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: visible;
   }
 
-  .admin-row__actions {
-    grid-column: 1 / -1;
-    justify-content: flex-start;
+  /* Brand and the two rail actions share one row, with the nav strip beneath
+     it — the stacked version cost close to half a phone screen before any
+     content appeared. */
+  .admin-rail {
+    flex-flow: row wrap;
+    align-items: center;
+    padding: var(--space-sm) 0 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-dark-deep);
+  }
+
+  .admin-rail__brand {
+    order: 1;
+    flex: 1;
+    min-width: 0;
+    padding: 0 var(--space-md) var(--space-sm);
+  }
+
+  .admin-rail__mark {
+    font-size: 1rem;
+  }
+
+  /* The wordmark shares its row with the actions, and the topbar already
+     names the section, so the kicker is the line that goes. */
+  .admin-rail__kicker {
+    display: none;
+  }
+
+  .admin-rail__nav {
+    order: 3;
+    flex: 0 0 100%;
+    display: flex;
+    gap: var(--space-2xs);
+    overflow-x: auto;
+    padding: 0 var(--space-md);
+  }
+
+  .admin-rail__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .admin-rail__group + .admin-rail__group {
+    margin-top: 0;
+  }
+
+  /* Four destinations in a scrolling strip read fine without their headings,
+     and the room buys nearly a whole extra item on screen. */
+  .admin-rail__group-label {
+    display: none;
+  }
+
+  .admin-navitem {
+    width: auto;
+    white-space: nowrap;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+  }
+
+  .admin-navitem--active {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-accent);
+  }
+
+  .admin-rail__foot {
+    order: 2;
+    flex: none;
+    flex-direction: row;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0 var(--space-2xs) var(--space-sm) 0;
+    border-top: 0;
+  }
+
+  .admin-main {
+    overflow-y: visible;
+  }
+
+  .admin-topbar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-shell {
+    --tile-min: 220px;
+  }
+
+  .admin-grid--wide {
+    --tile-min: 220px;
+  }
+
+  .admin-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+  }
+
+  .admin-form__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-shell {
+    --tile-min: 100%;
+  }
+
+  .admin-grid--wide {
+    --tile-min: 100%;
+  }
+
+  .admin-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *,
+  .admin-gate * {
+    transition-duration: 0.01ms !important;
   }
 }
