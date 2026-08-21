@@ -178,4 +178,66 @@ describe('AdminPage', () => {
       expect.objectContaining({ method: 'DELETE' }),
     )
   })
+
+  const TOURS_CONTENT = {
+    gallery: { interiors: [], exteriors: [], page: [] },
+    tours: [
+      {
+        id: 't1',
+        title: 'Explorer 21',
+        embedUrl: 'https://kuula.co/share/a',
+        poster: null,
+        sortOrder: 0,
+      },
+      {
+        id: 't2',
+        title: 'Sea Breeze',
+        embedUrl: 'https://kuula.co/share/b',
+        poster: null,
+        sortOrder: 1,
+      },
+    ],
+  }
+
+  it('lists tours and marks the first as the one on the home page', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
+      }),
+    )
+    renderAdmin()
+
+    await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /360/i }))
+
+    expect(screen.getByDisplayValue('Explorer 21')).toBeInTheDocument()
+    // The home-page rule is visible rather than hidden.
+    expect(screen.getByText(/shown on the home page/i)).toBeInTheDocument()
+  })
+
+  it('rejects an off-allowlist embed URL before sending it', async () => {
+    const user = userEvent.setup()
+    const spy = mockFetch({
+      'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+      'GET /api/content': { ok: true, json: async () => TOURS_CONTENT },
+    })
+    vi.stubGlobal('fetch', spy)
+    renderAdmin()
+
+    await waitFor(() => expect(screen.getByRole('tab', { name: /360/i })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /360/i }))
+
+    await user.type(screen.getByLabelText(/new tour name/i), 'Bad tour')
+    await user.type(screen.getByLabelText(/new embed url/i), 'https://evil.example.com/x')
+    await user.click(screen.getByRole('button', { name: /add tour/i }))
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(/kuula\.co or matterport\.com/i),
+    )
+    // Refused client-side: no request was ever made.
+    expect(spy).not.toHaveBeenCalledWith('/api/tours', expect.anything())
+  })
 })

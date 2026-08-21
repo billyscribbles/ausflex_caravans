@@ -156,7 +156,7 @@ export default function ToursTab({ tours, onChange }) {
         <h2 className="admin-add__title">Add a tour</h2>
 
         <label className="admin-field" htmlFor="new-title">
-          Tour name
+          New tour name
         </label>
         <input
           id="new-title"
@@ -167,7 +167,7 @@ export default function ToursTab({ tours, onChange }) {
         />
 
         <label className="admin-field" htmlFor="new-url">
-          Embed URL
+          New embed URL
         </label>
         <input
           id="new-url"
