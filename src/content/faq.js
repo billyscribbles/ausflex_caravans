@@ -3,8 +3,12 @@ export const faq = {
   heading: 'Questions, answered.',
   items: [
     {
-      q: 'Can I choose my layout and interior?',
-      a: 'Yes. All our caravans are made to order, so we offer a wide range of floor plan layouts, and you work with our team to choose the interior that suits your individuality.',
+      q: 'Can I come and see the vans in person?',
+      a: 'Please do — it is how every build starts. Call us or book a time and we will have the vans you want to see ready to walk through at 27 Metrolink Cct, Campbellfield. Then we sit down and spec yours.',
+    },
+    {
+      q: 'How much can I actually change?',
+      a: 'Almost all of it. Every van is made to order, so the floor plan is a starting point: choose the layout, bunks and bed configuration, the cabinetry, benchtops and splashbacks, the upholstery, the appliances, and the off-road and off-grid gear. Our team walks you through every option and what it means on the road.',
     },
     {
       q: 'Where will my caravan be manufactured?',

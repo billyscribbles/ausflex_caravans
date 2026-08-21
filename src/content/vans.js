@@ -4,7 +4,7 @@
 export const vans = {
   eyebrow: 'The Range',
   heading: 'A van for every adventure.',
-  sub: 'Single axle or dual, off-roading or highway cruising, couples or families. From the 12-foot Tuff Mudder to on-site vans up to 30 feet, every Ausflex is made to order.',
+  sub: 'Single axle or dual, off-roading or highway cruising, couples or families. From the 12-foot Tuff Mudder to on-site vans up to 30 feet — and every one a starting point, not a finished product. Come and see them in Campbellfield, then change whatever you like.',
   items: [
     {
       slug: 'tuff-mudder',

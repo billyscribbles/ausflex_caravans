@@ -2,7 +2,7 @@
 export const services = {
   eyebrow: 'The Ausflex difference',
   heading: 'Experience, quality and integrity.',
-  sub: 'Our floor management team carry over 130 years of combined industry experience. We know what works in a caravan, because we have been building them since 1972.',
+  sub: 'Our floor management team carry over 130 years of combined industry experience. We know what works in a caravan, because we have been building them since 1972 — and we build every one to order, with you.',
   items: [
     {
       icon: 'MapPin',
@@ -16,8 +16,8 @@ export const services = {
     },
     {
       icon: 'Wrench',
-      title: 'Made to Order',
-      body: 'No cookie-cutter vans. Choose your floor plan, interior and finishes, and we build the van around the way you travel.',
+      title: 'Specified by You',
+      body: 'No cookie-cutter vans. Come in, choose the floor plan, cabinetry, finishes and appliances, and we build the van around the way you travel.',
     },
     {
       icon: 'Mountain',

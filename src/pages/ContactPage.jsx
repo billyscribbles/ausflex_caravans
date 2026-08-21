@@ -7,17 +7,17 @@ export default function ContactPage() {
     <main>
       <SEO
         title="Contact"
-        description="Talk to Ausflex Caravans about your next van. Visit us at 27 Metrolink Cct, Campbellfield VIC, call 0451 712 116 or send an enquiry online."
+        description="Come and see the Ausflex range in person at 27 Metrolink Cct, Campbellfield VIC, then spec your own van — layout, finishes and features. Call 0451 712 116 or book a visit online."
         path="/contact"
       />
 
       <header className="page-hero">
         <div className="container">
-          <span className="section-eyebrow">Contact us</span>
-          <h1 className="page-hero__title">Let’s talk caravans.</h1>
+          <span className="section-eyebrow">Visit us</span>
+          <h1 className="page-hero__title">Come in and build your own.</h1>
           <p className="page-hero__sub">
-            Each Ausflex is meticulously crafted, with attention to every detail. Contact us today
-            to discuss your dream caravan.
+            The whole range in one place, and a team who will change any of it to suit you. Call in
+            for a look through, or book a time below and we will set the vans aside.
           </p>
         </div>
       </header>

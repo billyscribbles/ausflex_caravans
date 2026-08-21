@@ -6,11 +6,11 @@ export const hero = {
     { lead: 'Built to', accent: 'explore.' },
     { lead: 'Made to', accent: 'last.' },
   ],
-  subheadline: 'Premium caravans. Australian made. Adventure ready.',
+  subheadline: 'Premium caravans. Australian made. Built to your spec.',
   primaryCta: { label: 'Explore our range', to: '/vans' },
-  secondaryCta: null,
+  secondaryCta: { label: 'Book a visit', to: '/contact' },
   aside:
-    'Australian made for Australian conditions. Ausflex Caravans are engineered for comfort, built for tough adventures, and designed to keep you moving.',
+    'Australian made for Australian conditions, and every one made to order. Come and see the range in Campbellfield, then choose the layout, the finishes and the features that make it yours.',
   image: '/images/hero-exterior-wordmark-v2.jpg',
   imageSrcset:
     '/images/hero-exterior-wordmark-v2-960.jpg 960w, /images/hero-exterior-wordmark-v2.jpg 1774w',

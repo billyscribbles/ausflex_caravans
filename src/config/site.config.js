@@ -20,7 +20,7 @@ export const site = {
   ],
 
   cta: {
-    label: 'Enquire Now',
+    label: 'Book a Visit',
     to: '/contact',
   },
 

@@ -6,12 +6,13 @@ import { contactCta } from '../content/cta.js'
 import { useScrollIn } from '../lib/motion.js'
 import './ContactCTA.css'
 
-// Closing band for every page except /contact: the enquiry pitch and a single
-// link through to the contact page. The form and the map live there only.
+// Closing band for every page except /contact: the invitation to visit and a
+// single link through to the contact page. The form and the map live there only.
 //
-// Cinematic rather than a cream footer-lead-in — a full-bleed factory frame
-// under a scrim, the closing statement in the hero's voice, then the direct
-// lines and the CTA sharing one row on a bronze rule.
+// Cinematic rather than a cream footer-lead-in — a full-bleed frame of finished
+// vans outside the Campbellfield building under a scrim, the closing statement in
+// the hero's voice, then the direct lines and the CTA sharing one row on a
+// bronze rule.
 export default function ContactCTA() {
   const scrollIn = useScrollIn()
   const { contact } = site

@@ -62,7 +62,7 @@ export default function VanPage() {
               </p>
             ))}
             <Link to="/contact" className="van__enquire">
-              Enquire about the {van.name}
+              Come and see the {van.name}
             </Link>
           </div>
 
@@ -70,8 +70,8 @@ export default function VanPage() {
             <figure className="van__floorplan">
               <img src={van.floorplan} alt={van.floorplanAlt} loading="lazy" />
               <figcaption>
-                Floor plan · {van.length} {van.name}. Layouts are made to order and can be
-                customised.
+                Floor plan · {van.length} {van.name}. A starting point — change the layout, the
+                fit-out and the finishes to suit you.
               </figcaption>
             </figure>
           )}

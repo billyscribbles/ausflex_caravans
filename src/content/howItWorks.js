@@ -1,21 +1,23 @@
+// The made-to-order journey. Step 01 is deliberately a visit, not a form:
+// the customisation conversation happens face to face.
 export const howItWorks = {
   eyebrow: 'The process',
-  heading: 'Your van, built your way.',
-  sub: 'Every Ausflex is made to order. Here is how a build comes together.',
+  heading: 'Choose one. Change anything.',
+  sub: 'No two Ausflex vans leave the same. Here is how yours comes together, from the first visit to handover.',
   steps: [
     {
       number: '01',
-      title: 'Talk to us',
-      body: 'Tell us how you travel: couple or crew, blacktop or back country. We recommend a starting point from the range.',
+      title: 'Come and see the range',
+      body: 'Call in or book a time. Walk through the vans, sit in the layouts, and find the starting point that suits how you travel.',
     },
     {
       number: '02',
-      title: 'Design the layout',
-      body: 'Work with our team on the floor plan, bunks, appliances and interior finishes that suit your individuality.',
+      title: 'Spec it your way',
+      body: 'Sit down with our team and choose it all: floor plan, bunks, cabinetry, benchtops, upholstery, appliances and off-road gear.',
     },
     {
       number: '03',
-      title: 'We build it',
+      title: 'We build it to that spec',
       body: 'Your van takes shape at our Campbellfield facility, starting with an Australian-steel chassis and suspension.',
     },
     {
