@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import request from 'supertest'
-import { mkdtemp, rm, readdir } from 'node:fs/promises'
+import { mkdtemp, rm, readdir, chmod } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hashPassword } from './auth.js'
@@ -356,5 +356,39 @@ describe('DELETE /api/vans/:id', () => {
     const cookie = await login()
     await request(app).delete('/api/vans/nope').set('Cookie', cookie).expect(404)
     await request(app).delete(`/api/vans/${firstVan().id}`).expect(401)
+  })
+})
+
+describe('error handling', () => {
+  it('returns 500 with a JSON body instead of crashing when persist() fails', async () => {
+    const cookie = await login()
+    const target = firstVan()
+    // The middleware logs the error for Railway's console — deliberate for a
+    // real crash, but silenced here so a test that triggers it on purpose
+    // doesn't spam the run's output.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    // Simulates a full or read-only Railway volume: content.json's directory
+    // loses write permission, so the writeFile inside persist() rejects and
+    // the mutate() promise this route awaits rejects with it. Without the
+    // asyncHandler wrapper and app.js's error middleware, Express 4 never
+    // forwards that rejection anywhere — no response is ever sent, and the
+    // request just hangs until the client (or here, the test) times out.
+    await chmod(dir, 0o500)
+    try {
+      const res = await request(app)
+        .patch(`/api/vans/${target.id}`)
+        .set('Cookie', cookie)
+        .send({ name: 'Should not crash the process' })
+
+      expect(res.status).toBe(500)
+      expect(res.body).toEqual({ error: 'internal server error' })
+      expect(errorSpy).toHaveBeenCalled()
+    } finally {
+      // Restored before afterEach's rm(dir, ...), which needs write access to
+      // clean up the temp directory.
+      await chmod(dir, 0o700)
+      errorSpy.mockRestore()
+    }
   })
 })

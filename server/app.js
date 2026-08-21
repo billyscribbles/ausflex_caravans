@@ -72,5 +72,20 @@ export function createApp() {
     res.sendFile(join(DIST, 'index.html'))
   })
 
+  // Backstop for anything that reaches next(err) — realistically a route
+  // wrapped in asyncHandler() whose promise rejected, e.g. mutate() failing
+  // because the Railway volume is full or mounted read-only. Express 4 does
+  // not route a rejected async handler here on its own; without this and the
+  // wrapper, that rejection is unhandled and the process exits. Never echoes
+  // err.message or err.stack — those can carry filesystem paths.
+  app.use((err, req, res, next) => {
+    if (res.headersSent) {
+      next(err)
+      return
+    }
+    console.error(err)
+    res.status(500).json({ error: 'internal server error' })
+  })
+
   return app
 }
