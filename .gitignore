@@ -17,3 +17,5 @@ dist-ssr
 
 # Lighthouse CI artifacts
 .lighthouseci/
+
+.data
