@@ -387,6 +387,21 @@
   padding: var(--space-xs) var(--space-sm);
 }
 
+/* Secondary action: a hairline border on a quiet ground rather than the
+   primary's filled slab, so a per-row action (Edit) does not compete with
+   the one loud button on the page (Add). */
+.admin-button--ghost {
+  background: var(--color-bg-alt);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.admin-button--ghost:hover:not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-accent-dark);
+  color: var(--color-accent-dark);
+}
+
 /* Square 28px control for the per-tile actions. Quiet until pointed at, so a
    grid of forty photos is not forty rows of shouting icons. */
 .admin-icon {
