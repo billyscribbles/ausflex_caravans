@@ -12,6 +12,7 @@ import { testimonials } from '../content/testimonials.js'
 import { faq } from '../content/faq.js'
 import { legal } from '../content/legal.js'
 import { video } from '../content/video.js'
+import { why } from '../content/why.js'
 import { tour } from '../content/tour.js'
 import { contactSection } from '../content/contact.js'
 import { contactCta } from '../content/cta.js'
@@ -75,6 +76,12 @@ describe('content — section copy contract', () => {
     expect(video.youtubeId).toMatch(/^[\w-]{11}$/)
     expect(video.title).toBeTruthy()
     expect(video.heading).toBeTruthy()
+  })
+
+  it('why carries its own video block for the Tough Test band', () => {
+    expect(why.video.youtubeId).toMatch(/^[\w-]{11}$/)
+    expect(why.video.title).toBeTruthy()
+    expect(why.video.heading).toBeTruthy()
   })
 
   it('tour has a Kuula embed URL, an accessible title and a poster', () => {

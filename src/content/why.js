@@ -28,6 +28,19 @@ export const why = {
     { term: '2 years', item: 'Pedders shockers warranty' },
     { term: '2 years', item: 'Backing plate warranty' },
   ],
+  // Channel 10's Tough Test segment, carried on the same cinematic stage as the
+  // home page walkthrough. No model plate — this band is proof, not a product.
+  video: {
+    eyebrow: 'Tough tested',
+    heading: 'Put through it on',
+    headingAccent: '10 Bold.',
+    sub: 'Luch and John took an Ausflex through the Tough Test segment on 10 Bold — and it absolutely smashed it.',
+    youtubeId: 'NGRi6YQTjc8',
+    title: 'Ausflex Caravans get Tough Tested on 10 Bold',
+    // The still is a 2.35:1 frame windowboxed inside 16:9; this crops the
+    // baked-in bars back off so the stage reads as one letterbox, not two.
+    posterScale: 1.24,
+  },
   images: [
     {
       src: '/images/chassis-1.jpg',

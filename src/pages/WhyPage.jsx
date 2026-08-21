@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SEO from '../lib/seo.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
+import VideoEmbed from '../components/VideoEmbed.jsx'
 import { why } from '../content/why.js'
 import { useScrollIn } from '../lib/motion.js'
 import './WhyPage.css'
@@ -52,6 +53,8 @@ export default function WhyPage() {
           </div>
         </div>
       </section>
+
+      <VideoEmbed content={why.video} className="why__video" id="tough-test" />
 
       <section className="why__photos section section--dark">
         <div className="container">

@@ -91,6 +91,13 @@
   background: var(--color-accent);
 }
 
+/* The Tough Test band and the chassis photos are one dark proof chapter, so
+ * the video drops its own bottom padding and the photos band's top padding
+ * carries the whole seam — otherwise the two ladders stack into a dead gap. */
+.why__video.section {
+  padding-bottom: 0;
+}
+
 .why__photos .section-label {
   margin-bottom: var(--gap-section-head);
 }
