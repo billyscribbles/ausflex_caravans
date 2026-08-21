@@ -7,7 +7,16 @@ import { read, mutate, uploadsDir } from '../store.js'
 import { extForMime, MAX_UPLOAD_BYTES } from '../validate.js'
 import { requireAuth } from './auth.js'
 
-const COLLECTIONS = ['interiors', 'exteriors', 'page']
+const NAMED_COLLECTIONS = ['interiors', 'exteriors', 'page']
+
+// A van's gallery is an ordinary photo collection named after its id, so every
+// route in this file works on it unchanged. The van must exist — an arbitrary
+// "van:" string would otherwise create rows nothing can ever reach.
+function isValidCollection(value) {
+  if (NAMED_COLLECTIONS.includes(value)) return true
+  if (typeof value !== 'string' || !value.startsWith('van:')) return false
+  return read().vans.items.some((van) => `van:${van.id}` === value)
+}
 
 // Memory storage: the browser has already resized to ~300KB, and holding it in
 // memory lets us validate the type before anything touches disk.
@@ -18,7 +27,7 @@ router.use(requireAuth)
 
 router.post('/', upload.single('file'), async (req, res) => {
   const collection = req.body?.collection
-  if (!COLLECTIONS.includes(collection)) {
+  if (!isValidCollection(collection)) {
     res.status(400).json({ error: 'unknown collection' })
     return
   }
@@ -55,7 +64,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 
 router.post('/reorder', async (req, res) => {
   const { collection, ids } = req.body ?? {}
-  if (!COLLECTIONS.includes(collection) || !Array.isArray(ids)) {
+  if (!isValidCollection(collection) || !Array.isArray(ids)) {
     res.status(400).json({ error: 'collection and ids are required' })
     return
   }
@@ -77,7 +86,7 @@ router.patch('/:id', async (req, res) => {
     return
   }
 
-  if (req.body?.collection !== undefined && !COLLECTIONS.includes(req.body.collection)) {
+  if (req.body?.collection !== undefined && !isValidCollection(req.body.collection)) {
     res.status(400).json({ error: 'unknown collection' })
     return
   }

@@ -205,3 +205,75 @@ describe('DELETE /api/photos/:id', () => {
     expect(await readdir(join(dir, 'uploads'))).toEqual([])
   })
 })
+
+describe('van gallery collections', () => {
+  it('accepts an upload into a real van collection', async () => {
+    const cookie = await login()
+    const van = store.read().vans.items[0]
+
+    const res = await request(app)
+      .post('/api/photos')
+      .set('Cookie', cookie)
+      .field('collection', `van:${van.id}`)
+      .field('alt', 'Interior shot')
+      .attach('file', PNG, 'photo.png')
+      .expect(201)
+
+    expect(res.body.photo.collection).toBe(`van:${van.id}`)
+    expect(res.body.photo.src).toMatch(/^\/uploads\//)
+  })
+
+  it('refuses a van collection that does not exist', async () => {
+    const cookie = await login()
+    await request(app)
+      .post('/api/photos')
+      .set('Cookie', cookie)
+      .field('collection', 'van:00000000-0000-0000-0000-000000000000')
+      .attach('file', PNG, 'photo.png')
+      .expect(400)
+  })
+
+  it('refuses a collection that is neither named nor a van', async () => {
+    const cookie = await login()
+    await request(app)
+      .post('/api/photos')
+      .set('Cookie', cookie)
+      .field('collection', 'vans')
+      .attach('file', PNG, 'photo.png')
+      .expect(400)
+  })
+
+  it('reorders within a van collection', async () => {
+    const cookie = await login()
+    const van = store.read().vans.items[0]
+    const collection = `van:${van.id}`
+
+    for (const alt of ['one', 'two']) {
+      await request(app)
+        .post('/api/photos')
+        .set('Cookie', cookie)
+        .field('collection', collection)
+        .field('alt', alt)
+        .attach('file', PNG, 'photo.png')
+        .expect(201)
+    }
+
+    const before = store
+      .read()
+      .photos.filter((p) => p.collection === collection)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+    const reversed = [...before].reverse().map((p) => p.id)
+
+    await request(app)
+      .post('/api/photos/reorder')
+      .set('Cookie', cookie)
+      .send({ collection, ids: reversed })
+      .expect(200)
+
+    const after = store
+      .read()
+      .photos.filter((p) => p.collection === collection)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+    expect(after.map((p) => p.id)).toEqual(reversed)
+  })
+})
