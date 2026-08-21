@@ -8,7 +8,7 @@ export const hero = {
   ],
   subheadline: 'Premium caravans. Australian made. Built to your spec.',
   primaryCta: { label: 'Explore our range', to: '/vans' },
-  secondaryCta: { label: 'Book a visit', to: '/contact' },
+  secondaryCta: { label: 'Contact us', to: '/contact' },
   aside:
     'Australian made for Australian conditions, and every one made to order. Come and see the range in Campbellfield, then choose the layout, the finishes and the features that make it yours.',
   image: '/images/hero-exterior-wordmark-v2.jpg',

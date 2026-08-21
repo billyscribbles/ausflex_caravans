@@ -6,8 +6,8 @@ export const contactCta = {
   eyebrow: 'Visit us',
   heading: 'Come and see the range,',
   headingAccent: 'then make it yours.',
-  body: 'Walk through the vans in Campbellfield, find the one that suits how you travel, then change whatever you like — layout, finishes, appliances, off-road spec. Call in or book a time and we will have them ready for you.',
-  cta: { label: 'Book your visit', to: '/contact' },
+  body: 'Walk through the vans in Campbellfield, find the one that suits how you travel, then change whatever you like — layout, finishes, appliances, off-road spec. Get in touch and we will have them ready for you.',
+  cta: { label: 'Contact us', to: '/contact' },
   image: '/images/factory-build.jpg',
   imageAlt: '',
 }

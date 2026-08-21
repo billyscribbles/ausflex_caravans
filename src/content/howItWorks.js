@@ -8,7 +8,7 @@ export const howItWorks = {
     {
       number: '01',
       title: 'Come and see the range',
-      body: 'Call in or book a time. Walk through the vans, sit in the layouts, and find the starting point that suits how you travel.',
+      body: 'Call in or get in touch. Walk through the vans, sit in the layouts, and find the starting point that suits how you travel.',
     },
     {
       number: '02',
