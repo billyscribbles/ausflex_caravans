@@ -5,6 +5,7 @@ import Login from '../admin/Login.jsx'
 import PhotosTab from '../admin/PhotosTab.jsx'
 import ToursTab from '../admin/ToursTab.jsx'
 import VansTab from '../admin/VansTab.jsx'
+import VansPageTab from '../admin/VansPageTab.jsx'
 import { getSession, getContent, logout, exportUrl } from '../admin/api.js'
 import '../admin/admin.css'
 
@@ -241,6 +242,10 @@ export default function AdminPage() {
 
               {content && view.kind === 'vans' && (
                 <VansTab vans={content.vans} onChange={refresh} />
+              )}
+
+              {content && view.kind === 'vansPage' && (
+                <VansPageTab page={content.vans} onChange={refresh} />
               )}
             </div>
           </main>

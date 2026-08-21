@@ -461,4 +461,35 @@ describe('AdminPage — vans', () => {
     // PhotosTab's own empty state, carrying the label VanEditor passed it.
     expect(screen.getByText(/nothing in tuff mudder photos yet/i)).toBeInTheDocument()
   })
+
+  it('edits the /vans page intro copy', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => WITH_VAN },
+        'PATCH /api/vans/page': { ok: true, json: async () => ({ page: {} }) },
+      }),
+    )
+    renderAdmin()
+
+    await userEvent.click(await screen.findByRole('tab', { name: /page intro/i }))
+
+    const heading = await screen.findByLabelText(/heading/i)
+    expect(heading).toHaveValue('A van for every adventure.')
+
+    await userEvent.clear(heading)
+    await userEvent.type(heading, 'Every adventure, covered.')
+    await userEvent.tab()
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/page',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ heading: 'Every adventure, covered.' }),
+        }),
+      ),
+    )
+  })
 })
