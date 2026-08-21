@@ -48,3 +48,18 @@ export const patchTour = (id, patch) =>
   request(`/api/tours/${id}`, { ...asJson(patch), method: 'PATCH' })
 export const reorderTours = (ids) => request('/api/tours/reorder', asJson({ ids }))
 export const deleteTour = (id) => request(`/api/tours/${id}`, { method: 'DELETE' })
+
+export const createVan = (body) => request('/api/vans', asJson(body))
+export const patchVan = (id, patch) =>
+  request(`/api/vans/${id}`, { ...asJson(patch), method: 'PATCH' })
+export const reorderVans = (ids) => request('/api/vans/reorder', asJson({ ids }))
+export const deleteVan = (id) => request(`/api/vans/${id}`, { method: 'DELETE' })
+export const patchVansPage = (patch) =>
+  request('/api/vans/page', { ...asJson(patch), method: 'PATCH' })
+
+export function uploadVanImage({ id, field, file }) {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('field', field)
+  return request(`/api/vans/${id}/image`, { method: 'POST', body: form })
+}
