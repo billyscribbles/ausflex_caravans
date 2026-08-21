@@ -1,9 +1,9 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import request from 'supertest'
-import { mkdtemp, rm, readdir, chmod } from 'node:fs/promises'
+import { mkdtemp, rm, readdir, chmod, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, basename } from 'node:path'
 import { hashPassword } from './auth.js'
 
 const PASSWORD = 'test-password-123'
@@ -248,6 +248,14 @@ describe('POST /api/vans/:id/image', () => {
     const target = firstVan()
     expect(target.image.startsWith('/images/')).toBe(true)
 
+    // A decoy sharing the seeded image's basename. The real /images/ file
+    // never lives in this temp uploads/ dir, so a directory-length assertion
+    // alone can't tell a working /uploads/-only guard from a deleted one —
+    // both leave the count unchanged. This decoy is what a deleted guard
+    // would actually unlink, so its survival is the thing under test.
+    const decoyName = basename(target.image)
+    await writeFile(join(dir, 'uploads', decoyName), 'decoy')
+
     const first = await request(app)
       .post(`/api/vans/${target.id}/image`)
       .set('Cookie', cookie)
@@ -255,8 +263,11 @@ describe('POST /api/vans/:id/image', () => {
       .attach('file', PNG, 'one.png')
       .expect(200)
 
-    // The seeded /images/ path is part of the build; nothing was unlinked.
-    expect(await readdir(join(dir, 'uploads'))).toHaveLength(1)
+    // The seeded /images/ path was never unlinked — proven by the decoy
+    // still being there, not just by a directory count.
+    const afterFirst = await readdir(join(dir, 'uploads'))
+    expect(afterFirst).toContain(decoyName)
+    expect(afterFirst).toHaveLength(2)
 
     await request(app)
       .post(`/api/vans/${target.id}/image`)
@@ -265,10 +276,12 @@ describe('POST /api/vans/:id/image', () => {
       .attach('file', PNG, 'two.png')
       .expect(200)
 
-    // The first upload replaced itself rather than accumulating.
+    // The first upload replaced itself rather than accumulating, and the
+    // decoy is still untouched.
     const files = await readdir(join(dir, 'uploads'))
-    expect(files).toHaveLength(1)
-    expect(files[0]).not.toBe(first.body.van.image.split('/').pop())
+    expect(files).toContain(decoyName)
+    expect(files).toHaveLength(2)
+    expect(files).not.toContain(first.body.van.image.split('/').pop())
   })
 
   it('rejects an unknown field and a non-image', async () => {
@@ -339,10 +352,22 @@ describe('DELETE /api/vans/:id', () => {
     expect(await readdir(join(dir, 'uploads'))).toHaveLength(0)
   })
 
-  it('leaves other vans and the named collections alone', async () => {
+  it('leaves other vans, their gallery rows and files, and the named collections alone', async () => {
     const cookie = await login()
     const [target, survivor] = store.read().vans.items
+    const survivorCollection = `van:${survivor.id}`
     const interiorsBefore = store.read().photos.filter((p) => p.collection === 'interiors').length
+
+    // A regression from an exact collection match to a "starts with van:"
+    // check would wipe every other van's gallery along with the one being
+    // deleted — the highest-consequence bug this suite can catch here, so
+    // the survivor needs its own uploaded gallery photo to prove it survives.
+    const survivorPhoto = await request(app)
+      .post('/api/photos')
+      .set('Cookie', cookie)
+      .field('collection', survivorCollection)
+      .attach('file', PNG, 'survivor.png')
+      .expect(201)
 
     await request(app).delete(`/api/vans/${target.id}`).set('Cookie', cookie).expect(200)
 
@@ -350,6 +375,10 @@ describe('DELETE /api/vans/:id', () => {
     expect(store.read().photos.filter((p) => p.collection === 'interiors')).toHaveLength(
       interiorsBefore,
     )
+    expect(store.read().photos.some((p) => p.id === survivorPhoto.body.photo.id)).toBe(true)
+
+    const survivorFile = survivorPhoto.body.photo.src.split('/').pop()
+    expect(await readdir(join(dir, 'uploads'))).toContain(survivorFile)
   })
 
   it('404s an unknown van and 401s without a session', async () => {
