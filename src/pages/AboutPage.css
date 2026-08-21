@@ -1,7 +1,52 @@
+/* About hero: the workshop team photo carries the band, so this header runs
+ * taller than the shared .page-hero and the copy lands on the van's dark
+ * roofline. Scrim ramps from the bottom so the faces up top stay readable. */
+.page-hero.about__hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  min-height: clamp(560px, 50vw, 720px);
+  background: var(--color-dark-deep);
+  padding-top: calc(var(--nav-h) + var(--space-3xl));
+  padding-bottom: var(--space-2xl);
+}
+
+/* Pinned to the top edge: the crop carries ~20% of shed roof above the
+ * tallest head, so the fixed navbar covers roof and never a face, and the
+ * copy below lands on the van's dark roofline. */
+.about__hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Scrim is confined to the bottom half — just enough to seat the copy on the
+ * van roof. It clears entirely by 55%, so the crew up top stays untouched. */
+.about__hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    var(--color-scrim-strong),
+    var(--color-scrim) 22%,
+    var(--color-scrim-soft) 38%,
+    var(--color-scrim-none) 55%
+  );
+}
+
+.about__hero-content {
+  position: relative;
+  z-index: 1;
+}
+
 .about__grid {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  gap: 72px;
+  gap: var(--gap-grid-wide);
   align-items: start;
 }
 
@@ -10,7 +55,7 @@
   line-height: 1.75;
   color: var(--color-text-soft);
   max-width: 62ch;
-  margin-bottom: 18px;
+  margin-bottom: var(--space-sm);
 }
 
 .about__highlight {
@@ -21,14 +66,15 @@
   line-height: 1.5;
   color: var(--color-text);
   border-top: 1px solid var(--color-rule);
-  padding-top: 24px;
-  margin-top: 30px;
+  padding-top: var(--space-md);
+  margin-top: var(--space-lg);
   max-width: 54ch;
 }
 
 .about__cta {
   display: inline-block;
-  margin-top: 26px;
+  margin-top: var(--space-md);
+  padding: var(--space-2xs) 0;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -41,11 +87,12 @@
   color: var(--color-text);
 }
 
+/* Clears the fixed nav while sticking, whatever --nav-h currently is. */
 .about__image {
   margin: 0;
   overflow: hidden;
   position: sticky;
-  top: 120px;
+  top: calc(var(--nav-h) + var(--space-md));
 }
 
 .about__image img {
@@ -54,12 +101,38 @@
   object-fit: cover;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .about__grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--space-xl);
   }
   .about__image {
     position: static;
+  }
+}
+
+/* Phones can't hold a 16:9 group shot behind copy without cropping half the
+ * crew out of frame, so the hero unstacks: photo full-bleed at its own aspect,
+ * copy below it on the flat dark band. No scrim needed once nothing overlaps. */
+@media (max-width: 768px) {
+  .page-hero.about__hero {
+    display: block;
+    min-height: 0;
+    padding-top: var(--nav-h);
+    padding-bottom: var(--space-xl);
+  }
+  .about__hero-image {
+    position: static;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-position: center;
+  }
+  .about__hero-scrim {
+    display: none;
+  }
+  .about__hero-content {
+    padding-top: var(--space-xl);
   }
 }

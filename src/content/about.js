@@ -12,7 +12,16 @@ export const about = {
   ],
   highlight:
     'Our vans aren’t just Aussie tough, they’re Kiwi tough too. The Ausflex range is available throughout Australia and New Zealand.',
-  image: '/images/lifestyle-towing-water.jpg',
-  imageAlt: 'Ausflex caravan and four-wheel drive parked at the water’s edge',
+  // Hero band photo: the workshop team on the roof of the 20th van they built.
+  hero: {
+    image: '/images/about-team.jpg',
+    imageSrcset: '/images/about-team-960.jpg 960w, /images/about-team.jpg 1600w',
+    imageSizes: '100vw',
+    imageAlt:
+      'The Ausflex workshop team sitting together on the roof of a caravan they built, inside the Victorian factory',
+  },
+  image: '/images/interior-club-dinette.jpg',
+  imageAlt:
+    'Club lounge and stone dinette inside a finished Ausflex van, styled with cushions and a throw',
   cta: { label: 'Why choose an Ausflex?', to: '/why-ausflex' },
 }
