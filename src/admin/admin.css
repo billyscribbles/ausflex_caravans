@@ -864,3 +864,44 @@
   background: var(--color-bg-alt);
   box-shadow: inset 0 0 0 1px var(--color-hairline);
 }
+
+/* The hero and the floorplan are one image each, not a collection — a framed
+ * slot beside its fields, rather than the photo grid. */
+.admin-single {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.admin-single__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.admin-single__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-single__empty {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.admin-single__side {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+@media (max-width: 640px) {
+  .admin-single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

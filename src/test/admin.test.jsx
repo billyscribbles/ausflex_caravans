@@ -5,6 +5,11 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import { HelmetProvider } from 'react-helmet-async'
 import AdminPage from '../pages/AdminPage.jsx'
 
+// createImageBitmap and canvas 2d contexts don't exist in jsdom. The browser
+// resize behaviour is already covered by src/test/resizeImage.test.js, so
+// here we only need the upload path to pass the file through untouched.
+vi.mock('../admin/resizeImage.js', () => ({ resizeImage: async (file) => file }))
+
 expect.extend(toHaveNoViolations)
 
 function renderAdmin() {
@@ -426,5 +431,34 @@ describe('AdminPage — vans', () => {
   it('warns that changing the web address breaks the old link', async () => {
     await openEditor()
     expect(await screen.findByText(/breaks the old link/i)).toBeInTheDocument()
+  })
+
+  it('uploads a hero photo and a floorplan through the same endpoint', async () => {
+    await openEditor({
+      'POST /api/vans/van-1/image': { ok: true, json: async () => ({ van: VAN }) },
+    })
+
+    const file = new File(['x'], 'hero.png', { type: 'image/png' })
+    await userEvent.upload(await screen.findByLabelText(/replace the main photo/i), file)
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1/image',
+        expect.objectContaining({ method: 'POST' }),
+      ),
+    )
+  })
+
+  it('offers alt text for both images', async () => {
+    await openEditor()
+    expect(await screen.findByLabelText(/describe the main photo/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/describe the floorplan/i)).toBeInTheDocument()
+  })
+
+  it('renders the van gallery as a photo collection scoped to this van', async () => {
+    await openEditor()
+    expect(await screen.findByText(/in the flesh/i)).toBeInTheDocument()
+    // PhotosTab's own empty state, carrying the label VanEditor passed it.
+    expect(screen.getByText(/nothing in tuff mudder photos yet/i)).toBeInTheDocument()
   })
 })
