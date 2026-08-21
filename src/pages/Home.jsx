@@ -7,7 +7,7 @@ import VirtualTour from '../components/VirtualTour.jsx'
 import Feature from '../components/Feature.jsx'
 import InteriorsRail from '../components/InteriorsRail.jsx'
 import HowItWorks from '../components/HowItWorks.jsx'
-import Contact from '../components/Contact.jsx'
+import ContactCTA from '../components/ContactCTA.jsx'
 import { gallery } from '../content/gallery.js'
 
 export default function Home() {
@@ -22,7 +22,7 @@ export default function Home() {
       <Feature />
       <InteriorsRail content={gallery.interiors} id="interiors" />
       <HowItWorks />
-      <Contact />
+      <ContactCTA />
     </main>
   )
 }

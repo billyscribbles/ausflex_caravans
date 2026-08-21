@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import SEO from '../lib/seo.jsx'
-import Contact from '../components/Contact.jsx'
+import ContactCTA from '../components/ContactCTA.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import { vans } from '../content/vans.js'
 import './VanPage.css'
@@ -94,7 +94,7 @@ export default function VanPage() {
         </section>
       )}
 
-      <Contact />
+      <ContactCTA />
     </main>
   )
 }

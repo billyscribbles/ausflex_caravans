@@ -1,0 +1,120 @@
+/* Closing enquiry band. A statement head sits over one full-width hairline,
+ * and the body copy, the direct lines and the CTA share the row beneath it —
+ * so the band spans the container instead of leaving a void down the middle. */
+/* Bigger than a normal section label and uncapped, so the closing statement
+ * runs most of the container width rather than sitting in a short block with
+ * a field of cream beside it. */
+.cta__heading {
+  font-size: clamp(36px, 6vw, 88px);
+  letter-spacing: -0.03em;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.cta__row {
+  margin-top: var(--gap-section-head);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-xl) var(--gap-grid-wide);
+}
+
+.cta__body {
+  /* Short basis that grows into its 52ch measure: the row stays on one line
+   * down to the breakpoint, and any slack past the measure is spread evenly
+   * between the three groups instead of pooling beside the copy. */
+  flex: 1 1 32ch;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--color-muted);
+  max-width: 52ch;
+}
+
+.cta__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: 17px var(--space-lg);
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.cta__button:hover {
+  background: var(--color-accent-dark);
+  color: var(--color-bg-card);
+}
+
+/* Mono labels over readable values, sitting side by side across the row. */
+.cta__direct {
+  display: flex;
+  gap: var(--space-2xl);
+}
+
+.cta__detail dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent-dark);
+  margin-bottom: var(--space-2xs);
+}
+
+.cta__detail dd {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.cta__detail a {
+  display: inline-block;
+  color: inherit;
+  border-bottom: 1px solid var(--color-border);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.cta__detail a:hover {
+  color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+}
+
+/* Two rows once the three groups stop fitting: copy on its own line, then the
+ * direct lines and the CTA. Grid rather than a wrapped flex line, so the copy
+ * keeps its 52ch measure without the direct lines pulling up beside it. */
+@media (max-width: 1200px) {
+  .cta__row {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cta__body {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .cta__row {
+    grid-template-columns: 1fr;
+  }
+  .cta__direct {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  .cta__button {
+    width: 100%;
+    justify-content: center;
+  }
+}

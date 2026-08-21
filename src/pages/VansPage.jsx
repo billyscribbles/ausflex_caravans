@@ -1,7 +1,7 @@
 import SEO from '../lib/seo.jsx'
 import Range from '../components/Range.jsx'
 import FAQ from '../components/FAQ.jsx'
-import Contact from '../components/Contact.jsx'
+import ContactCTA from '../components/ContactCTA.jsx'
 import { vans } from '../content/vans.js'
 
 export default function VansPage() {
@@ -21,7 +21,7 @@ export default function VansPage() {
       </header>
       <Range showHead={false} />
       <FAQ />
-      <Contact />
+      <ContactCTA />
     </main>
   )
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SEO from '../lib/seo.jsx'
-import Contact from '../components/Contact.jsx'
+import ContactCTA from '../components/ContactCTA.jsx'
 import { why } from '../content/why.js'
 import { useScrollIn } from '../lib/motion.js'
 import './WhyPage.css'
@@ -70,7 +70,7 @@ export default function WhyPage() {
         </div>
       </section>
 
-      <Contact />
+      <ContactCTA />
     </main>
   )
 }
