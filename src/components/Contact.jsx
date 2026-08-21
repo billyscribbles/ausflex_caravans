@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowRight, Facebook, Instagram } from 'lucide-react'
 import { site } from '../config/site.config.js'
 import { contactSection } from '../content/contact.js'
 import './Contact.css'
@@ -35,26 +36,90 @@ export default function Contact() {
     }
   }
 
+  const { contact, social } = site
+
   return (
     <section className="contact section" id="contact">
       <div className="container contact__inner">
-        <div className="contact__head">
+        <div className="contact__lead">
           <span className="section-eyebrow">{contactSection.eyebrow}</span>
-          <h2 className="section-label">{contactSection.heading}</h2>
-          <p className="section-sub">{contactSection.sub}</p>
+          <h2 className="section-label contact__heading">{contactSection.heading}</h2>
+          <p className="contact__sub">{contactSection.sub}</p>
+
+          <dl className="contact__details">
+            {contact.phone && (
+              <div className="contact__detail">
+                <dt>Call us</dt>
+                <dd>
+                  <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
+                </dd>
+                {contact.hours?.map((line) => (
+                  <dd key={line}>{line}</dd>
+                ))}
+              </div>
+            )}
+            {contact.location && (
+              <div className="contact__detail">
+                <dt>Our location</dt>
+                <dd>
+                  <a href={contact.mapUrl} target="_blank" rel="noopener noreferrer">
+                    {contact.location}
+                  </a>
+                </dd>
+              </div>
+            )}
+            {contact.email && (
+              <div className="contact__detail">
+                <dt>Email</dt>
+                <dd>
+                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                </dd>
+              </div>
+            )}
+            {(social.facebook || social.instagram) && (
+              <div className="contact__detail">
+                <dt>Follow us</dt>
+                <dd className="contact__socials">
+                  {social.facebook && (
+                    <a
+                      href={social.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Facebook"
+                    >
+                      <Facebook size={17} strokeWidth={1.8} />
+                    </a>
+                  )}
+                  {social.instagram && (
+                    <a
+                      href={social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Instagram"
+                    >
+                      <Instagram size={17} strokeWidth={1.8} />
+                    </a>
+                  )}
+                </dd>
+              </div>
+            )}
+          </dl>
         </div>
 
         <form className="contact__form" onSubmit={handleSubmit}>
-          <div className="contact__row">
-            <label className="contact__field">
-              <span>Name</span>
-              <input type="text" name="name" autoComplete="name" required />
-            </label>
-            <label className="contact__field">
-              <span>Email</span>
-              <input type="email" name="email" autoComplete="email" required />
-            </label>
+          <div className="contact__form-head">
+            {contactSection.formTitle && <h3>{contactSection.formTitle}</h3>}
+            {contactSection.formSub && <p>{contactSection.formSub}</p>}
           </div>
+
+          <label className="contact__field">
+            <span>Name</span>
+            <input type="text" name="name" autoComplete="name" required />
+          </label>
+          <label className="contact__field">
+            <span>Email</span>
+            <input type="email" name="email" autoComplete="email" required />
+          </label>
           <label className="contact__field">
             <span>Phone (optional)</span>
             <input type="tel" name="phone" autoComplete="tel" />
@@ -63,7 +128,7 @@ export default function Contact() {
             <span>Message</span>
             <textarea
               name="message"
-              rows="5"
+              rows="4"
               required
               placeholder="Tell us what you are looking for…"
             />
@@ -77,7 +142,8 @@ export default function Contact() {
           </label>
 
           <button type="submit" className="contact__submit" disabled={status === 'submitting'}>
-            {status === 'submitting' ? 'Sending…' : `${contactSection.submitLabel} →`}
+            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+            {status === 'submitting' ? 'Sending…' : contactSection.submitLabel}
           </button>
 
           {/* Always-present live region so success/error is announced to AT. */}
@@ -92,6 +158,18 @@ export default function Contact() {
             )}
           </p>
         </form>
+
+        {contact.mapEmbedUrl && (
+          <div className="contact__map">
+            <iframe
+              src={contact.mapEmbedUrl}
+              title={`Map showing ${contact.location}`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        )}
       </div>
     </section>
   )

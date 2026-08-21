@@ -1,13 +1,19 @@
-.feature {
+.feature__heading {
+  max-width: 700px;
+  margin-bottom: 96px;
+}
+
+.feature__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 620px;
-  background: var(--color-bg-alt);
+  grid-template-columns: 1.15fr 1fr;
+  gap: 80px;
+  align-items: start;
 }
 
 .feature__image {
-  min-height: 520px;
+  aspect-ratio: 5 / 4;
   overflow: hidden;
+  background: var(--color-bg-alt);
 }
 
 .feature__image img {
@@ -16,49 +22,52 @@
   object-fit: cover;
 }
 
-.feature__copy {
-  display: flex;
-  align-items: center;
-  padding: 72px 8%;
-}
-
 .feature__body {
   font-size: 16px;
-  line-height: 1.75;
-  color: var(--color-text-soft);
-  max-width: 520px;
-  margin-bottom: 8px;
-}
-
-.feature__points {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 34px;
-  padding-top: 28px;
-  border-top: 1px solid var(--color-border-strong);
-}
-
-.feature__point dt {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-text);
-}
-
-.feature__point dd {
-  font-size: 13px;
+  line-height: 1.85;
   color: var(--color-muted);
-  margin-top: 4px;
+  max-width: 420px;
+  padding-bottom: 30px;
+}
+
+.feature__row {
+  padding: 30px 0;
+  border-top: 1px solid var(--color-rule);
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 24px;
+}
+
+.feature__row-no {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--color-accent-dark);
+  padding-top: 6px;
+}
+
+.feature__row-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+.feature__row-body {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--color-muted);
+  max-width: 420px;
 }
 
 .feature__cta {
   display: inline-block;
-  margin-top: 34px;
+  margin-top: 30px;
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-accent-dark);
   transition: color var(--transition-fast);
@@ -68,22 +77,12 @@
   color: var(--color-text);
 }
 
-@media (max-width: 900px) {
-  .feature {
+@media (max-width: 1024px) {
+  .feature__heading {
+    margin-bottom: 64px;
+  }
+  .feature__grid {
     grid-template-columns: 1fr;
-  }
-  .feature__image {
-    min-height: 380px;
-    max-height: 480px;
-  }
-  .feature__copy {
-    padding: 56px 24px;
-  }
-}
-
-@media (max-width: 560px) {
-  .feature__points {
-    grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 48px;
   }
 }

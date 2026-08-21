@@ -11,6 +11,7 @@ export const vans = {
       name: 'Tuff Mudder',
       length: '12ft',
       tag: 'Off-road hybrid',
+      meta: 'Sleeps 2 · Off-road hybrid',
       blurb: 'Small in size but big in features. Adventure on wheels, built tough to go off-road.',
       description: [
         'The Tuff Mudder really packs a punch on and off the road. At twelve feet it tows easily behind a mid-size vehicle, yet still fits a proper bed, kitchen and storage for a serious trip away.',
@@ -34,6 +35,7 @@ export const vans = {
       name: 'Little Wonder',
       length: '17ft',
       tag: 'Couples touring',
+      meta: 'Sleeps 2 · Full ensuite',
       blurb:
         'The 17-foot Little Wonder offers all the luxury of home, perfect for couple getaways.',
       description: [
@@ -63,6 +65,7 @@ export const vans = {
       name: 'Family Adventurer',
       length: '18.6ft',
       tag: 'Family touring',
+      meta: 'Sleeps 4–5 · 2 or 3 bunks',
       blurb:
         'With an option for 2 or 3 bunks, the 18.6-foot Family Adventurer has room for all the family.',
       description: [
@@ -92,6 +95,7 @@ export const vans = {
       name: 'Fierce Couple Deluxe',
       length: '19.6ft',
       tag: 'Deluxe touring',
+      meta: 'Sleeps 2 · Deluxe ensuite',
       blurb: 'For the serious adventurers. Hit the road with all the comforts of being at home.',
       description: [
         'The Fierce Couple Deluxe is nineteen and a half feet of full-time touring comfort: a proper bedroom, big lounge, full kitchen and a deluxe ensuite, finished to the standard the name promises.',
@@ -120,6 +124,7 @@ export const vans = {
       name: 'Extreme Family',
       length: '21.6ft',
       tag: 'Full-size family',
+      meta: 'Sleeps 4–6 · Dual axle',
       blurb: 'The ultimate in family caravanning, with a queen or double bed plus 2 or 3 bunks.',
       description: [
         'The Extreme Family is our full-size family tourer. Choose a queen or double bed and two or three bunks, so the whole family hits the road with all the comforts of being at home.',
@@ -148,6 +153,7 @@ export const vans = {
       name: 'On-Site Caravans',
       length: 'Up to 30ft',
       tag: 'Custom on-site',
+      meta: 'Custom layouts · Permanent siting',
       blurb: 'Custom-built on-site caravans designed around your unique needs, up to 30 feet.',
       description: [
         'Not every van needs to chase the horizon. Our on-site caravans are custom built for permanent and semi-permanent living: holiday parks, granny flats, site offices and weekenders.',

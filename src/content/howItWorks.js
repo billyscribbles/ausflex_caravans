@@ -1,5 +1,5 @@
 export const howItWorks = {
-  eyebrow: 'From order to open road',
+  eyebrow: 'The process',
   heading: 'Your van, built your way.',
   sub: 'Every Ausflex is made to order. Here is how a build comes together.',
   steps: [

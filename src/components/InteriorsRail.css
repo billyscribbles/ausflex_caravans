@@ -1,0 +1,87 @@
+.interiors-rail__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 70px;
+}
+
+.interiors-rail__heading {
+  max-width: 620px;
+  margin-bottom: 0;
+}
+
+.interiors-rail__hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+  padding-bottom: 6px;
+}
+
+/* Full-bleed track whose first card aligns with the container's edge. */
+.interiors-rail__track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0 max(56px, calc((100vw - 1600px) / 2 + 56px)) 20px;
+  scroll-padding-inline: max(56px, calc((100vw - 1600px) / 2 + 56px));
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.interiors-rail__card {
+  flex: 0 0 auto;
+  width: min(520px, 78vw);
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.interiors-rail__frame {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.interiors-rail__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.interiors-rail__caption {
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@media (max-width: 1200px) {
+  .interiors-rail__track {
+    padding-left: 32px;
+    padding-right: 32px;
+    scroll-padding-inline: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .interiors-rail__head {
+    margin-bottom: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .interiors-rail__track {
+    padding-left: 20px;
+    padding-right: 20px;
+    scroll-padding-inline: 20px;
+  }
+  .interiors-rail__hint {
+    display: none;
+  }
+}

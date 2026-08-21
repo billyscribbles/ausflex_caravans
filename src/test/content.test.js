@@ -9,6 +9,9 @@ import { howItWorks } from '../content/howItWorks.js'
 import { testimonials } from '../content/testimonials.js'
 import { faq } from '../content/faq.js'
 import { legal } from '../content/legal.js'
+import { video } from '../content/video.js'
+import { contactSection } from '../content/contact.js'
+import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
   it('hero has a headline and a primary CTA', () => {
@@ -57,6 +60,20 @@ describe('content — section copy contract', () => {
       expect(item.q).toBeTruthy()
       expect(item.a).toBeTruthy()
     }
+  })
+
+  it('video has a YouTube id, an accessible title and a heading', () => {
+    expect(video.youtubeId).toMatch(/^[\w-]{11}$/)
+    expect(video.title).toBeTruthy()
+    expect(video.heading).toBeTruthy()
+  })
+
+  it('contact has a heading, form copy and an embeddable map', () => {
+    expect(contactSection.heading).toBeTruthy()
+    expect(contactSection.formTitle).toBeTruthy()
+    expect(contactSection.formSub).toBeTruthy()
+    expect(contactSection.submitLabel).toBeTruthy()
+    expect(site.contact.mapEmbedUrl).toContain('output=embed')
   })
 
   it('legal has privacy and terms, each with sections', () => {

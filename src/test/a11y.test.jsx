@@ -19,7 +19,9 @@ describe('Home — accessibility', () => {
         </MemoryRouter>
       </HelmetProvider>,
     )
-    const results = await axe(container)
+    // iframes: false — jsdom has no real frames, so axe cannot inject into
+    // the Google Maps embed; the iframe itself (title, role) is still checked.
+    const results = await axe(container, { iframes: false })
     expect(results).toHaveNoViolations()
   })
 })

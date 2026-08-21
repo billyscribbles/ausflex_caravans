@@ -3,39 +3,39 @@
 
 export const gallery = {
   interiors: {
-    eyebrow: 'Interior collection',
-    heading: 'Designed to feel like home.',
+    eyebrow: 'Interiors',
+    heading: 'Finished like a home, not a trailer.',
     sub: 'A closer look at the living, kitchen and bedroom spaces.',
     items: [
       {
         src: '/images/interior-living.jpg',
         alt: 'Open-plan living area with galley kitchen and lounge',
-        caption: 'Living space',
+        caption: 'Open-plan living · Galley kitchen',
       },
       {
         src: '/images/interior-kitchen.jpg',
         alt: 'Caravan kitchen with stone benchtop, gas cooktop and matte black tapware',
-        caption: 'Kitchen',
+        caption: 'Stone benchtop · Matte black tapware',
       },
       {
         src: '/images/interior-bedroom.jpg',
         alt: 'Caravan bedroom with made bed and dinette in the foreground',
-        caption: 'Bedroom',
+        caption: 'Queen bedroom · Dinette forward',
       },
       {
         src: '/images/interior-lounge.jpg',
         alt: 'Club lounge upholstered in charcoal with soft throw',
-        caption: 'Lounge',
+        caption: 'Club lounge · Charcoal upholstery',
       },
       {
         src: '/images/interior-dining.jpg',
         alt: 'Kitchen and dining nook with oven and rattan pendant light',
-        caption: 'Kitchen & dining',
+        caption: 'Dining nook · Pendant lighting',
       },
       {
         src: '/images/interior-bedroom-2.jpg',
         alt: 'Bedroom looking back through the van past the kitchen',
-        caption: 'Bedroom',
+        caption: 'Bedroom · Full-length view',
       },
     ],
   },

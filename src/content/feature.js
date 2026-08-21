@@ -1,15 +1,31 @@
-// Split image/copy feature — "inside an Ausflex" on the home page.
+// Craft band on the home page — the engineering story in numbered rows.
 export const feature = {
-  eyebrow: 'Inside an Ausflex',
-  heading: 'Comfort, without compromise.',
-  body: 'Bright, modern interiors combine clean cabinetry, generous seating, warm lighting and carefully selected finishes. We use only the finest materials and fittings, so the space feels premium without losing its sense of adventure.',
+  eyebrow: 'Craft',
+  heading: "What you can't see is what keeps you out there.",
+  body: 'Every Ausflex starts on the factory floor in Campbellfield, and the parts you never look at get the most attention.',
   points: [
-    { title: 'Contemporary living', detail: 'Thoughtful, open layouts' },
-    { title: 'Premium finish', detail: 'Clean, considered details' },
-    { title: 'Smart storage', detail: 'Designed around travel' },
-    { title: 'Relaxed nights', detail: 'Comfortable bedroom spaces' },
+    {
+      title: 'Australian-steel chassis',
+      detail:
+        'Built in Australia from Australian steel, with oversized 75mm box arms and a precision bolt-on cradle. Backed by a 5-year manufacturer warranty.',
+    },
+    {
+      title: 'Oz Trekker suspension',
+      detail:
+        'Oversized Pedders coils and shockers with 12-inch brakes, rated for corrugations. No wheel alignment or camber adjustment ever required.',
+    },
+    {
+      title: 'Tough from ground to roof',
+      detail:
+        'Only the highest-quality materials, parts and fixtures. Our build team will happily stand on a finished roof without a second thought.',
+    },
+    {
+      title: 'Fitted, not assembled',
+      detail:
+        'No cookie-cutter vans. Choose your floor plan, interior and finishes — cabinetry is cut for your layout and hand-finished in Campbellfield.',
+    },
   ],
-  image: '/images/interior-feature.jpg',
-  imageAlt: 'Ausflex caravan interior with lounge, galley kitchen and warm timber floor',
-  cta: { label: 'See the interiors', to: '/gallery' },
+  image: '/images/chassis-1.jpg',
+  imageAlt: 'Heavy-duty galvanised caravan chassis on the factory floor',
+  cta: { label: 'See the full chassis spec', to: '/why-ausflex' },
 }

@@ -9,6 +9,8 @@ export default function Hero() {
         <img
           className="hero__image"
           src={hero.image}
+          srcSet={hero.imageSrcset}
+          sizes={hero.imageSrcset ? hero.imageSizes || '100vw' : undefined}
           alt={hero.imageAlt || ''}
           fetchpriority="high"
         />
@@ -16,41 +18,43 @@ export default function Hero() {
       <div className="hero__scrim" aria-hidden="true" />
 
       <div className="container hero__content">
-        {hero.eyebrow && (
-          <span className="hero__eyebrow hero__fade-up" style={{ animationDelay: '0s' }}>
-            {hero.eyebrow}
-          </span>
-        )}
-
-        <h1 className="hero__headline hero__fade-up" style={{ animationDelay: '0.06s' }}>
-          {hero.headline}
-          {hero.headlineAccent && (
-            <>
-              <br />
-              <span className="hero__headline-accent">{hero.headlineAccent}</span>
-            </>
+        <div className="hero__main">
+          {hero.eyebrow && (
+            <span className="hero__eyebrow hero__fade-up" style={{ animationDelay: '0s' }}>
+              {hero.eyebrow}
+            </span>
           )}
-        </h1>
 
-        <p className="hero__subheadline hero__fade-up" style={{ animationDelay: '0.14s' }}>
-          {hero.subheadline}
-        </p>
+          <h1 className="hero__headline hero__fade-up" style={{ animationDelay: '0.06s' }}>
+            {hero.headline}
+            {hero.headlineAccent && (
+              <>
+                <br />
+                <span className="hero__headline-accent">{hero.headlineAccent}</span>
+              </>
+            )}
+          </h1>
 
-        <div className="hero__ctas hero__fade-up" style={{ animationDelay: '0.22s' }}>
-          {hero.primaryCta && (
-            <Link to={hero.primaryCta.to} className="hero__cta-primary">
-              {hero.primaryCta.label}
-            </Link>
-          )}
-          {hero.secondaryCta && (
-            <Link to={hero.secondaryCta.to} className="hero__cta-secondary">
-              {hero.secondaryCta.label}
-            </Link>
-          )}
+          <p className="hero__subheadline hero__fade-up" style={{ animationDelay: '0.14s' }}>
+            {hero.subheadline}
+          </p>
+
+          <div className="hero__ctas hero__fade-up" style={{ animationDelay: '0.22s' }}>
+            {hero.primaryCta && (
+              <Link to={hero.primaryCta.to} className="hero__cta-primary">
+                {hero.primaryCta.label}
+              </Link>
+            )}
+            {hero.secondaryCta && (
+              <Link to={hero.secondaryCta.to} className="hero__cta-secondary">
+                {hero.secondaryCta.label}
+              </Link>
+            )}
+          </div>
         </div>
 
         {hero.trust?.length > 0 && (
-          <ul className="hero__trust-row hero__fade-up" style={{ animationDelay: '0.32s' }}>
+          <ul className="hero__trust hero__fade-up" style={{ animationDelay: '0.32s' }}>
             {hero.trust.map((t) => (
               <li key={t} className="hero__trust-item">
                 {t}

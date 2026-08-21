@@ -6,15 +6,15 @@ import './HowItWorks.css'
 export default function HowItWorks() {
   const scrollIn = useScrollIn()
   return (
-    <section className="hiw section section--dark">
-      <div className="container">
+    <section className="hiw section section--dark" id="process">
+      <div className="container hiw__grid">
         <div className="hiw__head">
           {howItWorks.eyebrow && <span className="section-eyebrow">{howItWorks.eyebrow}</span>}
-          <h2 className="section-label">{howItWorks.heading}</h2>
-          {howItWorks.sub && <p className="section-sub">{howItWorks.sub}</p>}
+          <h2 className="section-label hiw__heading">{howItWorks.heading}</h2>
+          {howItWorks.sub && <p className="hiw__sub">{howItWorks.sub}</p>}
         </div>
 
-        <div className="hiw__grid">
+        <div className="hiw__steps">
           {howItWorks.steps.map((step, i) => (
             <motion.div key={step.number} className="hiw__step" {...scrollIn(i)}>
               <div className="hiw__number">{step.number}</div>
