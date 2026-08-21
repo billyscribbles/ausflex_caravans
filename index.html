@@ -4,28 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
-    <meta name="theme-color" content="#0c8c81" />
+    <meta name="theme-color" content="#191713" />
 
-    <!-- Self-hosted fonts: drop woff2 files into public/fonts/, then uncomment
-         and correct the paths to remove render-blocking font fetches. -->
-    <!--
-    <link rel="preload" href="/fonts/display.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/body.woff2" as="font" type="font/woff2" crossorigin />
-    -->
+    <!-- Self-hosted fonts — preloaded to avoid render-blocking font fetches. -->
+    <link
+      rel="preload"
+      href="/fonts/manrope-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/hanken-grotesk-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
-    <!-- Fallback SEO — runtime Helmet (src/lib/seo.jsx) overrides these per page.
-         Replace og-image.svg with a 1200x630 PNG before launch: most social
-         platforms do not render SVG previews. -->
-    <title>Foundation — Agency Starter Template</title>
-    <meta name="description" content="Replace in src/config/site.config.js" />
+    <!-- Fallback SEO — runtime Helmet (src/lib/seo.jsx) overrides these per page. -->
+    <title>Ausflex Caravans — Built to Last, Built for Comfort</title>
+    <meta
+      name="description"
+      content="Victoria's boutique caravan manufacturer. Australian-built caravans with heavy-duty chassis, a 5-year warranty and made-to-order layouts, crafted in Campbellfield."
+    />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Foundation" />
-    <meta property="og:description" content="Replace in src/config/site.config.js" />
-    <meta property="og:image" content="/brand/og-image.svg" />
+    <meta property="og:title" content="Ausflex Caravans — Built to Last, Built for Comfort" />
+    <meta
+      property="og:description"
+      content="Australian-built caravans with heavy-duty chassis, a 5-year warranty and made-to-order layouts, crafted in Campbellfield, Victoria."
+    />
+    <meta property="og:image" content="/brand/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Foundation" />
-    <meta name="twitter:description" content="Replace in src/config/site.config.js" />
-    <meta name="twitter:image" content="/brand/og-image.svg" />
+    <meta name="twitter:title" content="Ausflex Caravans — Built to Last, Built for Comfort" />
+    <meta
+      name="twitter:description"
+      content="Australian-built caravans with heavy-duty chassis, a 5-year warranty and made-to-order layouts, crafted in Campbellfield, Victoria."
+    />
+    <meta name="twitter:image" content="/brand/og-image.jpg" />
   </head>
   <body>
     <div id="root"></div>

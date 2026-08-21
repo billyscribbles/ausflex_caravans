@@ -3,6 +3,22 @@
  * Reference them via var(--color-accent), var(--font-display), etc.
  */
 
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/manrope-var.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/hanken-grotesk-var.woff2') format('woff2');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
@@ -72,13 +88,12 @@ select {
 
 .section-label {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 46px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: clamp(34px, 4.6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
   color: var(--color-text);
   margin-bottom: 16px;
-  line-height: 1.1;
-  font-optical-sizing: auto;
+  line-height: 1.02;
 }
 
 .section--dark .section-label {
@@ -100,12 +115,16 @@ select {
 .section-eyebrow {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  color: var(--color-accent-dark);
+  margin-bottom: 14px;
+}
+
+.section--dark .section-eyebrow {
   color: var(--color-accent);
-  margin-bottom: 16px;
 }
 
 .glow-card {
@@ -123,7 +142,7 @@ select {
   border-color: var(--color-accent);
   box-shadow:
     0 0 0 1px var(--color-accent-glow),
-    0 8px 32px rgba(12, 140, 129, 0.12);
+    0 12px 36px var(--color-accent-glow);
   transform: translateY(-2px);
 }
 
@@ -170,7 +189,7 @@ select {
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: var(--color-accent);
+  background: var(--color-accent-dark);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-accent);
   transform: translateY(-160%);

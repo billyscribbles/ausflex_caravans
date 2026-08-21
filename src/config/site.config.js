@@ -3,59 +3,75 @@
 
 export const site = {
   brand: {
-    name: 'Foundation Studio',
-    logoText: 'FOUNDATION',
-    tagline: 'A lean studio building digital products for businesses that want results.',
+    name: 'Ausflex Caravans',
+    logoText: 'AUSFLEX',
+    tagline:
+      'Australian-made caravans, custom built in Campbellfield, Victoria. Built to last, built for comfort.',
     // Optional image logo — if set, Navbar/Footer render this instead of logoText.
-    // Drop the file into /public/brand/ and reference it like "/brand/logo.svg".
-    logoSrc: null,
+    logoSrc: '/brand/logo.png',
   },
 
   nav: [
-    { label: 'Services', to: '/services' },
-    { label: 'About', to: '/about' },
+    { label: 'Our Vans', to: '/vans' },
+    { label: 'Why Ausflex', to: '/why-ausflex' },
+    { label: 'About Us', to: '/about' },
+    { label: 'Gallery', to: '/gallery' },
     { label: 'Contact', to: '/contact' },
   ],
 
   cta: {
-    label: 'Get a Quote',
+    label: 'Enquire Now',
     to: '/contact',
   },
 
   footer: {
     columns: [
       {
-        title: 'Navigation',
+        title: 'Explore',
         links: [
           { label: 'Home', to: '/' },
-          { label: 'Services', to: '/services' },
-          { label: 'About', to: '/about' },
+          { label: 'Our Vans', to: '/vans' },
+          { label: 'Why Ausflex', to: '/why-ausflex' },
+          { label: 'About Us', to: '/about' },
+          { label: 'Gallery', to: '/gallery' },
           { label: 'Contact', to: '/contact' },
         ],
       },
+      {
+        title: 'The Range',
+        links: [
+          { label: '12ft Tuff Mudder', to: '/vans/tuff-mudder' },
+          { label: '17ft Little Wonder', to: '/vans/little-wonder' },
+          { label: '18.6ft Family Adventurer', to: '/vans/family-adventurer' },
+          { label: '19.6ft Fierce Couple', to: '/vans/fierce-couple' },
+          { label: '21.6ft Extreme Family', to: '/vans/extreme-family' },
+          { label: 'On-Site Caravans', to: '/vans/on-site' },
+        ],
+      },
     ],
-    copyright: '© 2025 Foundation Studio. All rights reserved.',
+    copyright: '© 2026 Ausflex Caravans. All rights reserved.',
   },
 
   social: {
-    linkedin: '',
-    instagram: '',
-    twitter: '',
+    facebook: 'https://www.facebook.com/profile.php?id=100083029877406',
+    instagram: 'https://instagram.com/ausflex.caravans',
   },
 
   contact: {
-    email: 'hello@example.com',
-    phone: '',
-    location: 'Melbourne, Australia',
+    email: 'ausflexcaravans@gmail.com',
+    phone: '0451 712 116',
+    location: '27 Metrolink Cct, Campbellfield VIC 3061',
+    hours: ['Mon – Fri: 7am – 5pm', 'Sat: 7am – 12pm'],
+    mapUrl: 'https://maps.google.com/maps?ll=-37.651657,144.969702&z=14',
   },
 
   seo: {
-    defaultTitle: 'Foundation Studio — Web Design & Development',
-    titleTemplate: '%s · Foundation Studio',
-    description: 'We build fast, modern websites for small businesses.',
-    siteUrl: import.meta.env.VITE_SITE_URL || 'https://example.com',
-    // Replace with a 1200x630 PNG before launch — social platforms ignore SVG.
-    ogImage: '/brand/og-image.svg',
+    defaultTitle: 'Ausflex Caravans — Built to Last, Built for Comfort',
+    titleTemplate: '%s · Ausflex Caravans',
+    description:
+      "Victoria's boutique caravan manufacturer. Australian-built caravans with heavy-duty chassis, a 5-year warranty and made-to-order layouts, crafted in Campbellfield.",
+    siteUrl: import.meta.env.VITE_SITE_URL || 'https://www.ausflexcaravans.com.au',
+    ogImage: '/brand/og-image.jpg',
     locale: 'en_AU',
   },
 
