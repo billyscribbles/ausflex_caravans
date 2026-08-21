@@ -22,7 +22,11 @@ export const exportUrl = '/api/admin/export'
 export const getSession = () => request('/api/auth/session')
 export const login = (password) => request('/api/auth/login', asJson({ password }))
 export const logout = () => request('/api/auth/logout', { method: 'POST' })
-export const getContent = () => request('/api/content')
+// /api/content is cached for 60s for the public site's benefit. The dashboard
+// reads back its own writes, so it must bypass that cache — otherwise an
+// uploaded photo does not appear for up to a minute and the client uploads it
+// again.
+export const getContent = () => request('/api/content', { cache: 'no-store' })
 
 export function uploadPhoto({ file, collection, alt, caption }) {
   const form = new FormData()
