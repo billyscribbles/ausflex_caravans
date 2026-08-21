@@ -88,6 +88,12 @@ describe('slugify', () => {
   it('never returns an empty slug', () => {
     expect(slugify('!!!')).toBe('van')
   })
+
+  it('truncates to the 60-char cap', () => {
+    const result = slugify('a'.repeat(80))
+    expect(result.length).toBe(60)
+    expect(isValidSlug(result)).toBe(true)
+  })
 })
 
 describe('uniqueSlug', () => {
@@ -100,6 +106,13 @@ describe('uniqueSlug', () => {
     expect(uniqueSlug('Little Wonder', ['little-wonder', 'little-wonder-2'])).toBe(
       'little-wonder-3',
     )
+  })
+
+  it('stays within the 60-char cap when the base is already at the ceiling', () => {
+    const base = slugify('a'.repeat(80))
+    const result = uniqueSlug('a'.repeat(80), [base])
+    expect(result.length).toBeLessThanOrEqual(60)
+    expect(isValidSlug(result)).toBe(true)
   })
 })
 

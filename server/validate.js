@@ -69,9 +69,18 @@ export function slugify(name) {
 export function uniqueSlug(name, taken) {
   const base = slugify(name)
   if (!taken.includes(base)) return base
+  // The base can already sit at the 60-char cap, so the suffix must borrow
+  // its room from the base rather than extend past it — otherwise the
+  // result would fail this module's own isValidSlug.
   let n = 2
-  while (taken.includes(`${base}-${n}`)) n += 1
-  return `${base}-${n}`
+  let candidate
+  do {
+    const suffix = `-${n}`
+    const trimmedBase = base.slice(0, VAN_TEXT_LIMITS.slug - suffix.length).replace(/-+$/, '')
+    candidate = `${trimmedBase}${suffix}`
+    n += 1
+  } while (taken.includes(candidate))
+  return candidate
 }
 
 function listError(value, label, maxItems, maxChars) {
