@@ -4,8 +4,11 @@ import request from 'supertest'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { hashPassword } from './auth.js'
 
 const PASSWORD = 'test-password-123'
+// scrypt is deliberately slow — hash once for the whole file, not per test.
+const HASH = await hashPassword(PASSWORD)
 let dir
 let app
 
@@ -15,9 +18,9 @@ beforeEach(async () => {
   process.env.SESSION_SECRET = 'test-session-secret'
   vi.resetModules()
 
-  const { hashPassword, resetRateLimit } = await import('./auth.js')
-  process.env.ADMIN_PASSWORD_HASH = await hashPassword(PASSWORD)
-  resetRateLimit()
+  process.env.ADMIN_PASSWORD_HASH = HASH
+  const auth = await import('./auth.js')
+  auth.resetRateLimit()
 
   const store = await import('./store.js')
   await store.load()
