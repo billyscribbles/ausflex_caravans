@@ -8,6 +8,30 @@ const LIVE = {
     page: [{ id: '3', src: '/uploads/c.webp', alt: 'Live page photo', caption: '' }],
   },
   tours: [{ id: '4', title: 'Live tour', embedUrl: 'https://kuula.co/share/x', poster: null }],
+  vans: {
+    eyebrow: 'Live eyebrow',
+    heading: 'Live heading',
+    sub: 'Live sub',
+    items: [
+      {
+        id: '5',
+        slug: 'live-van',
+        name: 'Live Van',
+        length: '20ft',
+        tag: 'Live tag',
+        meta: 'Live meta',
+        blurb: 'Live blurb',
+        description: ['Live paragraph.'],
+        specs: ['Live spec'],
+        image: '/uploads/live.webp',
+        imageAlt: 'Live van',
+        floorplan: null,
+        floorplanAlt: '',
+        photos: [],
+        sortOrder: 0,
+      },
+    ],
+  },
 }
 
 // The store fires its fetch at module scope, so the stub must be installed
@@ -82,5 +106,43 @@ describe('contentStore', () => {
     renderHook(() => store.useTours())
 
     await waitFor(() => expect(spy).toHaveBeenCalledTimes(1))
+  })
+})
+
+describe('useVans', () => {
+  it('serves the live range once the request resolves', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => LIVE }))
+    const store = await freshStore()
+    const { result } = renderHook(() => store.useVans())
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.vans.heading).toBe('Live heading')
+    expect(result.current.vans.items[0].slug).toBe('live-van')
+  })
+
+  it('falls back to the static van file when the request fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+    const store = await freshStore()
+    const { result } = renderHook(() => store.useVans())
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.vans.items.length).toBeGreaterThan(0)
+    expect(result.current.vans.items[0].slug).toBeTruthy()
+  })
+
+  // A rolling deploy can briefly pair an old server with a new client. Only the
+  // van slice should degrade — not the gallery the old server answers fine.
+  it('falls back per-slice when the payload omits vans', async () => {
+    const { vans: _vans, ...withoutVans } = LIVE
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => withoutVans }))
+    const store = await freshStore()
+
+    const vansHook = renderHook(() => store.useVans())
+    const galleryHook = renderHook(() => store.useCollection('page'))
+
+    await waitFor(() => expect(vansHook.result.current.loading).toBe(false))
+    expect(vansHook.result.current.vans.items[0].slug).toBeTruthy()
+    // Gallery still came from the API, not the fallback.
+    expect(galleryHook.result.current.items[0].alt).toBe('Live page photo')
   })
 })

@@ -4,6 +4,7 @@
 import { useSyncExternalStore } from 'react'
 import { gallery } from '../content/gallery.js'
 import { tour } from '../content/tour.js'
+import { vans } from '../content/vans.js'
 
 export const fallback = {
   gallery: {
@@ -20,6 +21,7 @@ export const fallback = {
       sortOrder: 0,
     },
   ],
+  vans,
 }
 
 let state = { status: 'loading', data: null }
@@ -74,4 +76,15 @@ export function useCollection(name) {
 export function useTours() {
   const { status, data } = useContent()
   return { loading: status === 'loading', tours: data ? data.tours : [] }
+}
+
+// Falls back per-slice rather than whole-payload: `isWellFormed` deliberately
+// does not require `vans`, so an old server answering a new client mid-deploy
+// degrades the range only, not the gallery and tours it serves correctly.
+export function useVans() {
+  const { status, data } = useContent()
+  return {
+    loading: status === 'loading',
+    vans: data?.vans?.items ? data.vans : fallback.vans,
+  }
 }
