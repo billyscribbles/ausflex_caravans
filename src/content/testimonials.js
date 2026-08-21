@@ -1,24 +1,25 @@
+// Brand statements in Ausflex's own words — shown where a voice-of-the-company
+// quote fits. Swap in real customer reviews as they come in.
 export const testimonials = {
-  eyebrow: 'What clients say',
-  heading: 'Trusted by founders who ship.',
+  eyebrow: 'In our words',
+  heading: 'What we stand for.',
   items: [
     {
       quote:
-        'They built our entire site in ten days. It looks better than the Figma mockups we paid someone else for.',
-      author: 'Sarah Chen',
-      role: 'Founder, Lumen Coffee',
+        'We are one of the caravan industry’s best-kept secrets, producing caravans for some of the most popular and prestigious brands in Australia.',
+      author: 'Ausflex Caravans',
+      role: 'Campbellfield, Victoria',
     },
     {
       quote:
-        'Fast, honest, and way more technical than any agency I have worked with. Our traffic tripled in two months.',
-      author: 'Marcus Rivera',
-      role: 'Owner, Rivera Fitness',
+        'Your caravan is more than a vehicle. It’s a home away from home, and we build every one to the same standard we would want in our own.',
+      author: 'The Ausflex build team',
+      role: 'Over 130 years combined experience',
     },
     {
-      quote:
-        'I finally understand what my website is doing. Weekly updates, real code, no BS. Would hire again tomorrow.',
-      author: 'Priya Patel',
-      role: 'Director, Patel Legal',
+      quote: 'We stand behind what we build. Every van, every weld, every warranty.',
+      author: 'Ausflex Caravans',
+      role: 'Since 1972',
     },
   ],
 }

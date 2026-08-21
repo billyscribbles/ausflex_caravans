@@ -1,27 +1,27 @@
 export const howItWorks = {
-  eyebrow: 'How it works',
-  heading: 'A clean four-step process.',
-  sub: 'No surprises, no scope creep, no disappearing agency.',
+  eyebrow: 'From order to open road',
+  heading: 'Your van, built your way.',
+  sub: 'Every Ausflex is made to order. Here is how a build comes together.',
   steps: [
     {
       number: '01',
-      title: 'Discovery call',
-      body: 'A free 30-minute chat to understand your business, goals, and deadline.',
+      title: 'Talk to us',
+      body: 'Tell us how you travel: couple or crew, blacktop or back country. We recommend a starting point from the range.',
     },
     {
       number: '02',
-      title: 'Fixed-price quote',
-      body: 'A written quote with a clear scope, timeline, and milestones. No hourly games.',
+      title: 'Design the layout',
+      body: 'Work with our team on the floor plan, bunks, appliances and interior finishes that suit your individuality.',
     },
     {
       number: '03',
-      title: 'Build & review',
-      body: 'You see progress weekly in a live preview. Feedback goes straight into the next sprint.',
+      title: 'We build it',
+      body: 'Your van takes shape at our Campbellfield facility, starting with an Australian-steel chassis and suspension.',
     },
     {
       number: '04',
-      title: 'Launch & support',
-      body: 'We deploy, hand over the code, and stay on call for the first month. You own everything.',
+      title: 'Hit the road',
+      body: 'Walk through every feature at handover, then head off backed by our warranty and after-sales support.',
     },
   ],
 }

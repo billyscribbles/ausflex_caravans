@@ -3,24 +3,24 @@ export const faq = {
   heading: 'Questions, answered.',
   items: [
     {
-      q: 'How long does a typical project take?',
-      a: 'Most small-business sites take 2–3 weeks from discovery call to launch. Larger e-commerce builds run 4–6 weeks.',
+      q: 'Can I choose my layout and interior?',
+      a: 'Yes. All our caravans are made to order, so we offer a wide range of floor plan layouts, and you work with our team to choose the interior that suits your individuality.',
     },
     {
-      q: 'Do I own the code when you are done?',
-      a: 'Yes. Every project ships with the repository transferred to you. No platform lock-in, no ongoing license fees.',
+      q: 'Where will my caravan be manufactured?',
+      a: 'Our skilled team of craftsmen and women build every caravan at our manufacturing facility in Campbellfield, Victoria.',
     },
     {
-      q: 'Do you offer fixed-price quotes?',
-      a: 'Always. You get a written scope and a single number before any work starts. No hourly billing, no surprise invoices.',
+      q: 'Where are Ausflex caravans sold?',
+      a: 'We have a network of dealer partners throughout Australia and New Zealand, so both adventure-loving countries are covered.',
     },
     {
-      q: 'What if I need changes after launch?',
-      a: 'The first month of minor changes is included. After that, we offer flexible retainers or one-off change requests.',
+      q: 'What warranty comes with an Ausflex caravan?',
+      a: 'Every van starts with a heavy-duty chassis and suspension built in Australia from Australian steel, covered by a 5-year chassis and suspension manufacturer warranty. The Pedders shockers and backing plate each carry a 2-year warranty. We stand behind what we build.',
     },
     {
-      q: 'Can you work with my existing brand and logo?',
-      a: 'Of course. We can also build a fresh brand from scratch if you need one — just ask during the discovery call.',
+      q: 'How long will my caravan take to build?',
+      a: 'Crafting a van with high-quality finishes takes time, and build times vary with the season and specification. We provide an estimated build time when we discuss your requirements.',
     },
   ],
 }
