@@ -9,8 +9,8 @@
  *   [ 5  ][ 6 ][ 7 ]
  *   [  wide  ][ 9 ]
  * Any other rhythm pushes a wide tile off its row and leaves a hole behind
- * it, so keep item counts on a multiple of 9. `dense` is the safety net if
- * a collection ever drifts off that count. */
+ * it, so a count of 9n, 9n+4 or 9n+7 closes the last block flush. `dense` is
+ * the safety net if a collection ever drifts off those counts. */
 .gallery-grid__mosaic {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -50,6 +50,15 @@
 .gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 4),
 .gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 8) {
   grid-column: span 2;
+}
+
+/* Collections are edited in the dashboard, so a count can land mid-block. A
+ * tall tile with fewer than three tiles after it has nothing to sit beside,
+ * and `dense` has nothing left to backfill with — it strands a column of
+ * holes down the last two rows. Drop it to one row and the block closes on a
+ * short final row instead, which reads as a normal grid ending. */
+.gallery-grid__mosaic .gallery-grid__tile:nth-child(9n + 1):nth-last-child(-n + 3) {
+  grid-row: span 1;
 }
 
 .gallery-grid__tile img {

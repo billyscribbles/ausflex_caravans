@@ -1,6 +1,8 @@
 // Contract: each section's content file keeps the shape its component
 // renders. Rewriting copy for a new client is fine; breaking the shape
 // (a missing key, an object where an array is expected) fails here.
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 import { hero } from '../content/hero.js'
 import { stats } from '../content/stats.js'
@@ -13,6 +15,7 @@ import { video } from '../content/video.js'
 import { tour } from '../content/tour.js'
 import { contactSection } from '../content/contact.js'
 import { contactCta } from '../content/cta.js'
+import { gallery } from '../content/gallery.js'
 import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
@@ -110,6 +113,44 @@ describe('content — section copy contract', () => {
       for (const section of doc.sections) {
         expect(section.heading).toBeTruthy()
         expect(section.body).toBeTruthy()
+      }
+    }
+  })
+})
+
+describe('gallery — collection grouping contract', () => {
+  const collections = ['interiors', 'exteriors', 'page']
+
+  it('every item has a src under /images and non-empty alt text', () => {
+    for (const name of collections) {
+      for (const item of gallery[name].items) {
+        expect(item.src, `${name}: ${item.src}`).toMatch(/^\/images\/[\w.-]+$/)
+        expect(item.alt, `${name}: ${item.src}`).toBeTruthy()
+      }
+    }
+  })
+
+  it('no collection repeats a photo', () => {
+    for (const name of collections) {
+      const srcs = gallery[name].items.map((i) => i.src)
+      expect(new Set(srcs).size, `${name} has a duplicate src`).toBe(srcs.length)
+    }
+  })
+
+  // Both render on /gallery, one above the other, so an overlap shows the
+  // same van twice on a single screen.
+  it('the exteriors band and the page mosaic share no photo', () => {
+    const band = new Set(gallery.exteriors.items.map((i) => i.src))
+    const overlap = gallery.page.items.map((i) => i.src).filter((src) => band.has(src))
+    expect(overlap).toEqual([])
+  })
+
+  // Deleting a photo without unlinking it here leaves a broken tile that only
+  // shows up in the browser, so check the files are actually on disk.
+  it('every photo resolves to a file in public/images', () => {
+    for (const name of collections) {
+      for (const item of gallery[name].items) {
+        expect(existsSync(join('public', item.src)), `${name}: ${item.src} is missing`).toBe(true)
       }
     }
   })

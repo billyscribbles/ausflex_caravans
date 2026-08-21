@@ -1,66 +1,96 @@
-.hiw__grid {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: var(--gap-grid-wide);
-  align-items: start;
+/* The band runs wider than the standard ladder: four steps in a row need the
+ * air above and below them to read as one sequence. */
+.hiw.section {
+  padding-block: var(--space-5xl);
+}
+
+.hiw__head {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-4xl);
+}
+
+.hiw__head-main,
+.hiw__sub {
+  position: relative;
+  z-index: 1;
 }
 
 .hiw__heading {
-  font-size: clamp(32px, 3.6vw, 48px);
-  line-height: 1.12;
+  max-width: 16ch;
   margin-bottom: 0;
 }
 
 .hiw__sub {
-  margin-top: var(--space-md);
+  max-width: 34ch;
+  padding-bottom: 8px;
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-bone-muted);
-  max-width: 42ch;
 }
 
 .hiw__steps {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-xl) var(--gap-grid-wide);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap-grid-wide);
 }
 
-/* Every other list on the site opens each row with a hairline — the feature
- * rows, the FAQ, the range meta, the quotes. The process steps were the one
- * set floating on their numbers alone, which made the 2x2 read as four loose
- * blocks rather than one sequence. */
+/* Every other list on the site opens each row with a hairline — the chassis
+ * rows, the FAQ, the range meta, the quotes. */
 .hiw__step {
   padding-top: var(--space-md);
   border-top: 1px solid var(--color-hairline-dark);
 }
 
+/* The numerals are the section. At 11px they were the hero's language shrunk
+ * past the point of being the same idea; at display scale the four of them
+ * read across the band as one sequence before any word is. */
 .hiw__number {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  display: block;
+  font-size: clamp(56px, 6.4vw, 104px);
+  margin-bottom: var(--space-lg);
   color: var(--color-accent);
-  margin-bottom: var(--space-sm);
 }
 
 .hiw__title {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: -0.015em;
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.14;
   color: var(--color-bone);
   margin-bottom: var(--space-xs);
 }
 
 .hiw__body {
-  font-size: 16px;
-  line-height: 1.85;
+  font-size: 15px;
+  line-height: 1.8;
   color: var(--color-bone-muted);
 }
 
 @media (max-width: 1024px) {
-  .hiw__grid {
-    grid-template-columns: 1fr;
-    gap: var(--gap-section-head);
+  .hiw.section {
+    padding-block: var(--space-4xl);
+  }
+  .hiw__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-3xl);
+  }
+  .hiw__heading {
+    max-width: none;
+  }
+  .hiw__sub {
+    max-width: 62ch;
+    padding-bottom: 0;
+  }
+  .hiw__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2xl) var(--gap-grid-wide);
   }
 }
 
@@ -68,5 +98,8 @@
   .hiw__steps {
     grid-template-columns: 1fr;
     gap: var(--space-xl);
+  }
+  .hiw__number {
+    margin-bottom: var(--space-md);
   }
 }

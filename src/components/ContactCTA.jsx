@@ -8,18 +8,29 @@ import './ContactCTA.css'
 
 // Closing band for every page except /contact: the enquiry pitch and a single
 // link through to the contact page. The form and the map live there only.
-// Statement head, one full-width rule, then body + direct lines + CTA sharing
-// the row beneath it — the band reads edge to edge rather than as two islands.
+//
+// Cinematic rather than a cream footer-lead-in — a full-bleed factory frame
+// under a scrim, the closing statement in the hero's voice, then the direct
+// lines and the CTA sharing one row on a bronze rule.
 export default function ContactCTA() {
   const scrollIn = useScrollIn()
   const { contact } = site
 
   return (
-    <section className="cta section">
-      <div className="container">
+    <section className="cta">
+      {contactCta.image && (
+        <div className="cta__figure" aria-hidden="true">
+          <img src={contactCta.image} alt="" loading="lazy" />
+          <span className="cta__scrim" />
+        </div>
+      )}
+
+      <div className="container cta__content">
         <motion.div className="cta__head" {...scrollIn(0)}>
           {contactCta.eyebrow && <span className="section-eyebrow">{contactCta.eyebrow}</span>}
-          <h2 className="section-label cta__heading">{contactCta.heading}</h2>
+          <h2 className="display-statement cta__heading">
+            {contactCta.heading} {contactCta.headingAccent && <em>{contactCta.headingAccent}</em>}
+          </h2>
         </motion.div>
 
         <motion.div className="cta__row" {...scrollIn(1)}>

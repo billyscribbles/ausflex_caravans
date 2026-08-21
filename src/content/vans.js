@@ -11,7 +11,7 @@ export const vans = {
       name: 'Tuff Mudder',
       length: '12ft',
       tag: 'Off-road hybrid',
-      meta: 'Sleeps 2 · Off-road hybrid',
+      meta: 'Sleeps 2 · Single axle',
       blurb: 'Small in size but big in features. Adventure on wheels, built tough to go off-road.',
       description: [
         'The Tuff Mudder really packs a punch on and off the road. At twelve feet it tows easily behind a mid-size vehicle, yet still fits a proper bed, kitchen and storage for a serious trip away.',
@@ -152,7 +152,7 @@ export const vans = {
       slug: 'on-site',
       name: 'On-Site Caravans',
       length: 'Up to 30ft',
-      tag: 'Custom on-site',
+      tag: 'On-site living',
       meta: 'Custom layouts · Permanent siting',
       blurb: 'Custom-built on-site caravans designed around your unique needs, up to 30 feet.',
       description: [

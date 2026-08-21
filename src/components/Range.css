@@ -1,4 +1,9 @@
+/* Brochure spread, not a product grid: two cards to a row at full editorial
+ * scale, a wide cinematic crop, and the model number set as display type
+ * rather than an 11px chip. */
+
 .range__head {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -6,35 +11,45 @@
   margin-bottom: var(--gap-section-head);
 }
 
+/* Both children clear the ghost word behind them. */
+.range__head-main,
+.range__sub {
+  position: relative;
+  z-index: 1;
+}
+
 .range__heading {
-  max-width: 620px;
+  max-width: 15ch;
   margin-bottom: 0;
 }
 
 .range__sub {
-  max-width: 38ch;
+  max-width: 36ch;
+  padding-bottom: 8px;
   font-size: 16px;
   line-height: 1.85;
   color: var(--color-muted);
 }
 
+/* Two up. The row gap runs a full ladder step wider than the column gap so
+ * each spread reads as its own page rather than as a wall of tiles. */
 .range__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2xl) var(--gap-grid);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4xl) var(--gap-grid-wide);
 }
 
 .range__card-link {
   display: block;
 }
 
-/* Half the range is shot on white and half on grey, so without an edge the
- * pale plates dissolve into the cream page and the row reads as three
- * different-sized holes. A hairline gives every card the same frame whatever
- * its photo does — the house alternative to a shadow. */
+/* 3:2 rather than 4:3 — a wider crop that lets a 21-foot van sit in the frame
+ * as a profile instead of a portrait. Half the range is shot on white and half
+ * on grey, so the hairline gives every card the same frame whatever its photo
+ * does: the house alternative to a shadow. */
 .range__image {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
   background: var(--color-bg-alt);
   box-shadow: inset 0 0 0 1px var(--color-hairline);
@@ -48,21 +63,50 @@
 }
 
 .range__card:hover .range__image img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
-/* Opaque ink chip: at 72% the photo showed through enough to drop the bronze
- * index to 3.1:1. Solid ground puts it back at 7.2:1 whatever is behind it. */
+/* Numeral in its own column, text in the other — the numbered-plate spine the
+ * chassis rows use, so the two bands share one system. */
+.range__body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-md);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-rule);
+  /* The rule is the hover surface: it runs bronze as the card is entered, so
+   * the whole spread acknowledges the pointer rather than just the photo. */
+  transition: border-color var(--transition-base);
+}
+
+.range__card:hover .range__body {
+  border-color: var(--color-accent);
+}
+
 .range__index {
-  position: absolute;
-  top: var(--space-xs);
-  left: var(--space-xs);
-  padding: 6px var(--space-2xs);
-  background: var(--color-dark-deep);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: clamp(28px, 2.6vw, 40px);
+  /* Optical: the numeral's cap line sits above the tag's x-height by default. */
+  margin-top: -2px;
+  /* Soft at rest so it reads as a model number rather than a heading, and
+   * firms up to the AA bronze as the card is entered. Decorative — the name
+   * beside it carries the accessible label. */
   color: var(--color-accent);
+  transition: color var(--transition-base);
+}
+
+.range__card:hover .range__index {
+  color: var(--color-accent-dark);
+}
+
+/* Oversized category label — the widest-tracked type on the card, above the
+ * name, the way a brochure calls the segment before the model. */
+.range__tag {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  color: var(--color-accent-dark);
+  margin-bottom: var(--space-2xs);
 }
 
 .range__title-row {
@@ -70,14 +114,14 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-md);
-  margin-top: var(--space-md);
 }
 
 .range__name {
   font-family: var(--font-display);
-  font-size: 29px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
   color: var(--color-text);
   transition: color var(--transition-fast);
 }
@@ -88,7 +132,7 @@
 
 .range__length {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-accent-dark);
@@ -96,9 +140,7 @@
 }
 
 .range__meta {
-  margin-top: var(--space-sm);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--color-rule);
+  margin-top: var(--space-xs);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
@@ -112,18 +154,29 @@
     align-items: flex-start;
     gap: var(--space-md);
   }
+  .range__heading {
+    max-width: none;
+  }
   .range__sub {
     max-width: 62ch;
+    padding-bottom: 0;
   }
   .range__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-xl) var(--gap-grid);
+    gap: var(--space-3xl) var(--gap-grid);
   }
 }
 
 @media (max-width: 768px) {
   .range__grid {
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
+  }
+  /* Stacked, the numeral column costs measure the copy needs more. */
+  .range__body {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-2xs);
+  }
+  .range__index {
+    font-size: 24px;
   }
 }

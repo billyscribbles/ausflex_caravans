@@ -23,6 +23,10 @@ export const theme = {
     rule: 'rgba(23, 21, 18, 0.12)',
     dark: '#191713',
     'dark-deep': '#12100d',
+    // Third ground. The page alternates cream -> charcoal -> image-led, and
+    // charcoal has to sit a step off `dark` so a flat band following a
+    // photographic one still reads as its own chapter.
+    charcoal: '#221f18',
     // Foreground set for the dark bands (nav, hero, process, footer).
     bone: '#F3EFE9',
     'bone-soft': 'rgba(243, 239, 233, 0.75)',

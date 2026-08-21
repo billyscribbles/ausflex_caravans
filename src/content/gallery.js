@@ -1,18 +1,26 @@
-// Photo collections. `interiors` and `exteriors` feed the home-page mosaic
-// sections; `page` feeds the full /gallery route.
+// Photo collections, grouped by subject so a photo only ever lives in one
+// place on a given page. `interiors` feeds the home-page rail; `exteriors` and
+// `page` feed the two bands on /gallery, so nothing repeats between them:
+//
+//   interiors  → inside shots (home rail)
+//   exteriors  → outside shots, studio plates and on-location (/gallery band)
+//   page       → interiors, factory and lifestyle (/gallery mosaic)
 
 export const gallery = {
   interiors: {
     eyebrow: 'Interiors',
-    heading: 'Finished like a home, not a trailer.',
-    sub: 'A closer look at the living, kitchen, bedroom and ensuite spaces — and the finishes you can choose between.',
+    // Split so the closing phrase can run bronze, the way the hero sets
+    // "BUILT TO EXPLORE." — see .display-statement in index.css.
+    heading: 'Finished like a home,',
+    headingAccent: 'not a trailer.',
+    sub: 'Living, kitchen, bedroom and ensuite — and the finishes you choose between.',
     // The rail frames are 3:2, so the landscape shots sit uncropped; the
     // portraits between them alternate finish palettes (stone, olive, white).
     items: [
       {
         src: '/images/interior-club-dinette.jpg',
-        alt: 'U-shaped club lounge in black leather around a stone dinette table',
-        caption: 'Club lounge · Stone dinette',
+        alt: 'U-shaped club lounge in black leather around a round timber dinette table',
+        caption: 'Club lounge · Stone & timber',
       },
       {
         src: '/images/interior-galley.jpg',
@@ -56,26 +64,30 @@ export const gallery = {
       },
       {
         src: '/images/interior-bedroom-2.jpg',
-        alt: 'Bedroom looking back through the van past the kitchen',
+        alt: 'Bedroom at the far end of the van, past the gloss kitchen and marble dinette',
         caption: 'Bedroom · Gloss cabinetry',
       },
     ],
   },
 
+  // Every outside shot lives here — the four studio plates and the on-location
+  // photography — so /gallery never shows the same van twice. Ordered for the
+  // mosaic (see GalleryGrid.css): portraits take the tall slots at 9n+1, the
+  // side profiles take the wide slots at 9n+4 and 9n+8.
   exteriors: {
     eyebrow: 'Exterior collection',
     heading: 'Presence. Protection. Purpose.',
     sub: 'Strong lines, practical storage and unmistakable Ausflex character.',
     items: [
       {
-        src: '/images/exterior-explorer-21-studio.jpg',
-        alt: 'Ausflex Explorer 21 in white and charcoal, front three-quarter studio view with the checkerplate toolbox open',
-        caption: 'Explorer 21',
+        src: '/images/gallery-ex-dark.jpg',
+        alt: 'Ausflex Xtreme 18 in charcoal with yellow graphics, front three-quarter view outside the showroom',
+        caption: 'Xtreme 18 · Showroom',
       },
       {
-        src: '/images/exterior-family-adventurer-studio.jpg',
-        alt: 'Ausflex Family Adventurer Off Road in cream and black, full side profile',
-        caption: 'Family Adventurer Off Road',
+        src: '/images/exterior-explorer-21-studio.jpg',
+        alt: 'Ausflex Explorer 21 in white and charcoal, front three-quarter studio view over the checkerplate toolbox',
+        caption: 'Explorer 21',
       },
       {
         src: '/images/exterior-sea-breeze-studio.jpg',
@@ -83,9 +95,44 @@ export const gallery = {
         caption: 'Sea Breeze',
       },
       {
+        src: '/images/exterior-family-adventurer-studio.jpg',
+        alt: 'Ausflex Family Adventurer Off Road in cream and black, full side profile',
+        caption: 'Family Adventurer Off Road',
+      },
+      {
+        src: '/images/gallery-ex-cream.jpg',
+        alt: 'Ausflex Family Adventurer 20.6 Off Road in cream and black, side profile kerbside',
+        caption: 'Family Adventurer 20.6',
+      },
+      {
+        src: '/images/gallery-ex-storm.jpg',
+        alt: 'Ausflex Xtreme 21 in olive with blue graphics, front three-quarter under a stormy sky',
+        caption: 'Xtreme 21 · Storm light',
+      },
+      {
+        src: '/images/gallery-ex-fierce-1.jpg',
+        alt: 'Ausflex Fierce 18.6 in green and black, side view with the awning arm folded along the wall',
+        caption: 'Fierce 18.6 · Side',
+      },
+      {
         src: '/images/exterior-explorer-charcoal.jpg',
-        alt: 'Ausflex Explorer in charcoal, rear three-quarter studio view with the awning out',
+        alt: 'Ausflex Explorer in charcoal, rear three-quarter studio view',
         caption: 'Explorer · Charcoal',
+      },
+      {
+        src: '/images/gallery-ex-fierce-3.jpg',
+        alt: 'Rear panel of the Ausflex Fierce 18.6 in green, spare wheel mounted on the checkerplate',
+        caption: 'Fierce 18.6 · Rear',
+      },
+      {
+        src: '/images/gallery-ex-factory.jpg',
+        alt: 'Ausflex Sea Breeze parked at the factory entrance',
+        caption: 'Sea Breeze · Factory',
+      },
+      {
+        src: '/images/gallery-ex-fierce-2.jpg',
+        alt: 'Ausflex Fierce 18.6 in green, rear three-quarter at the factory',
+        caption: 'Fierce 18.6 · Factory',
       },
     ],
   },
@@ -94,100 +141,98 @@ export const gallery = {
     eyebrow: 'Gallery',
     heading: 'Our photo gallery.',
     sub: 'The features, interiors and exteriors of our Australian-built vans, straight from the factory floor and the road.',
-    // Ordered for the mosaic, which tiles in blocks of 9 (see GalleryGrid.css):
-    // 9n+1 is tall and 9n+4 / 9n+8 are wide — so portraits lead each block and
-    // the landscape shots land in the wide slots. Keep the count a multiple of
-    // 9 (currently 36 = 4 blocks) or the grid ends on a short row.
+    // Interiors, factory and lifestyle — the exteriors band above owns every
+    // outside shot. Ordered for the mosaic, which tiles in blocks of 9 (see
+    // GalleryGrid.css): 9n+1 is tall so it takes a portrait, and 9n+4 / 9n+8
+    // are wide so they take a landscape. 22 items closes the last block flush.
     items: [
       {
         src: '/images/interior-lounge-tan.jpg',
         alt: 'Tan leather club lounge and timber table beside an olive green kitchen',
       },
-      { src: '/images/gallery-in-bedroom.jpg', alt: 'Bedroom with upholstered bedhead' },
-      {
-        src: '/images/interior-club-dinette.jpg',
-        alt: 'U-shaped club lounge in black leather around a stone dinette table',
-      },
-      {
-        src: '/images/exterior-explorer-charcoal.jpg',
-        alt: 'Ausflex Explorer in charcoal, rear three-quarter studio view with the awning out',
-      },
       {
         src: '/images/interior-kitchen-olive.jpg',
         alt: 'Olive green kitchen with timber benchtop and oven, bed beyond',
       },
-      { src: '/images/gallery-in-bunks.jpg', alt: 'Bunk beds with reading lights' },
-      { src: '/images/gallery-in-kitchen.jpg', alt: 'Kitchen with timber benchtop and black sink' },
-      {
-        src: '/images/exterior-sea-breeze-studio.jpg',
-        alt: 'Ausflex Sea Breeze in black and white, front three-quarter studio view',
-      },
-      {
-        src: '/images/interior-ensuite-hall.jpg',
-        alt: 'Hallway past the ensuite vanity and shower, looking through to the bedroom',
-      },
-      { src: '/images/gallery-in-club-lounge.jpg', alt: 'Club lounge in dark leather' },
-      {
-        src: '/images/interior-bunk-nook.jpg',
-        alt: 'Single bunk made up in cream linen with overhead lockers and timber floor',
-      },
-      { src: '/images/gallery-in-dinette.jpg', alt: 'Dinette with timber table' },
       {
         src: '/images/interior-ensuite-vanity.jpg',
         alt: 'Ensuite vanity with stone benchtop, fluted vessel basin and black tapware',
       },
-      { src: '/images/gallery-ex-showroom.jpg', alt: 'Van outside the Ausflex showroom' },
-      { src: '/images/gallery-in-hall.jpg', alt: 'Interior walkway from bedroom to living area' },
-      { src: '/images/gallery-in-kitchen-white.jpg', alt: 'White kitchen with black cooktop' },
       {
-        src: '/images/exterior-family-adventurer-studio.jpg',
-        alt: 'Ausflex Family Adventurer Off Road in cream and black, full side profile',
+        src: '/images/interior-club-dinette.jpg',
+        alt: 'U-shaped club lounge in black leather around a round timber dinette table',
       },
       {
-        src: '/images/interior-kitchen-stone.jpg',
-        alt: 'Kitchen with stone benchtop and black sink, bunks visible down the hallway',
+        src: '/images/interior-living.jpg',
+        alt: 'Open-plan living area with galley kitchen and lounge',
       },
-      { src: '/images/gallery-ex-factory.jpg', alt: 'Van parked at the factory entrance' },
-      {
-        src: '/images/interior-lounge.jpg',
-        alt: 'Club lounge upholstered in charcoal with soft throw',
-      },
-      { src: '/images/gallery-in-kitchen-2.jpg', alt: 'Compact kitchen with sink and cooktop' },
-      {
-        src: '/images/exterior-explorer-21-studio.jpg',
-        alt: 'Ausflex Explorer 21 in white and charcoal, front three-quarter studio view with the checkerplate toolbox open',
-      },
-      { src: '/images/gallery-ex-dark.jpg', alt: 'Black off-road van, front three-quarter view' },
       {
         src: '/images/interior-kitchen.jpg',
         alt: 'Caravan kitchen with stone benchtop, gas cooktop and matte black tapware',
       },
-      { src: '/images/gallery-ex-fierce-1.jpg', alt: 'Fierce 18G van, rear view in green' },
       {
-        src: '/images/lifestyle-towing-road.jpg',
-        alt: 'Four-wheel drive towing an Ausflex van in the rain',
-      },
-      { src: '/images/gallery-in-dinette-mono.jpg', alt: 'Dinette in black and white finish' },
-      {
-        src: '/images/factory-build.jpg',
-        alt: 'The Ausflex team on the factory floor during a build',
-      },
-      { src: '/images/gallery-ex-fierce-2.jpg', alt: 'Fierce hybrid at the factory' },
-      {
-        src: '/images/interior-dining.jpg',
-        alt: 'Kitchen and dining nook with timber benchtop and black mosaic splashback',
+        src: '/images/gallery-in-kitchen-2.jpg',
+        alt: 'Galley kitchen with timber benchtop and black sink, looking through to the ensuite',
       },
       {
         src: '/images/interior-galley.jpg',
         alt: 'Galley kitchen with stone splashback and oven, looking through to the bedroom',
       },
-      { src: '/images/gallery-ex-fierce-3.jpg', alt: 'Fierce 18G rear panel and wheels' },
-      { src: '/images/factory-team.jpg', alt: 'Dinette under construction on the factory floor' },
-      { src: '/images/gallery-ex-cream.jpg', alt: 'Cream and black tourer outside the factory' },
-      { src: '/images/gallery-ex-storm.jpg', alt: 'Dark green van under a stormy sky' },
+      {
+        src: '/images/interior-lounge.jpg',
+        alt: 'Club lounge upholstered in charcoal with soft throw',
+      },
+      {
+        src: '/images/interior-bedroom.jpg',
+        alt: 'Caravan bedroom with made bed and dinette in the foreground',
+      },
+      {
+        src: '/images/gallery-in-dinette.jpg',
+        alt: 'Tan leather dinette with a timber table, kitchen and bunks beyond',
+      },
+      {
+        src: '/images/interior-bedroom-2.jpg',
+        alt: 'Bedroom at the far end of the van, past the gloss kitchen and marble dinette',
+      },
+      {
+        src: '/images/interior-kitchen-stone.jpg',
+        alt: 'Kitchen with stone benchtop and black sink, bunks visible down the hallway',
+      },
+      {
+        src: '/images/gallery-in-bunks.jpg',
+        alt: 'Twin bunks in cream linen beside a full-height wardrobe',
+      },
+      {
+        src: '/images/interior-bunk-nook.jpg',
+        alt: 'Single bunk made up in cream linen with overhead lockers and timber floor',
+      },
+      {
+        src: '/images/interior-ensuite-hall.jpg',
+        alt: 'Hallway past the ensuite vanity and shower, looking through to the bedroom',
+      },
+      {
+        src: '/images/lifestyle-towing-road.jpg',
+        alt: 'Four-wheel drive towing an Ausflex van on a wet road',
+      },
+      {
+        src: '/images/gallery-in-dinette-mono.jpg',
+        alt: 'Marble dinette and black kitchen in a monochrome finish',
+      },
+      {
+        src: '/images/interior-dining.jpg',
+        alt: 'Kitchen and dining nook with timber benchtop and black mosaic splashback',
+      },
+      {
+        src: '/images/factory-build.jpg',
+        alt: 'Vans under construction on the Ausflex factory floor',
+      },
+      {
+        src: '/images/factory-team.jpg',
+        alt: 'The Ausflex team on the roof of a van during a build',
+      },
       {
         src: '/images/lifestyle-towing-water.jpg',
-        alt: 'Ausflex van and four-wheel drive parked at the water’s edge',
+        alt: 'Ausflex Xtreme 21 parked at the water’s edge',
       },
     ],
   },

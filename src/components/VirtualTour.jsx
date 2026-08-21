@@ -6,10 +6,14 @@ import { tour } from '../content/tour.js'
 import { useScrollIn } from '../lib/motion.js'
 import './VirtualTour.css'
 
-// Kuula 360° tour band. The home page sets the copy in a narrow column with
-// the player wide beside it, and only mounts Kuula once the visitor launches
-// it, so the page stays light. The /360 page passes `full` to drop the copy
-// column and load the tour immediately at full container width.
+// Kuula 360° tour band. On the home page the copy sits in a controlled ink
+// plate in a narrow column and the interior takes the rest of the grid — the
+// photo is the dominant half, but the two stay side by side rather than the
+// plate lapping over it. Kuula only mounts once the visitor launches it, so
+// the page stays light.
+//
+// The /360 page passes `full` to drop the copy column and load the tour
+// immediately at full container width.
 //
 // `tours` is the managed list from the admin dashboard. The full page renders a
 // picker across it; the home band shows the first one. Either way exactly one
@@ -27,62 +31,60 @@ export default function VirtualTour({ content = tour, tours = [], full = false }
   const showPicker = full && list.length > 1
 
   return (
-    <section className="tour section" id="tour">
-      <div className="container">
-        <div className={`tour__grid${full ? ' tour__grid--full' : ''}`}>
-          {content.heading && (
-            <div className="tour__copy">
-              {content.eyebrow && <span className="section-eyebrow">{content.eyebrow}</span>}
-              <h2 className="section-label tour__heading">{content.heading}</h2>
-              {content.sub && <p className="section-sub tour__sub">{content.sub}</p>}
-            </div>
-          )}
-
-          <motion.div className={`tour__frame${full ? ' tour__frame--full' : ''}`} {...scrollIn(0)}>
-            {showPicker && (
-              <div className="tour__picker" role="group" aria-label="Choose a tour">
-                {list.map((item, i) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`tour__pick${i === index ? ' tour__pick--active' : ''}`}
-                    aria-current={i === index ? 'true' : undefined}
-                    onClick={() => setIndex(i)}
-                  >
-                    {item.title}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {active ? (
-              <iframe
-                key={current.id}
-                className="tour__player"
-                src={current.embedUrl}
-                title={current.title}
-                allow="xr-spatial-tracking; gyroscope; accelerometer"
-                allowFullScreen
-              />
-            ) : (
-              <button type="button" className="tour__poster" onClick={() => setActive(true)}>
-                <img src={current.poster} alt="" loading="lazy" />
-                <span className="tour__launch">
-                  <Rotate3d size={18} strokeWidth={1.5} aria-hidden="true" />
-                  {content.launchLabel}
-                </span>
+    <section className={`tour section${full ? '' : ' tour--band'}`} id="tour">
+      <div className={`container${full ? '' : ' tour__layout'}`}>
+        {/* Outside the frame: the frame is a fixed-height, overflow-hidden
+         * box, so a picker in flow inside it pushed the player under its own
+         * bottom edge. */}
+        {showPicker && (
+          <div className="tour__picker" role="group" aria-label="Choose a tour">
+            {list.map((item, i) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`tour__pick${i === index ? ' tour__pick--active' : ''}`}
+                aria-current={i === index ? 'true' : undefined}
+                onClick={() => setIndex(i)}
+              >
+                {item.title}
               </button>
-            )}
-          </motion.div>
+            ))}
+          </div>
+        )}
 
-          {content.heading && content.cta && (
-            <div className="tour__cta-row">
+        {content.heading && !full && (
+          <div className="tour__copy">
+            {content.eyebrow && <span className="section-eyebrow">{content.eyebrow}</span>}
+            <h2 className="section-label tour__heading">{content.heading}</h2>
+            {content.sub && <p className="tour__sub">{content.sub}</p>}
+            {content.cta && (
               <Link to={content.cta.to} className="tour__cta">
                 {content.cta.label} →
               </Link>
-            </div>
+            )}
+          </div>
+        )}
+
+        <motion.div className={`tour__frame${full ? ' tour__frame--full' : ''}`} {...scrollIn(0)}>
+          {active ? (
+            <iframe
+              key={current.id}
+              className="tour__player"
+              src={current.embedUrl}
+              title={current.title}
+              allow="xr-spatial-tracking; gyroscope; accelerometer"
+              allowFullScreen
+            />
+          ) : (
+            <button type="button" className="tour__poster" onClick={() => setActive(true)}>
+              <img src={current.poster} alt="" loading="lazy" />
+              <span className="tour__launch">
+                <Rotate3d size={18} strokeWidth={1.5} aria-hidden="true" />
+                {content.launchLabel}
+              </span>
+            </button>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

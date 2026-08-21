@@ -15,7 +15,7 @@ export default function Testimonials() {
 
         <div className="testimonials__grid">
           {testimonials.items.map((t, i) => (
-            <motion.figure key={t.author} className="testimonials__card" {...scrollIn(i)}>
+            <motion.figure key={t.quote} className="testimonials__card" {...scrollIn(i)}>
               {/* Typographic quotes, not the straight ASCII pair. */}
               <blockquote className="testimonials__quote">&ldquo;{t.quote}&rdquo;</blockquote>
               <figcaption className="testimonials__author">

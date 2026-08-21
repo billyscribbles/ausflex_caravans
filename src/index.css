@@ -45,6 +45,21 @@
    * up with the container without being one (the footer bands, the
    * full-bleed interiors rail). */
   --gutter: 56px;
+  /* The single grid the whole site is locked to. --content-max is the measure
+   * content actually occupies; --container-max is that plus the gutters, and
+   * is what every wrapper caps at. Nothing sets its own max-width: the range
+   * head, the video stage, the footer columns and the interiors rail all
+   * derive their left/right anchors from these two, so no two bands can drift
+   * onto different edges. */
+  --content-max: 1280px;
+  --container-max: calc(var(--content-max) + var(--gutter) * 2);
+  /* Distance from a full-width element's left edge to the container's content
+   * edge. Anything that bleeds but still has to start on the grid — the video
+   * spec plate, the tour copy block, the interiors rail — anchors to this.
+   * The 100% resolves against the element it is used on, so it must only be
+   * read from a full-width element; that also keeps it scrollbar-safe in a way
+   * a 100vw version would not be. */
+  --page-inset: max(var(--gutter), calc((100% - var(--container-max)) / 2 + var(--gutter)));
   /* Heading block -> the content it introduces. Every section head uses it,
    * so the whole page shares one vertical rhythm. */
   --gap-section-head: var(--space-2xl);
@@ -110,10 +125,9 @@ dd {
  * Proportional digits made "18.6FT" and "21.6FT" sit at different widths in
  * the same column; lining figures keep the numerals on a shared grid. */
 .section-eyebrow,
-.stats__item,
+.stats__value,
 .range__length,
-.range__index,
-.footer__contact-info,
+.footer__phone,
 .footer__bottom {
   font-variant-numeric: tabular-nums;
 }
@@ -150,7 +164,7 @@ select {
 
 /* Utility classes — all section components reach for these. */
 .container {
-  max-width: 1600px;
+  max-width: var(--container-max);
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
@@ -160,8 +174,35 @@ select {
 }
 
 .section--dark {
+  position: relative;
   background: var(--color-dark);
   color: var(--color-bone);
+}
+
+/* The third ground. Cream -> charcoal -> image-led is the page's rhythm, and
+ * a charcoal band butted against a photographic one needs to be a shade off
+ * `dark` or the two read as one long black stretch. */
+.section--charcoal {
+  background: var(--color-charcoal);
+}
+
+/* Every ground change on the page is marked, never butted. A bronze hairline
+ * fading out at both ends sits on the top edge of each ink band, so the seam
+ * reads as an art-directed transition rather than two blocks meeting. */
+.section--dark::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--color-scrim-none),
+    var(--color-bronze-outline) 22%,
+    var(--color-bronze-outline) 78%,
+    var(--color-scrim-none)
+  );
 }
 
 /* Seam control between adjacent bands.
@@ -184,27 +225,126 @@ select {
 }
 
 /* Bronze reads at 2.5:1 on cream — far below the 3:1 non-text minimum — so
- * the focus ring uses the darker bronze on light ground and only switches to
- * the light bronze where the ground is ink. */
+ * the light bronze is only ever used where the ground is ink. Two tokens ride
+ * together on that switch: the focus ring, and --color-accent-aa, which is
+ * "whichever bronze passes on this ground" for accented display type, numerals
+ * and eyebrows. Anything reading --color-accent-aa is correct on every ground
+ * without knowing which one it is on. */
+:root {
+  --color-accent-aa: var(--color-accent-dark);
+}
+
 .section--dark,
 .page-hero,
 .navbar,
 .footer,
 .hero,
 .notfound,
-.errorboundary {
+.errorboundary,
+.cta,
+.tour__copy {
   --color-focus: var(--color-accent);
+  --color-accent-aa: var(--color-accent);
 }
 
+/* The page's working headline. Sized and weighted up from the old 60px/400 so
+ * it holds the same room as the hero statement instead of reading as a
+ * different site's type — the hero keeps the uppercase 700 voice, and
+ * .display-statement below is where that voice is repeated. */
 .section-label {
   font-family: var(--font-display);
-  font-size: clamp(36px, 4.4vw, 60px);
-  font-weight: 400;
-  letter-spacing: -0.025em;
+  font-size: clamp(38px, 4.8vw, 68px);
+  font-weight: 500;
+  letter-spacing: -0.032em;
   color: var(--color-text);
   margin-bottom: var(--space-md);
-  line-height: 1.08;
+  line-height: 1.04;
   text-wrap: balance;
+}
+
+/* The hero's voice, repeated at the page's three statement moments: the
+ * interiors campaign, the video stage and the closing CTA. Deliberately rare —
+ * uppercase 700 everywhere would flatten the hierarchy the hero depends on. */
+.display-statement {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 6.2vw, 92px);
+  font-weight: 700;
+  line-height: 1.01;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  /* Inherits the band's own foreground. Hard-coding ink here and correcting it
+   * with a .section--dark override left the statement invisible on any ink
+   * ground that is not a .section — the closing CTA, which is the one place it
+   * matters most. */
+  color: inherit;
+  text-wrap: balance;
+}
+
+/* The closing word of a statement, in bronze — the hero's
+ * "BUILT TO EXPLORE." treatment carried down the page. */
+.display-statement em {
+  font-style: normal;
+  color: var(--color-accent-aa);
+}
+
+/* Oversized ghost word behind a section head — the hero's AUSFLEX wordmark
+ * device. Filled at very low contrast rather than outlined: the hero's word is
+ * a solid shape sunk into the photograph, and an outline would read as a
+ * different idea. Decorative only, so it is always aria-hidden. */
+.ghost-word {
+  position: absolute;
+  z-index: 0;
+  top: -0.12em;
+  left: calc(var(--gutter) * -1);
+  font-family: var(--font-display);
+  font-size: clamp(120px, 19vw, 300px);
+  font-weight: 700;
+  line-height: 0.74;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--color-bg-alt);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.section--dark .ghost-word {
+  color: rgba(243, 239, 233, 0.038);
+}
+
+/* Below the tablet breakpoint the shortest of these words is still wider than
+ * the viewport, and it pushed the document 180px sideways — body's
+ * overflow-x: hidden does not stop <html> from scrolling. It is a
+ * large-canvas device anyway: at phone width it is noise, not art direction. */
+@media (max-width: 768px) {
+  .ghost-word {
+    display: none;
+  }
+}
+
+/* Large index numeral — 01 / 05. The mono 11px indices were the hero
+ * language shrunk past the point of reading as the same system. */
+.numeral {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-aa);
+}
+
+/* Condensed all-caps metadata — spec lines, captions, category labels. */
+.metaline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+.section--dark .metaline {
+  color: var(--color-bone-muted);
 }
 
 .section--dark .section-label {
@@ -237,12 +377,8 @@ select {
   font-weight: 400;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-accent-dark);
+  color: var(--color-accent-aa);
   margin-bottom: var(--space-sm);
-}
-
-.section--dark .section-eyebrow {
-  color: var(--color-accent);
 }
 
 /* Shared inner-page header — ink band under the fixed nav. */
@@ -255,8 +391,8 @@ select {
 .page-hero__title {
   font-family: var(--font-display);
   font-size: clamp(44px, 5.6vw, 82px);
-  font-weight: 400;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  letter-spacing: -0.034em;
   line-height: 1.02;
   color: var(--color-bone);
   margin-bottom: var(--space-md);
@@ -268,10 +404,6 @@ select {
   line-height: 1.8;
   color: var(--color-bone-muted);
   max-width: 62ch;
-}
-
-.page-hero .section-eyebrow {
-  color: var(--color-accent);
 }
 
 @media (max-width: 768px) {

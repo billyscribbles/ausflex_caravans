@@ -1,10 +1,14 @@
-/* The craft band above closes at the tighter --space-4xl rhythm, so the rail
+/* Campaign, not a contact sheet: one dominant lead shot and two supporting
+ * crops at different aspects, then the collection's long tail in a rail below.
+ *
+ * The chassis band above closes at the tighter --space-4xl rhythm, so this
  * meets it there. A full 160+160 seam between the two read as dead cream. */
-.interiors-rail.section {
+.interiors.section {
   padding-top: var(--space-4xl);
 }
 
-.interiors-rail__head {
+.interiors__head {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -12,38 +16,123 @@
   margin-bottom: var(--gap-section-head);
 }
 
-.interiors-rail__heading {
-  max-width: 620px;
-  margin-bottom: 0;
+.interiors__head-main,
+.interiors__sub {
+  position: relative;
+  z-index: 1;
 }
 
-.interiors-rail__hint {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+.interiors__heading {
+  max-width: 14ch;
+}
+
+.interiors__sub {
+  max-width: 34ch;
+  padding-bottom: 8px;
+  font-size: 16px;
+  line-height: 1.85;
   color: var(--color-muted);
-  white-space: nowrap;
-  padding-bottom: 6px;
 }
 
-/* Full-bleed track whose first card aligns with the container's edge. Uses
- * the shared --gutter so it stays flush with .container at every width. */
+/* Lead spans both rows on the left; the two supporting crops stack on the
+ * right at two different aspect ratios, so the column has a rhythm instead of
+ * reading as two equal tiles.
+ *
+ * The supporting crops are what set the band's height — they carry the only
+ * fixed ratios here, the rows size to them, and the lead then stretches to
+ * whatever that comes to. Sizing the rows in `fr` instead left the frames with
+ * no resolved height at all, so `height: 100%` on the photos fell back to
+ * their intrinsic size and the lead rendered 1594px tall. */
+.interiors__mosaic {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: var(--gap-grid);
+  margin-bottom: var(--space-3xl);
+}
+
+.interiors__lead {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.interiors__support {
+  grid-column: 2;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.interiors__support--1 {
+  grid-row: 1;
+}
+.interiors__support--2 {
+  grid-row: 2;
+}
+
+.interiors__frame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+/* No ratio of its own: it fills the two rows the supporting crops define, and
+ * lands a little taller than wide — dominant without being a fixed portrait
+ * that fights the column beside it. */
+.interiors__lead .interiors__frame {
+  min-height: 420px;
+}
+
+.interiors__support--1 .interiors__frame {
+  aspect-ratio: 4 / 3;
+}
+
+.interiors__support--2 .interiors__frame {
+  aspect-ratio: 3 / 2;
+}
+
+/* Out of flow so a photo's intrinsic size can never set the frame's height —
+ * the grid decides that, and the photo fills whatever it comes to. */
+.interiors__frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.interiors__lead:hover .interiors__frame img,
+.interiors__support:hover .interiors__frame img {
+  transform: scale(1.03);
+}
+
+.interiors__caption {
+  margin-top: var(--space-sm);
+}
+
+/* Full-bleed track whose first card aligns with the container's content edge.
+ * Uses the shared --page-inset so it stays flush with .container at every
+ * width. */
 .interiors-rail__track {
-  --rail-inset: max(var(--gutter), calc((100% - 1600px) / 2 + var(--gutter)));
   display: flex;
   gap: var(--space-md);
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  padding: 0 var(--rail-inset) var(--space-md);
-  scroll-padding-inline: var(--rail-inset);
+  padding: 0 var(--page-inset) var(--space-md);
+  scroll-padding-inline: var(--page-inset);
   scrollbar-width: thin;
   scrollbar-color: var(--color-border-strong) transparent;
 }
 
 .interiors-rail__card {
   flex: 0 0 auto;
-  width: min(520px, 78vw);
+  width: min(460px, 74vw);
   margin: 0;
   scroll-snap-align: start;
 }
@@ -58,32 +147,60 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.interiors-rail__card:hover .interiors-rail__frame img {
+  transform: scale(1.03);
 }
 
 .interiors-rail__caption {
   margin-top: var(--space-sm);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
-@media (max-width: 1024px) {
-  .interiors-rail__head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .interiors-rail__hint {
-    display: none;
-  }
 }
 
 /* Placeholder cards hold the rail's shape while live content loads. */
 .interiors-rail__card--skeleton {
+  aspect-ratio: 3 / 2;
   background: var(--color-bg-alt);
+}
+
+@media (max-width: 1024px) {
+  .interiors__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+  .interiors__heading {
+    max-width: none;
+  }
+  .interiors__sub {
+    max-width: 62ch;
+    padding-bottom: 0;
+  }
+  .interiors__lead .interiors__frame {
+    min-height: 320px;
+  }
+}
+
+/* Stacked, the mosaic's two columns become one and the lead keeps its
+ * dominance through height rather than through the grid. */
+@media (max-width: 768px) {
+  .interiors__mosaic {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: var(--space-lg);
+  }
+  .interiors__lead,
+  .interiors__support {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .interiors__lead .interiors__frame {
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+  .interiors__support--1 .interiors__frame,
+  .interiors__support--2 .interiors__frame {
+    aspect-ratio: 3 / 2;
+  }
 }

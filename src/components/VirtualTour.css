@@ -1,51 +1,55 @@
-/* Matches the video band's tighter rhythm — see VideoEmbed.css. */
+/* Two shapes share this file.
+ *
+ * `.tour--band` is the home page: a narrow ink copy plate beside an interior
+ * that takes the rest of the grid. The photo is the dominant half — that is
+ * what stops this reading as a 50/50 blog split — but the two sit side by side
+ * on the container grid rather than one lapping over the other.
+ *
+ * Without `--band` (the /360 page) the copy is gone and the player runs the
+ * full container width. */
+
 .tour.section {
   padding-block: var(--space-4xl);
 }
 
-/* Mirror of the video band: copy in a narrow column on the left, player wide
- * on the right, CTA settling on the player's bottom edge. On /360 the copy is
- * dropped and the grid collapses to a block so the tour runs full width. */
-.tour__grid {
+/* Warm off-white. The page alternates cream -> charcoal -> off-white, and this
+ * band is the off-white beat between the ink video stage and the ink chassis
+ * showcase. */
+.tour--band {
+  background: var(--color-bg-alt);
+}
+
+.tour__layout {
   display: grid;
-  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  column-gap: var(--gap-grid-wide);
-}
-
-.tour__grid--full {
-  display: block;
-}
-
-.tour__copy {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-}
-
-.tour__heading {
-  font-size: clamp(30px, 3.3vw, 46px);
-  margin-bottom: var(--space-md);
-}
-
-.tour__sub {
-  margin-bottom: 0;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: var(--gap-grid-wide);
+  align-items: stretch;
 }
 
 .tour__frame {
   position: relative;
-  grid-column: 2;
-  grid-row: 1 / -1;
-  aspect-ratio: 16 / 9;
-  border: 1px solid var(--color-hairline);
   overflow: hidden;
   background: var(--color-dark-deep);
 }
 
-/* /360 page: the tour is the page — full container width, taller frame. */
+/* Home band only. Scoped to .tour--band rather than overridden on the full
+ * variant: the responsive rules below re-declare aspect-ratio, and a later
+ * media query beat an earlier `aspect-ratio: auto` override, which sized the
+ * /360 player to 832px inside a 375px column.
+ *
+ * align-self: start is what lets the ratio size the frame. Stretched to the
+ * row instead, its height came from the copy plate beside it and the ratio
+ * then solved for a width 97px wider than its own track. */
+.tour--band .tour__frame {
+  grid-column: 2;
+  align-self: start;
+  aspect-ratio: 3 / 2;
+}
+
+/* /360: the tour is the page — full container width, taller frame. */
 .tour__frame--full {
-  aspect-ratio: auto;
   height: min(72vh, 720px);
+  border: 1px solid var(--color-hairline);
 }
 
 .tour__player {
@@ -70,7 +74,7 @@
   transition:
     transform var(--transition-slow),
     opacity var(--transition-slow);
-  opacity: 0.85;
+  opacity: 0.92;
 }
 
 .tour__poster:hover img,
@@ -106,43 +110,70 @@
   transform: translate(-50%, -50%) scale(1.04);
 }
 
-.tour__cta-row {
+/* The controlled block. Ink ground so it reads as a plate set against the
+ * photograph rather than as a column of body copy, and it fills its grid cell
+ * so the two halves of the band close on the same top and bottom lines. */
+.tour__copy {
   grid-column: 1;
-  grid-row: 2;
-  align-self: end;
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--color-rule);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--color-dark);
+  color: var(--color-bone);
+}
+
+.tour__heading {
+  font-size: clamp(28px, 2.9vw, 42px);
+  color: var(--color-bone);
+  margin-bottom: var(--space-md);
+}
+
+.tour__sub {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--color-bone-muted);
 }
 
 .tour__cta {
-  display: inline-block;
-  padding: var(--space-2xs) 0;
+  display: block;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-hairline-dark);
+  width: 100%;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-accent-dark);
+  color: var(--color-accent);
   transition: color var(--transition-fast);
 }
 
 .tour__cta:hover {
-  color: var(--color-text);
+  color: var(--color-bone);
 }
 
+/* Stacked: the plate runs above the photo, both on the container grid. */
 @media (max-width: 1024px) {
-  .tour__grid {
+  .tour__layout {
     grid-template-columns: 1fr;
-    grid-template-rows: none;
-    row-gap: var(--space-xl);
+    gap: var(--space-lg);
   }
-  .tour__copy,
-  .tour__frame,
-  .tour__cta-row {
-    grid-column: auto;
-    grid-row: auto;
+  .tour--band .tour__frame {
+    grid-column: 1;
+    aspect-ratio: 16 / 9;
+  }
+  .tour__copy {
+    grid-column: 1;
+  }
+  .tour__copy {
+    padding: var(--space-lg);
   }
   .tour__heading {
-    font-size: clamp(32px, 5vw, 46px);
+    max-width: 20ch;
+  }
+  .tour__sub {
+    max-width: 62ch;
   }
 }
 

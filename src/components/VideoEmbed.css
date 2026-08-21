@@ -1,42 +1,49 @@
-/* The player carries the mass here, so this band runs one step tighter than
- * the standard section rhythm — that keeps the whole thing inside one desktop
- * fold. It rejoins the ladder at 768px. */
+/* Cinematic band: a short head, then a 21:9 stage with the model plate laid
+ * over it. The letterbox is what makes it cinema — the stage stays on the
+ * container grid rather than bleeding, so the band keeps the same left and
+ * right anchors as everything else and never fills the screen. It runs one
+ * step tighter than the standard ladder and rejoins it at 768px. */
 .video.section {
-  padding-block: var(--space-4xl);
+  padding-block: var(--space-4xl) var(--space-3xl);
 }
 
-/* Player wide on the left, copy in a narrow column on the right. The player
- * spans both rows, so the copy hangs off its top edge and the CTA sits on its
- * bottom edge — the slack falls between them. DOM order is copy, player, CTA,
- * which is also the order the stacked layout wants. */
-.video__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
-  grid-template-rows: auto 1fr;
-  column-gap: var(--gap-grid-wide);
+.video__head {
+  margin-bottom: var(--space-2xl);
 }
 
-.video__copy {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: start;
-}
-
+/* A step down from the full display clamp. At 92px the head outweighed the
+ * frame it introduces, and the band read as a headline with a video under it
+ * rather than as a walkthrough. */
 .video__heading {
-  font-size: clamp(30px, 3.3vw, 46px);
+  font-size: clamp(32px, 4.4vw, 62px);
   margin-bottom: var(--space-md);
+  max-width: 18ch;
 }
 
+/* One line. The old three-line paragraph in a 420px column was what made this
+ * band read as ordinary — the frame is the argument here, not the copy. */
 .video__sub {
-  margin-bottom: 0;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-bone-soft);
+  max-width: 52ch;
 }
 
+/* The stage is the positioning context only — the frame inside it owns the
+ * crop, so the spec plate can leave the frame and flow beneath it on a phone
+ * without being clipped by overflow. */
+.video__stage {
+  position: relative;
+  width: 100%;
+}
+
+/* 21:9 rather than 16:9 so the frame reads as a projection rather than an
+ * embedded player; the YouTube thumbnail is 16:9 and object-fit crops the top
+ * and bottom off it. */
 .video__frame {
   position: relative;
-  grid-column: 1;
-  grid-row: 1 / -1;
-  aspect-ratio: 16 / 9;
-  border: 1px solid var(--color-hairline-dark);
+  width: 100%;
+  aspect-ratio: 21 / 9;
   overflow: hidden;
   background: var(--color-dark-deep);
 }
@@ -49,7 +56,8 @@
 }
 
 .video__poster {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -60,16 +68,29 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition:
-    transform var(--transition-slow),
-    opacity var(--transition-slow);
-  opacity: 0.85;
+  transition: transform var(--transition-slow);
 }
 
 .video__poster:hover img,
 .video__poster:focus-visible img {
   transform: scale(1.03);
-  opacity: 1;
+}
+
+/* Grounds the bottom-left corner so the spec plate holds its contrast over
+ * whatever the frame happens to be, and feathers the top edge into the band.
+ * The bottom ramp is the load-bearing one: this thumbnail is a van on bright
+ * concrete, and the plate's mono labels are the smallest type on the band. */
+.video__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--color-scrim-soft), var(--color-scrim-none) 30%),
+    linear-gradient(
+      0deg,
+      var(--color-scrim-strong),
+      var(--color-scrim) 30%,
+      var(--color-scrim-none) 60%
+    );
 }
 
 .video__play {
@@ -80,8 +101,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 76px;
-  height: 76px;
+  width: 88px;
+  height: 88px;
   border-radius: var(--radius-full);
   background: var(--color-accent);
   color: var(--color-dark-deep);
@@ -90,8 +111,9 @@
     transform var(--transition-base);
 }
 
+/* Optical centring — a triangle's visual centre sits left of its bounding box. */
 .video__play svg {
-  margin-left: 4px;
+  margin-left: 5px;
 }
 
 .video__poster:hover .video__play,
@@ -100,10 +122,59 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-.video__cta-row {
-  grid-column: 2;
-  grid-row: 2;
-  align-self: end;
+/* Spec plate — brochure metadata inset from the frame's own bottom-left
+ * corner now that the stage sits on the grid rather than bleeding. */
+.video__plate {
+  position: absolute;
+  left: var(--space-xl);
+  right: var(--space-xl);
+  bottom: var(--space-lg);
+  pointer-events: none;
+}
+
+/* Bone, not bronze. The plate's top line sits highest in the frame, where the
+ * scrim is thinnest, and bronze measured 2.96:1 against this thumbnail's
+ * concrete — under the 4.5:1 floor for 12px type. Bone clears it on any
+ * thumbnail, and the bronze on this band stays where it is safe: the eyebrow
+ * on flat ink above, and the rule under this line. */
+.video__plate-model {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  color: var(--color-bone);
+  margin-bottom: var(--space-sm);
+}
+
+.video__specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-bronze-outline);
+  max-width: 640px;
+}
+
+.video__spec dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-bone-muted);
+  margin-bottom: 4px;
+}
+
+.video__spec dd {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--color-bone);
+  font-variant-numeric: tabular-nums;
+}
+
+.video__foot {
+  margin-top: var(--space-xl);
   padding-top: var(--space-md);
   border-top: 1px solid var(--color-hairline-dark);
 }
@@ -123,20 +194,14 @@
   color: var(--color-bone);
 }
 
+/* Below the desktop breakpoint 21:9 leaves a letterbox too shallow to read a
+ * spec plate in, so the stage steps back toward the source's own 16:9. */
 @media (max-width: 1024px) {
-  .video__grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-    row-gap: var(--space-xl);
+  .video__frame {
+    aspect-ratio: 16 / 9;
   }
-  .video__copy,
-  .video__frame,
-  .video__cta-row {
-    grid-column: auto;
-    grid-row: auto;
-  }
-  .video__heading {
-    font-size: clamp(32px, 5vw, 46px);
+  .video__specs {
+    gap: var(--space-xl);
   }
 }
 
@@ -147,5 +212,16 @@
   .video__play {
     width: 60px;
     height: 60px;
+  }
+  /* The plate would cover half a phone-width frame, so it moves below it. */
+  .video__plate {
+    position: static;
+    padding-top: var(--space-lg);
+  }
+  .video__specs {
+    gap: var(--space-lg);
+  }
+  .video__scrim {
+    background: linear-gradient(0deg, var(--color-scrim-soft), var(--color-scrim-none) 46%);
   }
 }

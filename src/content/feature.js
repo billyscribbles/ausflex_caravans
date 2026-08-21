@@ -3,6 +3,9 @@ export const feature = {
   eyebrow: 'Craft',
   heading: "What you can't see is what keeps you out there.",
   body: 'Every Ausflex starts on the factory floor in Campbellfield, and the parts you never look at get the most attention.',
+  // One bronze technical line under the head — the spec summary a brochure
+  // prints before it explains anything.
+  techLine: '75mm box arms · 12in brakes · Pedders coils · 5-year warranty',
   points: [
     {
       title: 'Australian-steel chassis',

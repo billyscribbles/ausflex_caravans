@@ -1,66 +1,60 @@
-/* Full-width credibility strip — mono micro-type between two hairlines. */
+/* Credibility strip under the hero. The four facts used to run as 12px mono
+ * on one line, which put the site's strongest claims in its smallest type;
+ * they are set as display values over mono labels now, so the strip reads
+ * before it is read. */
 .stats {
-  border-top: 1px solid var(--color-hairline);
   border-bottom: 1px solid var(--color-hairline);
-  padding: var(--space-lg) 0;
+  padding: var(--space-2xl) 0;
 }
 
 .stats__grid {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-sm) var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-lg);
 }
 
+/* Each fact opens on a hairline, matching the chassis rows, the process steps
+ * and the range cards — one rule system across the page. */
 .stats__item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2xs);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
 }
 
 .stats__value {
-  color: var(--color-accent-dark);
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.2vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--color-text);
+  margin-bottom: var(--space-2xs);
   white-space: nowrap;
 }
 
 .stats__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.6;
   color: var(--color-muted);
 }
 
-/* Tablet: four one-per-line rows made the strip taller than the copy above it,
- * so it pairs up. Each item stacks its value over its label — side by side in
- * a half-width column, the label had nowhere to go. */
 @media (max-width: 768px) {
   .stats {
-    padding: var(--space-md) 0;
+    padding: var(--space-xl) 0;
   }
   .stats__grid {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md) var(--space-sm);
-  }
-  .stats__item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    gap: var(--space-lg) var(--space-md);
   }
 }
 
-/* Phone: a half column is ~150px, and mono at this tracking breaks a label
- * like "manufacturing heritage" across three lines in it. Back to full-width
- * rows, value and label on one line. */
-@media (max-width: 620px) {
+/* A half column on a small phone is ~150px, and mono at this tracking breaks a
+ * label like "manufacturing heritage" across three lines in it. */
+@media (max-width: 480px) {
   .stats__grid {
     grid-template-columns: 1fr;
-    gap: var(--space-xs);
-  }
-  .stats__item {
-    flex-direction: row;
-    align-items: baseline;
-    gap: var(--space-2xs);
+    gap: var(--space-md);
   }
 }
