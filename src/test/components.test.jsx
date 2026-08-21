@@ -39,7 +39,12 @@ describe('Navbar — renders brand + nav from site.config', () => {
 
 describe('VirtualTour with multiple tours', () => {
   const tours = [
-    { id: 'a', title: 'Explorer 21', embedUrl: 'https://kuula.co/share/a', poster: '/images/x.jpg' },
+    {
+      id: 'a',
+      title: 'Explorer 21',
+      embedUrl: 'https://kuula.co/share/a',
+      poster: '/images/x.jpg',
+    },
     { id: 'b', title: 'Sea Breeze', embedUrl: 'https://kuula.co/share/b', poster: '/images/y.jpg' },
   ]
 
