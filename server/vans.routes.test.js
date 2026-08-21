@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import request from 'supertest'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hashPassword } from './auth.js'
@@ -9,6 +9,13 @@ import { hashPassword } from './auth.js'
 const PASSWORD = 'test-password-123'
 // scrypt is deliberately slow — hash once for the whole file, not per test.
 const HASH = await hashPassword(PASSWORD)
+
+// Smallest valid PNG — multer sniffs the mimetype from the part headers, but a
+// real byte payload keeps the test honest about what lands on disk.
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+)
 
 let dir
 let app
@@ -201,5 +208,153 @@ describe('POST /api/vans/reorder', () => {
   it('requires an ids array', async () => {
     const cookie = await login()
     await request(app).post('/api/vans/reorder').set('Cookie', cookie).send({}).expect(400)
+  })
+})
+
+describe('POST /api/vans/:id/image', () => {
+  it('sets the hero image from an upload', async () => {
+    const cookie = await login()
+    const target = firstVan()
+
+    const res = await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', PNG, 'hero.png')
+      .expect(200)
+
+    expect(res.body.van.image).toMatch(/^\/uploads\/.+\.png$/)
+    expect(store.read().vans.items.find((v) => v.id === target.id).image).toBe(res.body.van.image)
+  })
+
+  it('sets the floorplan independently of the hero image', async () => {
+    const cookie = await login()
+    const target = firstVan()
+    const originalHero = target.image
+
+    const res = await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'floorplan')
+      .attach('file', PNG, 'plan.png')
+      .expect(200)
+
+    expect(res.body.van.floorplan).toMatch(/^\/uploads\//)
+    expect(res.body.van.image).toBe(originalHero)
+  })
+
+  it('deletes the file it replaced, but never a seeded /images path', async () => {
+    const cookie = await login()
+    const target = firstVan()
+    expect(target.image.startsWith('/images/')).toBe(true)
+
+    const first = await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', PNG, 'one.png')
+      .expect(200)
+
+    // The seeded /images/ path is part of the build; nothing was unlinked.
+    expect(await readdir(join(dir, 'uploads'))).toHaveLength(1)
+
+    await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', PNG, 'two.png')
+      .expect(200)
+
+    // The first upload replaced itself rather than accumulating.
+    const files = await readdir(join(dir, 'uploads'))
+    expect(files).toHaveLength(1)
+    expect(files[0]).not.toBe(first.body.van.image.split('/').pop())
+  })
+
+  it('rejects an unknown field and a non-image', async () => {
+    const cookie = await login()
+    const target = firstVan()
+
+    await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'blurb')
+      .attach('file', PNG, 'x.png')
+      .expect(400)
+
+    await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', Buffer.from('<html>hi</html>'), {
+        filename: 'x.html',
+        contentType: 'text/html',
+      })
+      .expect(400)
+  })
+
+  it('404s an unknown van and 401s without a session', async () => {
+    const cookie = await login()
+    await request(app)
+      .post('/api/vans/nope/image')
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', PNG, 'x.png')
+      .expect(404)
+
+    await request(app)
+      .post(`/api/vans/${firstVan().id}/image`)
+      .field('field', 'image')
+      .attach('file', PNG, 'x.png')
+      .expect(401)
+  })
+})
+
+describe('DELETE /api/vans/:id', () => {
+  it('removes the van, its gallery rows and their files', async () => {
+    const cookie = await login()
+    const target = firstVan()
+    const collection = `van:${target.id}`
+
+    await request(app)
+      .post('/api/photos')
+      .set('Cookie', cookie)
+      .field('collection', collection)
+      .attach('file', PNG, 'gallery.png')
+      .expect(201)
+
+    await request(app)
+      .post(`/api/vans/${target.id}/image`)
+      .set('Cookie', cookie)
+      .field('field', 'image')
+      .attach('file', PNG, 'hero.png')
+      .expect(200)
+
+    expect(await readdir(join(dir, 'uploads'))).toHaveLength(2)
+
+    await request(app).delete(`/api/vans/${target.id}`).set('Cookie', cookie).expect(200)
+
+    expect(store.read().vans.items.find((v) => v.id === target.id)).toBeUndefined()
+    expect(store.read().photos.some((p) => p.collection === collection)).toBe(false)
+    expect(await readdir(join(dir, 'uploads'))).toHaveLength(0)
+  })
+
+  it('leaves other vans and the named collections alone', async () => {
+    const cookie = await login()
+    const [target, survivor] = store.read().vans.items
+    const interiorsBefore = store.read().photos.filter((p) => p.collection === 'interiors').length
+
+    await request(app).delete(`/api/vans/${target.id}`).set('Cookie', cookie).expect(200)
+
+    expect(store.read().vans.items.find((v) => v.id === survivor.id)).toBeTruthy()
+    expect(store.read().photos.filter((p) => p.collection === 'interiors')).toHaveLength(
+      interiorsBefore,
+    )
+  })
+
+  it('404s an unknown van and 401s without a session', async () => {
+    const cookie = await login()
+    await request(app).delete('/api/vans/nope').set('Cookie', cookie).expect(404)
+    await request(app).delete(`/api/vans/${firstVan().id}`).expect(401)
   })
 })

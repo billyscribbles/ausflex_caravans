@@ -1,12 +1,26 @@
 import { Router } from 'express'
 import { randomUUID } from 'node:crypto'
-import { read, mutate } from '../store.js'
-import { uniqueSlug, validateVanPatch, MAX_PAGE_CHARS } from '../validate.js'
+import multer from 'multer'
+import { writeFile, unlink } from 'node:fs/promises'
+import { join, basename } from 'node:path'
+import { read, mutate, uploadsDir } from '../store.js'
+import {
+  uniqueSlug,
+  validateVanPatch,
+  extForMime,
+  MAX_UPLOAD_BYTES,
+  MAX_PAGE_CHARS,
+} from '../validate.js'
 import { requireAuth } from './auth.js'
 
 const TEXT_FIELDS = ['slug', 'name', 'length', 'tag', 'meta', 'blurb', 'imageAlt', 'floorplanAlt']
 const LIST_FIELDS = ['description', 'specs']
 const PAGE_FIELDS = ['eyebrow', 'heading', 'sub']
+const IMAGE_FIELDS = ['image', 'floorplan']
+
+// Same settings as photos.js: the browser has already resized, and memory
+// storage lets us validate the type before anything touches disk.
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES } })
 
 const router = Router()
 router.use(requireAuth)
@@ -16,6 +30,21 @@ const findVan = (id) => read().vans.items.find((v) => v.id === id)
 // Signals a slug collision from inside a mutate() callback, before any field
 // is written, so a losing request never persists a partial edit.
 class SlugTakenError extends Error {}
+
+// Signals that the van a request is operating on was deleted by a concurrent
+// request between our pre-check and the mutate() callback running. Thrown
+// before any field is written, so the losing request never touches a
+// vanished record — see the module-level check in each of the two routes
+// below for why this matters here specifically.
+class VanGoneError extends Error {}
+
+// Seeded rows point at /images/*, which ships with the build and must stay.
+// Only uploaded files are ours to remove.
+async function removeUpload(src) {
+  if (typeof src === 'string' && src.startsWith('/uploads/')) {
+    await unlink(join(uploadsDir(), basename(src))).catch(() => {})
+  }
+}
 
 // Literal segments must register before /:id, or "page" and "reorder" are read
 // as van ids. Same ordering rule tours.js follows for /reorder.
@@ -146,6 +175,103 @@ router.patch('/:id', async (req, res) => {
   }
 
   res.json({ van })
+})
+
+router.post('/:id/image', upload.single('file'), async (req, res) => {
+  const field = req.body?.field
+  if (!IMAGE_FIELDS.includes(field)) {
+    res.status(400).json({ error: 'field must be image or floorplan' })
+    return
+  }
+
+  const existing = findVan(req.params.id)
+  if (!existing) {
+    res.status(404).json({ error: 'not found' })
+    return
+  }
+
+  const ext = extForMime(req.file?.mimetype)
+  if (!req.file || !ext) {
+    res.status(400).json({ error: 'file must be a webp, jpeg or png image' })
+    return
+  }
+
+  // The filename is ours, never the client's — see photos.js for why.
+  const previous = existing[field]
+  const name = `${randomUUID()}.${ext}`
+  await writeFile(join(uploadsDir(), name), req.file.buffer)
+
+  let van
+  try {
+    van = await mutate((content) => {
+      const target = content.vans.items.find((v) => v.id === req.params.id)
+      // The existence check above ran outside mutate()'s queue, so a
+      // concurrent DELETE could have removed this van in the meantime.
+      // Re-checked here, before the write, so we never assign onto a
+      // vanished record.
+      if (!target) throw new VanGoneError()
+      target[field] = `/uploads/${name}`
+      return target
+    })
+  } catch (err) {
+    if (err instanceof VanGoneError) {
+      // The file already landed on disk for a van that no longer exists by
+      // the time the write was applied — clean it up rather than leaving an
+      // orphan nothing will ever reach.
+      await removeUpload(`/uploads/${name}`)
+      res.status(404).json({ error: 'not found' })
+      return
+    }
+    throw err
+  }
+
+  // Only after the new path is committed, so a failed unlink cannot orphan the
+  // record from its image.
+  await removeUpload(previous)
+
+  res.json({ van })
+})
+
+router.delete('/:id', async (req, res) => {
+  if (!findVan(req.params.id)) {
+    res.status(404).json({ error: 'not found' })
+    return
+  }
+
+  const collection = `van:${req.params.id}`
+
+  // Gathered from inside the mutate() callback rather than from the pre-check
+  // above, so a concurrent upload landing in between (a new image path, a new
+  // gallery photo) is still captured — the files removed below always match
+  // what was actually committed, not a stale snapshot.
+  let removed
+  try {
+    removed = await mutate((content) => {
+      const target = content.vans.items.find((v) => v.id === req.params.id)
+      if (!target) throw new VanGoneError()
+
+      const files = [target.image, target.floorplan]
+      content.photos = content.photos.filter((p) => {
+        if (p.collection !== collection) return true
+        files.push(p.src)
+        return false
+      })
+      content.vans.items = content.vans.items.filter((v) => v.id !== req.params.id)
+      return files
+    })
+  } catch (err) {
+    if (err instanceof VanGoneError) {
+      res.status(404).json({ error: 'not found' })
+      return
+    }
+    throw err
+  }
+
+  for (const src of removed) {
+    await removeUpload(src)
+  }
+
+  res.json({ ok: true })
 })
 
 export default router
