@@ -1,95 +1,99 @@
+/* Fixed nav that dissolves into the page — a gradient, not a solid bar.
+ * Once scrolled it firms up so links stay legible over passing content. */
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  background: rgba(18, 16, 13, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition:
-    border-color var(--transition-base),
-    background var(--transition-base);
+  background: linear-gradient(to bottom, rgba(10, 9, 8, 0.92), rgba(10, 9, 8, 0));
+  transition: background var(--transition-base);
 }
 
 .navbar.scrolled {
-  background: rgba(18, 16, 13, 0.98);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
+  background: rgba(10, 9, 8, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-hairline-dark);
 }
 
 .navbar__inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 32px;
-  height: 76px;
+  padding: 26px 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.navbar.scrolled .navbar__inner {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
 .navbar__logo {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 19px;
-  color: #fff;
   display: flex;
-  align-items: center;
-  gap: 7px;
-  letter-spacing: -0.01em;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.12em;
+  color: var(--color-bone);
 }
 
 .navbar__logo-img {
-  height: 30px;
+  height: 34px;
   width: auto;
 }
 
 .navbar__logo-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: var(--color-accent);
   border-radius: 50%;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 34px;
+  gap: 40px;
 }
 
 .navbar__link {
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-weight: 400;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-bone-soft);
   transition: color var(--transition-fast);
 }
 
 .navbar__link:hover {
-  color: #fff;
+  color: var(--color-accent);
 }
 
 .navbar__cta {
-  background: transparent;
-  color: var(--color-accent);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 11px 22px;
-  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  padding: 13px 26px;
+  border: 1px solid var(--color-bronze-outline);
   border-radius: var(--radius-full);
   transition:
     background var(--transition-fast),
     color var(--transition-fast),
-    transform var(--transition-fast);
+    border-color var(--transition-fast);
 }
 
 .navbar__cta:hover {
   background: var(--color-accent);
   color: var(--color-dark-deep);
-  transform: translateY(-1px);
+  border-color: var(--color-accent);
 }
 
 .navbar__hamburger {
@@ -102,29 +106,28 @@
 .navbar__hamburger span {
   display: block;
   width: 24px;
-  height: 2px;
-  background: #fff;
-  border-radius: 2px;
+  height: 1px;
+  background: var(--color-bone);
   transition:
     transform var(--transition-base),
     opacity var(--transition-base);
 }
 
 .navbar__hamburger.open span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+  transform: translateY(6px) rotate(45deg);
 }
 .navbar__hamburger.open span:nth-child(2) {
   opacity: 0;
 }
 .navbar__hamburger.open span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .navbar__mobile {
   display: none;
   flex-direction: column;
   background: var(--color-dark-deep);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--color-hairline-dark);
   overflow: hidden;
   max-height: 0;
   transition: max-height 300ms ease;
@@ -132,44 +135,57 @@
 
 .navbar__mobile.open {
   max-height: 500px;
+  border-bottom: 1px solid var(--color-hairline-dark);
 }
 
 .navbar__mobile-link {
   display: block;
-  padding: 14px 32px;
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition:
-    color var(--transition-fast),
-    background var(--transition-fast);
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-bone-soft);
+  border-bottom: 1px solid var(--color-hairline-dark);
+  transition: color var(--transition-fast);
 }
 
 .navbar__mobile-link:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-accent);
 }
 
 .navbar__mobile-cta {
-  margin: 16px 32px 24px;
+  margin: 16px 20px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   background: var(--color-accent);
   color: var(--color-dark-deep);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 13px 24px;
+  padding: 14px 24px;
   border-radius: var(--radius-full);
   text-align: center;
   transition: background var(--transition-fast);
 }
 
 .navbar__mobile-cta:hover {
-  background: #cbb08a;
+  background: var(--color-bone);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+  .navbar__inner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .navbar__links {
+    gap: 28px;
+  }
+}
+
+@media (max-width: 980px) {
+  .navbar {
+    background: rgba(10, 9, 8, 0.92);
+  }
   .navbar__links {
     display: none;
   }
@@ -180,10 +196,9 @@
     display: flex;
   }
   .navbar__inner {
-    padding: 0 20px;
-    height: 68px;
+    padding: 16px 20px;
   }
   .navbar__logo-img {
-    height: 26px;
+    height: 28px;
   }
 }
