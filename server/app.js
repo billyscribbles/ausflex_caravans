@@ -8,6 +8,7 @@ import contentRoutes from './routes/content.js'
 import authRoutes, { requireAuth } from './routes/auth.js'
 import photoRoutes from './routes/photos.js'
 import tourRoutes from './routes/tours.js'
+import vanRoutes from './routes/vans.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(root, 'dist')
@@ -43,6 +44,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes)
   app.use('/api/photos', photoRoutes)
   app.use('/api/tours', tourRoutes)
+  app.use('/api/vans', vanRoutes)
 
   // Railway volumes are not backed up. This is the client's escape hatch for
   // the metadata; the image files themselves need manual recovery.
