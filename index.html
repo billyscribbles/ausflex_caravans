@@ -4,13 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
-    <meta name="theme-color" content="#191713" />
+    <meta name="theme-color" content="#0A0908" />
 
-    <!-- Self-hosted fonts — preloaded to avoid render-blocking font fetches. -->
-    <link rel="preload" href="/fonts/manrope-var.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- LCP: start the hero photo download before React renders the <img>.
+         Keep in sync with hero.image / hero.imageSrcset in src/content/hero.js. -->
     <link
       rel="preload"
-      href="/fonts/hanken-grotesk-var.woff2"
+      as="image"
+      href="/images/hero-exterior-studio.jpg"
+      imagesrcset="/images/hero-exterior-studio-960.jpg 960w, /images/hero-exterior-studio.jpg 1672w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+
+    <!-- Self-hosted fonts — preloaded to avoid render-blocking font fetches. -->
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-mono-400.woff2"
       as="font"
       type="font/woff2"
       crossorigin
