@@ -13,6 +13,10 @@ router.use(requireAuth)
 
 const findVan = (id) => read().vans.items.find((v) => v.id === id)
 
+// Signals a slug collision from inside a mutate() callback, before any field
+// is written, so a losing request never persists a partial edit.
+class SlugTakenError extends Error {}
+
 // Literal segments must register before /:id, or "page" and "reorder" are read
 // as van ids. Same ordering rule tours.js follows for /reorder.
 router.patch('/page', async (req, res) => {
@@ -108,27 +112,38 @@ router.patch('/:id', async (req, res) => {
     return
   }
 
-  if (
-    req.body?.slug !== undefined &&
-    read().vans.items.some((v) => v.id !== req.params.id && v.slug === req.body.slug)
-  ) {
-    res.status(400).json({ error: 'another van already uses that URL' })
-    return
-  }
-
-  const van = await mutate((content) => {
-    const target = content.vans.items.find((v) => v.id === req.params.id)
-    for (const field of TEXT_FIELDS) {
-      if (req.body?.[field] !== undefined) target[field] = req.body[field]
-    }
-    // A trailing blank paragraph is a typing artefact, not an instruction.
-    for (const field of LIST_FIELDS) {
-      if (req.body?.[field] !== undefined) {
-        target[field] = req.body[field].map((entry) => entry.trim()).filter(Boolean)
+  let van
+  try {
+    van = await mutate((content) => {
+      const target = content.vans.items.find((v) => v.id === req.params.id)
+      // Re-checked here, against the live content the callback receives,
+      // rather than before mutate() is called: two overlapping PATCHes could
+      // otherwise both pass a pre-check and land on the same slug. Thrown
+      // before any field is written, so a losing request touches nothing.
+      if (
+        req.body?.slug !== undefined &&
+        content.vans.items.some((v) => v.id !== req.params.id && v.slug === req.body.slug)
+      ) {
+        throw new SlugTakenError()
       }
+      for (const field of TEXT_FIELDS) {
+        if (req.body?.[field] !== undefined) target[field] = req.body[field]
+      }
+      // A trailing blank paragraph is a typing artefact, not an instruction.
+      for (const field of LIST_FIELDS) {
+        if (req.body?.[field] !== undefined) {
+          target[field] = req.body[field].map((entry) => entry.trim()).filter(Boolean)
+        }
+      }
+      return target
+    })
+  } catch (err) {
+    if (err instanceof SlugTakenError) {
+      res.status(400).json({ error: 'another van already uses that URL' })
+      return
     }
-    return target
-  })
+    throw err
+  }
 
   res.json({ van })
 })

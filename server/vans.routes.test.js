@@ -157,11 +157,18 @@ describe('PATCH /api/vans/:id', () => {
       .send({ slug: 'Not A Slug' })
       .expect(400)
 
+    // name rides along with the colliding slug so the assertion below can
+    // prove the whole write was rejected, not just the slug field — the
+    // collision check runs inside the mutate() callback, before any field on
+    // the target is touched, so a losing request must leave everything as it
+    // was.
     await request(app)
       .patch(`/api/vans/${first.id}`)
       .set('Cookie', cookie)
-      .send({ slug: second.slug })
+      .send({ slug: second.slug, name: 'Should Not Persist' })
       .expect(400)
+
+    expect(store.read().vans.items.find((v) => v.id === first.id).name).toBe(first.name)
   })
 
   it('allows a van to keep its own slug', async () => {
