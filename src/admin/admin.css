@@ -762,3 +762,57 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --------------------------------------------------------------- Van list */
+
+/* Van list rows: thumbnail beside identity, so the range reads as a range. */
+.admin-vanrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.admin-vanrow__thumb {
+  width: 96px;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.admin-vanrow__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-vanrow__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-vanrow__meta,
+.admin-vanrow__url {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.admin-vanrow__url {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Deleting a van kills a live URL, so the confirm is a typed name rather than
+ * a single click. It needs more room than the icon-pair confirm. */
+.admin-confirm--typed {
+  display: grid;
+  gap: var(--space-xs);
+  width: 100%;
+}
+
+.admin-confirm__actions {
+  display: flex;
+  gap: var(--space-xs);
+}

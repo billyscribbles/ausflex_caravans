@@ -18,6 +18,30 @@ function renderAdmin() {
 const EMPTY_CONTENT = {
   gallery: { interiors: [], exteriors: [], page: [] },
   tours: [],
+  vans: { eyebrow: '', heading: '', sub: '', items: [] },
+}
+
+const VAN = {
+  id: 'van-1',
+  slug: 'tuff-mudder',
+  name: 'Tuff Mudder',
+  length: '12ft',
+  tag: 'Off-road hybrid',
+  meta: 'Sleeps 2',
+  blurb: 'Small in size but big in features.',
+  description: ['First paragraph.', 'Second paragraph.'],
+  specs: ['12ft body', 'Single axle'],
+  image: '/images/photo-tuff-mudder.jpg',
+  imageAlt: 'Tuff Mudder',
+  floorplan: null,
+  floorplanAlt: '',
+  photos: [],
+  sortOrder: 0,
+}
+
+const WITH_VAN = {
+  ...EMPTY_CONTENT,
+  vans: { eyebrow: 'The Range', heading: 'A van for every adventure.', sub: 'Sub.', items: [VAN] },
 }
 
 function mockFetch(handlers) {
@@ -146,6 +170,7 @@ describe('AdminPage', () => {
       ],
     },
     tours: [],
+    vans: { eyebrow: '', heading: '', sub: '', items: [] },
   }
 
   it('lists photos for the selected collection with editable alt text', async () => {
@@ -201,6 +226,7 @@ describe('AdminPage', () => {
         sortOrder: 1,
       },
     ],
+    vans: { eyebrow: '', heading: '', sub: '', items: [] },
   }
 
   it('lists tours and marks the first as the one on the home page', async () => {
@@ -243,5 +269,69 @@ describe('AdminPage', () => {
     )
     // Refused client-side: no request was ever made.
     expect(spy).not.toHaveBeenCalledWith('/api/tours', expect.anything())
+  })
+})
+
+describe('AdminPage — vans', () => {
+  it('lists the range with a count in the rail', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => WITH_VAN },
+      }),
+    )
+    renderAdmin()
+
+    const tab = await screen.findByRole('tab', { name: /vans/i })
+    await userEvent.click(tab)
+
+    expect(await screen.findByText('Tuff Mudder')).toBeInTheDocument()
+    expect(screen.getByText('/vans/tuff-mudder')).toBeInTheDocument()
+  })
+
+  it('adds a van by name', async () => {
+    const post = { ok: true, json: async () => ({ van: { ...VAN, id: 'van-2' } }) }
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => WITH_VAN },
+        'POST /api/vans': post,
+      }),
+    )
+    renderAdmin()
+
+    await userEvent.click(await screen.findByRole('tab', { name: /vans/i }))
+    await userEvent.type(await screen.findByLabelText(/new van name/i), 'Desert Runner')
+    await userEvent.click(screen.getByRole('button', { name: /add van/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/vans', expect.anything()))
+  })
+
+  it('requires the van name to be typed before deleting', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => WITH_VAN },
+        'DELETE /api/vans/van-1': { ok: true, json: async () => ({ ok: true }) },
+      }),
+    )
+    renderAdmin()
+
+    await userEvent.click(await screen.findByRole('tab', { name: /vans/i }))
+    await userEvent.click(await screen.findByRole('button', { name: /delete tuff mudder/i }))
+
+    const confirm = screen.getByRole('button', { name: /confirm delete/i })
+    expect(confirm).toBeDisabled()
+
+    await userEvent.type(screen.getByLabelText(/type the van name/i), 'Tuff Mudder')
+    expect(confirm).toBeEnabled()
+
+    await userEvent.click(confirm)
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith('/api/vans/van-1', { method: 'DELETE' }),
+    )
   })
 })
