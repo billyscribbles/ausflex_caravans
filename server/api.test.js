@@ -47,6 +47,23 @@ describe('GET /api/content', () => {
 
     await request(app).get('/api/content').set('If-None-Match', etag).expect(304)
   })
+
+  it('returns the van range sorted, with each gallery attached', async () => {
+    const res = await request(app).get('/api/content').expect(200)
+
+    expect(res.body.vans.heading).toBeTruthy()
+    expect(res.body.vans.items.length).toBeGreaterThan(0)
+
+    const orders = res.body.vans.items.map((v) => v.sortOrder)
+    expect(orders).toEqual([...orders].sort((a, b) => a - b))
+
+    const withPhotos = res.body.vans.items.find((v) => v.photos.length > 0)
+    expect(withPhotos).toBeTruthy()
+    expect(withPhotos.photos[0].src).toBeTruthy()
+
+    // The van collections never leak into the public gallery keys.
+    expect(Object.keys(res.body.gallery)).toEqual(['interiors', 'exteriors', 'page'])
+  })
 })
 
 describe('security headers', () => {
