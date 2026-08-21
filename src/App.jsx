@@ -33,6 +33,7 @@ const VansPage = lazyWithRetry(() => import('./pages/VansPage.jsx'))
 const VanPage = lazyWithRetry(() => import('./pages/VanPage.jsx'))
 const WhyPage = lazyWithRetry(() => import('./pages/WhyPage.jsx'))
 const GalleryPage = lazyWithRetry(() => import('./pages/GalleryPage.jsx'))
+const TourPage = lazyWithRetry(() => import('./pages/TourPage.jsx'))
 const AboutPage = lazyWithRetry(() => import('./pages/AboutPage.jsx'))
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'))
 const LegalPage = lazyWithRetry(() => import('./pages/LegalPage.jsx'))
@@ -75,6 +76,7 @@ export default function App() {
               <Route path="/vans/:slug" element={<VanPage />} />
               <Route path="/why-ausflex" element={<WhyPage />} />
               <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/360" element={<TourPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/privacy" element={<LegalPage type="privacy" />} />

@@ -16,6 +16,7 @@ export const site = {
     { label: 'Why Ausflex', to: '/why-ausflex' },
     { label: 'About Us', to: '/about' },
     { label: 'Gallery', to: '/gallery' },
+    { label: '360', to: '/360' },
     { label: 'Contact', to: '/contact' },
   ],
 
@@ -34,6 +35,7 @@ export const site = {
           { label: 'Why Ausflex', to: '/why-ausflex' },
           { label: 'About Us', to: '/about' },
           { label: 'Gallery', to: '/gallery' },
+          { label: '360 Tour', to: '/360' },
           { label: 'Contact', to: '/contact' },
         ],
       },

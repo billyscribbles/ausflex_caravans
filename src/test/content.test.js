@@ -10,12 +10,17 @@ import { testimonials } from '../content/testimonials.js'
 import { faq } from '../content/faq.js'
 import { legal } from '../content/legal.js'
 import { video } from '../content/video.js'
+import { tour } from '../content/tour.js'
 import { contactSection } from '../content/contact.js'
 import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
-  it('hero has a headline and a primary CTA', () => {
-    expect(hero.headline).toBeTruthy()
+  it('hero has headline lines and a primary CTA', () => {
+    expect(hero.headline.length).toBeGreaterThan(0)
+    for (const line of hero.headline) {
+      expect(line.lead).toBeTruthy()
+      expect(line.accent).toBeTruthy()
+    }
     expect(hero.primaryCta.label).toBeTruthy()
     expect(hero.primaryCta.to).toBeTruthy()
   })
@@ -66,6 +71,20 @@ describe('content — section copy contract', () => {
     expect(video.youtubeId).toMatch(/^[\w-]{11}$/)
     expect(video.title).toBeTruthy()
     expect(video.heading).toBeTruthy()
+  })
+
+  it('tour has a Kuula embed URL, an accessible title and a poster', () => {
+    expect(tour.src).toContain('https://kuula.co/share/')
+    expect(tour.title).toBeTruthy()
+    expect(tour.heading).toBeTruthy()
+    expect(tour.launchLabel).toBeTruthy()
+    expect(tour.poster).toMatch(/^\/images\//)
+  })
+
+  it('tour has hero copy for the dedicated /360 page', () => {
+    expect(tour.page.eyebrow).toBeTruthy()
+    expect(tour.page.heading).toBeTruthy()
+    expect(tour.page.sub).toBeTruthy()
   })
 
   it('contact has a heading, form copy and an embeddable map', () => {
