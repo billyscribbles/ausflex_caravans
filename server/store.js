@@ -3,7 +3,7 @@
 // crash mid-write can never leave a truncated file.
 import { readFile, writeFile, rename, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { buildSeed } from './seed.js'
+import { buildSeed, buildVans } from './seed.js'
 
 const DATA_DIR = process.env.DATA_DIR || './.data'
 const FILE = join(DATA_DIR, 'content.json')
@@ -26,20 +26,44 @@ async function persist() {
   await rename(tmp, FILE)
 }
 
+function hasVans(parsed) {
+  return Boolean(parsed?.vans) && Array.isArray(parsed.vans.items)
+}
+
 export async function load() {
   await mkdir(UPLOADS, { recursive: true })
+
+  let parsed = null
   try {
-    const parsed = JSON.parse(await readFile(FILE, 'utf8'))
-    if (!Array.isArray(parsed.photos) || !Array.isArray(parsed.tours)) {
-      throw new Error('malformed content.json')
-    }
-    cache = parsed
+    parsed = JSON.parse(await readFile(FILE, 'utf8'))
+    if (!Array.isArray(parsed.photos) || !Array.isArray(parsed.tours)) parsed = null
   } catch {
+    parsed = null
+  }
+
+  if (!parsed) {
     // Missing or corrupt — rebuild from the static content files rather than
     // booting with an empty site.
     cache = buildSeed()
     await persist()
+    return cache
   }
+
+  cache = parsed
+
+  // A content.json written before vans existed passes the checks above, so it
+  // would otherwise boot with an undefined range. Backfill it in place; a full
+  // rebuild here would discard the client's uploaded photos.
+  if (!hasVans(parsed)) {
+    const seeded = buildVans()
+    cache.vans = seeded.vans
+    cache.photos = [
+      ...cache.photos.filter((p) => !String(p.collection ?? '').startsWith('van:')),
+      ...seeded.photos,
+    ]
+    await persist()
+  }
+
   return cache
 }
 

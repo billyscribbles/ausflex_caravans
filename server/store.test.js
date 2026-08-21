@@ -32,7 +32,12 @@ describe('store', () => {
     expect(content.photos.length).toBeGreaterThan(0)
     expect(content.tours.length).toBeGreaterThan(0)
 
-    const collections = new Set(content.photos.map((p) => p.collection))
+    // Van gallery photos also land in this array (their own `van:<id>`
+    // collections — see the dedicated van tests below), so scope this check
+    // to the base gallery collections.
+    const collections = new Set(
+      content.photos.filter((p) => !p.collection.startsWith('van:')).map((p) => p.collection),
+    )
     expect(collections).toEqual(new Set(['interiors', 'exteriors', 'page']))
 
     // Seeded rows point at build-served paths, not uploads.
@@ -105,5 +110,66 @@ describe('store', () => {
       }),
     ).rejects.toThrow('boom')
     await expect(store.mutate((c) => c.photos.length)).resolves.toBeGreaterThan(0)
+  })
+
+  it('seeds the van range from the static content file', async () => {
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.vans.heading).toBeTruthy()
+    expect(content.vans.items.length).toBeGreaterThan(0)
+
+    for (const van of content.vans.items) {
+      expect(van.id).toBeTruthy()
+      expect(van.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      expect(Array.isArray(van.description)).toBe(true)
+      expect(Array.isArray(van.specs)).toBe(true)
+      // Gallery photos live in the photos array, never nested on the van.
+      expect(van.photos).toBeUndefined()
+    }
+
+    const ids = content.vans.items.map((v) => v.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('seeds each van gallery photo under its own van: collection', async () => {
+    const store = await freshStore()
+    const content = await store.load()
+
+    const vanRows = content.photos.filter((p) => p.collection.startsWith('van:'))
+    expect(vanRows.length).toBeGreaterThan(0)
+    expect(vanRows.every((p) => p.src.startsWith('/images/'))).toBe(true)
+
+    const known = new Set(content.vans.items.map((v) => `van:${v.id}`))
+    expect(vanRows.every((p) => known.has(p.collection))).toBe(true)
+  })
+
+  it('migrates a content.json that predates vans without discarding uploads', async () => {
+    const uploaded = {
+      id: 'kept-photo',
+      collection: 'page',
+      src: '/uploads/kept.webp',
+      alt: 'An upload the client made',
+      caption: '',
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: 1, photos: [uploaded], tours: [] }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    // The migration backfills vans...
+    expect(content.vans.items.length).toBeGreaterThan(0)
+    // ...without rebuilding the file from scratch, which would orphan this.
+    expect(content.photos.find((p) => p.id === 'kept-photo')).toEqual(uploaded)
+    expect(content.tours).toEqual([])
+
+    // And it persists, so the next boot does no work.
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.vans.items.length).toBe(content.vans.items.length)
   })
 })
