@@ -4,15 +4,8 @@ import { site } from '../config/site.config.js'
 import './Navbar.css'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     setMenuOpen(false)
@@ -21,7 +14,7 @@ export default function Navbar() {
   const { brand, nav, cta } = site
 
   return (
-    <header className={`navbar${scrolled ? ' scrolled' : ''}`}>
+    <header className="navbar">
       <div className="navbar__inner">
         <Link to="/" className="navbar__logo" aria-label={brand.name}>
           {brand.logoSrc ? (

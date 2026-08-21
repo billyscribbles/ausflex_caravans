@@ -1,14 +1,18 @@
 export const hero = {
-  eyebrow: 'Australian Made · Campbellfield, Victoria',
-  headline: 'Built to last.',
-  headlineAccent: 'Built to explore.',
-  subheadline:
-    "Victoria's boutique caravan manufacturer. Every Ausflex is made to order on a heavy-duty Australian chassis, with refined interiors and the muscle to go off-road.",
-  primaryCta: { label: 'Explore the range', to: '/vans' },
-  secondaryCta: { label: 'Book a factory visit', to: '/contact' },
-  trust: ['Est. 1972', '5-year chassis & suspension warranty', 'AU · NZ dealer network'],
+  eyebrow: '',
+  // Each line renders as lead + accented tail, per the approved comp:
+  // "BUILT TO EXPLORE." / "MADE TO LAST." with the closing word in bronze.
+  headline: [
+    { lead: 'Built to', accent: 'explore.' },
+    { lead: 'Made to', accent: 'last.' },
+  ],
+  subheadline: 'Premium caravans. Australian made. Adventure ready.',
+  primaryCta: { label: 'Explore our range', to: '/vans' },
+  secondaryCta: null,
+  aside:
+    'Australian made for Australian conditions. Ausflex Caravans are engineered for comfort, built for tough adventures, and designed to keep you moving.',
   image: '/images/hero-exterior-studio.jpg',
-  imageSrcset: '/images/hero-exterior-studio-960.jpg 960w, /images/hero-exterior-studio.jpg 1672w',
+  imageSrcset: '/images/hero-exterior-studio-960.jpg 960w, /images/hero-exterior-studio.jpg 1448w',
   imageSizes: '100vw',
   imageAlt:
     'Ausflex caravan in bronze and black, side profile in a dark studio with the entry door open',

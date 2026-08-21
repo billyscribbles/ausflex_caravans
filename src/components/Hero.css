@@ -1,42 +1,64 @@
+/* Offset below the fixed navbar so the photo never sits behind the bar.
+ * Keep the offsets in sync with the navbar heights: 96px desktop, 64px
+ * at the 980px breakpoint. */
 .hero {
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
+  margin-top: 96px;
+  min-height: calc(100vh - 96px);
+  min-height: calc(100dvh - 96px);
   display: flex;
   align-items: flex-end;
   background: var(--color-dark-deep);
+  overflow: hidden;
+}
+
+/* The photo hangs from the top of the stage at its native aspect ratio,
+ * sized so the bottom strip stays clear ground for the copy. Its edges
+ * feather into the flat stage color (via the mask below), so photo, stage,
+ * and navbar all read as one unified black surface. */
+/* 113% tall with a -13% offset: crops the photo's empty headroom above
+ * the embossed AUSFLEX so the letters start just below the navbar, while
+ * the floor stays pinned to the hero bottom. */
+.hero__figure {
+  position: absolute;
+  top: -13%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 113%;
+  aspect-ratio: 1448 / 1086;
+  max-width: 100%;
 }
 
 .hero__image {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, black 10%, black 90%, transparent),
+    linear-gradient(0deg, transparent, black 12%, black 92%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, black 10%, black 90%, transparent),
+    linear-gradient(0deg, transparent, black 12%, black 92%, transparent);
+  mask-composite: intersect;
 }
 
-/* The scrim is what keeps bone type legible on the photo — keep it. */
+/* Top fade blends the cropped photo edge under the navbar; the bottom
+ * band steadies the ground where the copy sits. */
 .hero__scrim {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 90% at 62% 42%, rgba(201, 168, 124, 0.1), rgba(18, 16, 13, 0) 60%),
-    linear-gradient(
-      90deg,
-      rgba(18, 16, 13, 0.82),
-      rgba(18, 16, 13, 0.2) 60%,
-      rgba(18, 16, 13, 0.28)
-    ),
-    linear-gradient(0deg, rgba(18, 16, 13, 0.88), transparent 55%);
+    linear-gradient(180deg, rgba(18, 16, 13, 0.85), rgba(18, 16, 13, 0) 14%),
+    linear-gradient(0deg, rgba(18, 16, 13, 0.75), rgba(18, 16, 13, 0) 34%);
 }
 
 .hero__content {
   position: relative;
   z-index: 1;
   width: 100%;
-  padding-top: 190px;
-  padding-bottom: 96px;
+  padding-top: 120px;
+  padding-bottom: 56px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -44,7 +66,7 @@
 }
 
 .hero__main {
-  max-width: 940px;
+  max-width: 720px;
 }
 
 .hero__eyebrow {
@@ -59,12 +81,16 @@
 
 .hero__headline {
   font-family: var(--font-display);
-  font-size: clamp(44px, 7.8vw, 112px);
-  font-weight: 400;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  font-size: clamp(32px, 3.6vw, 54px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
   color: var(--color-bone);
-  text-wrap: balance;
+}
+
+.hero__headline-line {
+  display: block;
 }
 
 .hero__headline-accent {
@@ -72,17 +98,17 @@
 }
 
 .hero__subheadline {
-  margin-top: 40px;
-  font-size: 17px;
-  line-height: 1.8;
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.6;
   color: var(--color-bone-soft);
-  max-width: 460px;
+  max-width: 520px;
 }
 
 .hero__ctas {
   display: flex;
   gap: 12px;
-  margin-top: 44px;
+  margin-top: 36px;
   flex-wrap: wrap;
 }
 
@@ -91,8 +117,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 19px 38px;
-  border-radius: var(--radius-full);
+  gap: 16px;
+  padding: 18px 30px;
+  border-radius: var(--radius-md);
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.14em;
@@ -104,12 +131,14 @@
 }
 
 .hero__cta-primary {
-  background: var(--color-bone);
-  color: var(--color-dark-deep);
+  border: 1px solid var(--color-bronze-outline);
+  color: var(--color-bone);
 }
 
 .hero__cta-primary:hover {
   background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-dark-deep);
 }
 
 .hero__cta-secondary {
@@ -122,15 +151,16 @@
   color: var(--color-accent);
 }
 
-.hero__trust {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-bone-muted);
-  text-align: right;
-  line-height: 2.4;
-  white-space: nowrap;
+/* Sits above the CTA row so its last line lands beside the subheadline,
+ * mirroring the comp's staggered baseline. */
+.hero__aside {
+  max-width: 380px;
+  margin-bottom: 84px;
+  padding-left: 28px;
+  border-left: 1px solid var(--color-bone-faint);
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--color-bone-soft);
   flex-shrink: 0;
 }
 
@@ -150,24 +180,30 @@
   animation: heroFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@media (max-width: 1200px) {
-  .hero__headline {
-    font-size: clamp(44px, 7.2vw, 84px);
+@media (max-width: 980px) {
+  .hero {
+    margin-top: 64px;
+    min-height: calc(100vh - 64px);
+    min-height: calc(100dvh - 64px);
   }
 }
 
 @media (max-width: 900px) {
+  .hero__figure {
+    top: 0;
+    width: 100%;
+    height: auto;
+  }
   .hero__content {
     flex-direction: column;
     align-items: flex-start;
     gap: 48px;
-    padding-top: 150px;
-    padding-bottom: 64px;
+    padding-top: 110px;
+    padding-bottom: 56px;
   }
-  .hero__trust {
-    text-align: left;
-    white-space: normal;
-    line-height: 2.2;
+  .hero__aside {
+    margin-bottom: 0;
+    flex-shrink: 1;
   }
 }
 
@@ -176,7 +212,8 @@
     margin-bottom: 28px;
   }
   .hero__subheadline {
-    margin-top: 28px;
+    margin-top: 24px;
+    font-size: 16px;
   }
   .hero__ctas {
     margin-top: 32px;
@@ -186,5 +223,9 @@
   .hero__cta-secondary {
     width: 100%;
     padding: 17px 24px;
+  }
+  .hero__aside {
+    padding-left: 20px;
+    font-size: 14px;
   }
 }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import { hero } from '../content/hero.js'
 import './Hero.css'
 
@@ -6,14 +7,16 @@ export default function Hero() {
   return (
     <section className="hero" id="hero">
       {hero.image && (
-        <img
-          className="hero__image"
-          src={hero.image}
-          srcSet={hero.imageSrcset}
-          sizes={hero.imageSrcset ? hero.imageSizes || '100vw' : undefined}
-          alt={hero.imageAlt || ''}
-          fetchpriority="high"
-        />
+        <div className="hero__figure">
+          <img
+            className="hero__image"
+            src={hero.image}
+            srcSet={hero.imageSrcset}
+            sizes={hero.imageSrcset ? hero.imageSizes || '100vw' : undefined}
+            alt={hero.imageAlt || ''}
+            fetchpriority="high"
+          />
+        </div>
       )}
       <div className="hero__scrim" aria-hidden="true" />
 
@@ -26,13 +29,11 @@ export default function Hero() {
           )}
 
           <h1 className="hero__headline hero__fade-up" style={{ animationDelay: '0.06s' }}>
-            {hero.headline}
-            {hero.headlineAccent && (
-              <>
-                <br />
-                <span className="hero__headline-accent">{hero.headlineAccent}</span>
-              </>
-            )}
+            {hero.headline.map((line) => (
+              <span key={line.accent} className="hero__headline-line">
+                {line.lead} <span className="hero__headline-accent">{line.accent}</span>
+              </span>
+            ))}
           </h1>
 
           <p className="hero__subheadline hero__fade-up" style={{ animationDelay: '0.14s' }}>
@@ -43,6 +44,7 @@ export default function Hero() {
             {hero.primaryCta && (
               <Link to={hero.primaryCta.to} className="hero__cta-primary">
                 {hero.primaryCta.label}
+                <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
               </Link>
             )}
             {hero.secondaryCta && (
@@ -53,14 +55,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {hero.trust?.length > 0 && (
-          <ul className="hero__trust hero__fade-up" style={{ animationDelay: '0.32s' }}>
-            {hero.trust.map((t) => (
-              <li key={t} className="hero__trust-item">
-                {t}
-              </li>
-            ))}
-          </ul>
+        {hero.aside && (
+          <p className="hero__aside hero__fade-up" style={{ animationDelay: '0.32s' }}>
+            {hero.aside}
+          </p>
         )}
       </div>
     </section>
