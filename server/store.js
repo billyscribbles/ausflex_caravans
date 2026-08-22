@@ -3,7 +3,7 @@
 // crash mid-write can never leave a truncated file.
 import { readFile, writeFile, rename, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { buildSeed, buildVans } from './seed.js'
+import { buildSeed, buildVans, SEED_VERSION, seededCaptions } from './seed.js'
 
 const DATA_DIR = process.env.DATA_DIR || './.data'
 const FILE = join(DATA_DIR, 'content.json')
@@ -61,6 +61,19 @@ export async function load() {
       ...cache.photos.filter((p) => !String(p.collection ?? '').startsWith('van:')),
       ...seeded.photos,
     ]
+    await persist()
+  }
+
+  // Photos seeded before their collection had captions carry an empty one, and
+  // a rebuild here would discard the client's uploads. Fill the blanks from the
+  // content files instead — gated on the seed version so a caption the client
+  // deliberately clears in the dashboard stays cleared.
+  if ((cache.version ?? 0) < SEED_VERSION) {
+    const captions = seededCaptions()
+    for (const photo of cache.photos) {
+      if (!photo.caption && captions.has(photo.src)) photo.caption = captions.get(photo.src)
+    }
+    cache.version = SEED_VERSION
     await persist()
   }
 

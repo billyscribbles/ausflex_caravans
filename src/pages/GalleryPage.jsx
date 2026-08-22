@@ -31,10 +31,13 @@ export default function GalleryPage() {
         dark
         id="exteriors"
       />
+      {/* The mosaic takes its own head (gallery.page.band) rather than the
+          page hero's copy — by the time it starts, the hero is off screen. */}
       <GalleryGrid
-        content={{ ...gallery.page, eyebrow: null, heading: null, sub: null, items: page.items }}
+        content={{ ...gallery.page.band, items: page.items }}
         loading={page.loading}
         lightbox
+        id="interiors"
       />
       <DealerBanner />
     </main>

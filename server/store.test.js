@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { SEED_VERSION, seededCaptions } from './seed.js'
 
 let dir
 
@@ -28,7 +29,7 @@ describe('store', () => {
     const store = await freshStore()
     const content = await store.load()
 
-    expect(content.version).toBe(1)
+    expect(content.version).toBe(SEED_VERSION)
     expect(content.photos.length).toBeGreaterThan(0)
     expect(content.tours.length).toBeGreaterThan(0)
 
@@ -171,5 +172,34 @@ describe('store', () => {
     // And it persists, so the next boot does no work.
     const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
     expect(onDisk.vans.items.length).toBe(content.vans.items.length)
+  })
+
+  it('backfills captions a store seeded under an older version never got', async () => {
+    const [src, caption] = [...seededCaptions()][0]
+    const stale = {
+      id: 'stale-photo',
+      collection: 'page',
+      src,
+      alt: 'Seeded before this collection had captions',
+      caption: '',
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    // A caption the client cleared on purpose, on a photo they uploaded.
+    const cleared = { ...stale, id: 'cleared-photo', src: '/uploads/theirs.webp', sortOrder: 1 }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: 1, photos: [stale, cleared], tours: [] }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.photos.find((p) => p.id === 'stale-photo').caption).toBe(caption)
+    expect(content.photos.find((p) => p.id === 'cleared-photo').caption).toBe('')
+
+    // Stamped and persisted, so the next boot leaves the client's edits alone.
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.version).toBe(SEED_VERSION)
   })
 })

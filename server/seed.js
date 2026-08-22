@@ -8,6 +8,22 @@ import { vans } from '../src/content/vans.js'
 
 const COLLECTIONS = ['interiors', 'exteriors', 'page']
 
+// Bumped whenever a shipped photo gains copy that a store seeded under an
+// earlier version would never see. store.js migrates forward to this number.
+export const SEED_VERSION = 2
+
+// Captions keyed by src, for the backfill in store.js. Every seeded photo the
+// content files caption is in here, whichever collection it belongs to.
+export function seededCaptions() {
+  const byCaption = new Map()
+  for (const collection of COLLECTIONS) {
+    for (const item of gallery[collection]?.items ?? []) {
+      if (item.caption) byCaption.set(item.src, item.caption)
+    }
+  }
+  return byCaption
+}
+
 // The van range, split into the two places it is stored: the van records
 // themselves, and their gallery photos as ordinary rows in the photos array
 // (so every existing photo route works on them unchanged).
@@ -72,5 +88,5 @@ export function buildSeed() {
   const seededVans = buildVans(now)
   photos.push(...seededVans.photos)
 
-  return { version: 1, photos, tours, vans: seededVans.vans }
+  return { version: SEED_VERSION, photos, tours, vans: seededVans.vans }
 }
