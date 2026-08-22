@@ -186,14 +186,18 @@ export default function VanEditor({ van, onChange, onBack }) {
         <p className="admin-hint">The short chips under the main photo.</p>
 
         <ul className="admin-chips">
-          {(van.specs ?? []).map((entry) => (
-            <li className="admin-chip" key={entry}>
+          {/* Keyed and filtered by index, not value: specs is append/remove-only
+              (never reordered), and two chips can carry identical text — a
+              value-keyed filter would remove every chip that matches instead
+              of just the one clicked. */}
+          {(van.specs ?? []).map((entry, index) => (
+            <li className="admin-chip" key={index}>
               {entry}
               <button
                 type="button"
                 className="admin-icon admin-icon--danger"
                 aria-label={`Remove ${entry}`}
-                onClick={() => save({ specs: van.specs.filter((s) => s !== entry) })}
+                onClick={() => save({ specs: van.specs.filter((_, i) => i !== index) })}
               >
                 <X size={13} aria-hidden="true" />
               </button>

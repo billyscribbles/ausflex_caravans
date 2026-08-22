@@ -428,6 +428,31 @@ describe('AdminPage — vans', () => {
     )
   })
 
+  it('removes only the clicked chip when two specs share identical text', async () => {
+    // Two chips with the same text is the case a value-keyed filter gets
+    // wrong: filtering by value drops every match, not just the one clicked.
+    const dupeVan = { ...VAN, specs: ['Solar ready', 'Solar ready'] }
+    await openEditor({
+      'GET /api/content': {
+        ok: true,
+        json: async () => ({ ...WITH_VAN, vans: { ...WITH_VAN.vans, items: [dupeVan] } }),
+      },
+      'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: dupeVan }) },
+    })
+
+    const removeButtons = await screen.findAllByRole('button', { name: /remove solar ready/i })
+    expect(removeButtons).toHaveLength(2)
+
+    await userEvent.click(removeButtons[0])
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/vans/van-1',
+        expect.objectContaining({ body: JSON.stringify({ specs: ['Solar ready'] }) }),
+      ),
+    )
+  })
+
   it('warns that changing the web address breaks the old link', async () => {
     await openEditor()
     expect(await screen.findByText(/breaks the old link/i)).toBeInTheDocument()
