@@ -48,6 +48,28 @@ describe('POST /api/auth/login', () => {
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
+  it('rejects a non-string password instead of crashing the process', async () => {
+    // Regression guard: `password` used to reach scrypt (via verifyPassword)
+    // unguarded. scrypt rejects on any non-string input, this route wasn't
+    // wrapped in asyncHandler, and Express 4 does not forward an async
+    // handler's rejection to error middleware on its own — so the rejection
+    // was unhandled and crashed the process (Node's default
+    // --unhandled-rejections=throw). No new error shape here: a bad type
+    // gets the exact same 401 as a wrong password, so the difference is not
+    // an oracle for what the server accepts.
+    const objectRes = await request(app)
+      .post('/api/auth/login')
+      .send({ password: { evil: true } })
+      .expect(401)
+    expect(objectRes.body).toEqual({ error: 'incorrect password' })
+
+    const arrayRes = await request(app)
+      .post('/api/auth/login')
+      .send({ password: ['a', 'b'] })
+      .expect(401)
+    expect(arrayRes.body).toEqual({ error: 'incorrect password' })
+  })
+
   it('rate-limits after 10 failed attempts', async () => {
     for (let i = 0; i < 10; i++) {
       await request(app).post('/api/auth/login').send({ password: 'nope' })

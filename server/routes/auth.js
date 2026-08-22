@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { verifyPassword, signSession, verifySession, rateLimit } from '../auth.js'
+import { asyncHandler } from '../asyncHandler.js'
 
 const COOKIE = 'ausflex_session'
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -21,27 +22,37 @@ export function requireAuth(req, res, next) {
 
 const router = Router()
 
-router.post('/login', async (req, res) => {
-  if (!rateLimit(req.ip)) {
-    res.status(429).json({ error: 'too many attempts, try again in 15 minutes' })
-    return
-  }
+router.post(
+  '/login',
+  asyncHandler(async (req, res) => {
+    if (!rateLimit(req.ip)) {
+      res.status(429).json({ error: 'too many attempts, try again in 15 minutes' })
+      return
+    }
 
-  const ok = await verifyPassword(req.body?.password ?? '', process.env.ADMIN_PASSWORD_HASH)
-  if (!ok) {
-    res.status(401).json({ error: 'incorrect password' })
-    return
-  }
+    // scrypt (inside verifyPassword) rejects on any non-string input. Guard
+    // here rather than let that rejection reach verifyPassword, and answer
+    // with the same 401 the wrong-password path returns below — a distinct
+    // response for a bad type would be an oracle for what the server accepts.
+    const password = req.body?.password
+    const ok =
+      typeof password === 'string' &&
+      (await verifyPassword(password, process.env.ADMIN_PASSWORD_HASH))
+    if (!ok) {
+      res.status(401).json({ error: 'incorrect password' })
+      return
+    }
 
-  res.cookie(COOKIE, signSession(secret()), {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: MAX_AGE_MS,
-    path: '/',
-  })
-  res.json({ ok: true })
-})
+    res.cookie(COOKIE, signSession(secret()), {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: MAX_AGE_MS,
+      path: '/',
+    })
+    res.json({ ok: true })
+  }),
+)
 
 router.get('/session', (req, res) => {
   res.json({ authed: isAuthed(req) })
