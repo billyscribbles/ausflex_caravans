@@ -8,6 +8,7 @@ import contentRoutes from './routes/content.js'
 import authRoutes, { requireAuth } from './routes/auth.js'
 import photoRoutes from './routes/photos.js'
 import tourRoutes from './routes/tours.js'
+import vanRoutes from './routes/vans.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(root, 'dist')
@@ -43,6 +44,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes)
   app.use('/api/photos', photoRoutes)
   app.use('/api/tours', tourRoutes)
+  app.use('/api/vans', vanRoutes)
 
   // Railway volumes are not backed up. This is the client's escape hatch for
   // the metadata; the image files themselves need manual recovery.
@@ -68,6 +70,21 @@ export function createApp() {
       return
     }
     res.sendFile(join(DIST, 'index.html'))
+  })
+
+  // Backstop for anything that reaches next(err) — realistically a route
+  // wrapped in asyncHandler() whose promise rejected, e.g. mutate() failing
+  // because the Railway volume is full or mounted read-only. Express 4 does
+  // not route a rejected async handler here on its own; without this and the
+  // wrapper, that rejection is unhandled and the process exits. Never echoes
+  // err.message or err.stack — those can carry filesystem paths.
+  app.use((err, req, res, next) => {
+    if (res.headersSent) {
+      next(err)
+      return
+    }
+    console.error(err)
+    res.status(500).json({ error: 'internal server error' })
   })
 
   return app

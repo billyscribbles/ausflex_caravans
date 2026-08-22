@@ -4,8 +4,40 @@
 import { randomUUID } from 'node:crypto'
 import { gallery } from '../src/content/gallery.js'
 import { tour } from '../src/content/tour.js'
+import { vans } from '../src/content/vans.js'
 
 const COLLECTIONS = ['interiors', 'exteriors', 'page']
+
+// The van range, split into the two places it is stored: the van records
+// themselves, and their gallery photos as ordinary rows in the photos array
+// (so every existing photo route works on them unchanged).
+export function buildVans(now = new Date().toISOString()) {
+  const items = []
+  const photos = []
+
+  vans.items.forEach((van, i) => {
+    const id = randomUUID()
+    const { photos: gallery = [], ...fields } = van
+    items.push({ ...fields, id, sortOrder: i, createdAt: now })
+
+    gallery.forEach((photo, j) => {
+      photos.push({
+        id: randomUUID(),
+        collection: `van:${id}`,
+        src: photo.src,
+        alt: photo.alt ?? '',
+        caption: photo.caption ?? '',
+        sortOrder: j,
+        createdAt: now,
+      })
+    })
+  })
+
+  return {
+    vans: { eyebrow: vans.eyebrow, heading: vans.heading, sub: vans.sub, items },
+    photos,
+  }
+}
 
 export function buildSeed() {
   const now = new Date().toISOString()
@@ -37,5 +69,8 @@ export function buildSeed() {
     },
   ]
 
-  return { version: 1, photos, tours }
+  const seededVans = buildVans(now)
+  photos.push(...seededVans.photos)
+
+  return { version: 1, photos, tours, vans: seededVans.vans }
 }

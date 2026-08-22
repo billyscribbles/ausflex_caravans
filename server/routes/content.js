@@ -18,6 +18,16 @@ router.get('/content', (req, res) => {
       page: of('page'),
     },
     tours: [...content.tours].sort(byOrder),
+    // Each van carries its own gallery, so the client never has to join two
+    // arrays to render a detail page.
+    vans: {
+      eyebrow: content.vans.eyebrow,
+      heading: content.vans.heading,
+      sub: content.vans.sub,
+      items: [...content.vans.items]
+        .sort(byOrder)
+        .map((van) => ({ ...van, photos: of(`van:${van.id}`) })),
+    },
   })
 
   const etag = `W/"${createHash('sha1').update(body).digest('hex')}"`

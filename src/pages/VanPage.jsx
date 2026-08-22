@@ -2,21 +2,35 @@ import { Link, useParams } from 'react-router-dom'
 import SEO from '../lib/seo.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
-import { vans } from '../content/vans.js'
+import { useVans } from '../lib/contentStore.js'
 import './VanPage.css'
 
 export default function VanPage() {
   const { slug } = useParams()
+  const { vans, loading } = useVans()
   const van = vans.items.find((v) => v.slug === slug)
+
+  // A van added in the dashboard is not in the static fallback, so a direct
+  // load would flash NotFoundPage for one frame before the fetch lands. Hold
+  // until the range is actually known.
+  if (!van && loading) {
+    return (
+      <main className="van">
+        <p className="van__loading" role="status">
+          Loading…
+        </p>
+      </main>
+    )
+  }
 
   if (!van) return <NotFoundPage />
 
   return (
     <main className="van">
       <SEO
-        title={`${van.length} ${van.name}`}
+        title={`${van.length} ${van.name}`.trim()}
         description={van.blurb}
-        image={van.image}
+        image={van.image ?? undefined}
         path={`/vans/${van.slug}`}
       />
 
@@ -38,7 +52,7 @@ export default function VanPage() {
       <section className="van__showcase">
         <div className="container">
           <div className="van__main-image">
-            <img src={van.image} alt={van.imageAlt} fetchpriority="high" />
+            {van.image && <img src={van.image} alt={van.imageAlt} fetchpriority="high" />}
           </div>
           {van.specs?.length > 0 && (
             <ul className="van__specs">
@@ -56,7 +70,7 @@ export default function VanPage() {
         <div className="container van__detail-grid">
           <div className="van__copy">
             <h2 className="section-label">About this van.</h2>
-            {van.description.map((p) => (
+            {(van.description ?? []).map((p) => (
               <p key={p} className="van__paragraph">
                 {p}
               </p>

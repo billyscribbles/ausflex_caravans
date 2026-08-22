@@ -17,6 +17,7 @@ import { tour } from '../content/tour.js'
 import { contactSection } from '../content/contact.js'
 import { contactCta } from '../content/cta.js'
 import { gallery } from '../content/gallery.js'
+import { vans } from '../content/vans.js'
 import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
@@ -122,6 +123,20 @@ describe('content — section copy contract', () => {
         expect(section.body).toBeTruthy()
       }
     }
+  })
+
+  it('vans has intro copy and items with the shape the van pages render', () => {
+    expect(vans.heading).toBeTruthy()
+    expect(vans.items.length).toBeGreaterThan(0)
+    for (const van of vans.items) {
+      expect(van.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      expect(van.name).toBeTruthy()
+      expect(Array.isArray(van.description)).toBe(true)
+      expect(Array.isArray(van.specs)).toBe(true)
+      expect(Array.isArray(van.photos)).toBe(true)
+    }
+    const slugs = vans.items.map((v) => v.slug)
+    expect(new Set(slugs).size).toBe(slugs.length)
   })
 })
 

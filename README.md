@@ -100,15 +100,22 @@ Until then `reportError` is silent in production and logs to the console in deve
 
 ## Admin dashboard
 
-Ausflex staff manage gallery photos and 360° tours at **`/admin`**, publishing to the live
-site with no redeploy. It is `noindex`, disallowed in `robots.txt`, and lazy-loaded as its
-own chunk, so none of it reaches public visitors.
+Ausflex staff manage gallery photos, 360° tours and the whole van range at **`/admin`**,
+publishing to the live site with no redeploy. It is `noindex`, disallowed in `robots.txt`, and
+lazy-loaded as its own chunk, so none of it reaches public visitors.
 
 Photos and tour metadata live in `content.json` on a Railway volume, alongside the uploaded
 images. On first boot the server seeds that file from `src/content/gallery.js` and
 `tour.js`, so a fresh environment opens with the photo set that ships in the repo. Those
 static files stay in place as the runtime fallback: if the API is unreachable the site
 renders them rather than an empty gallery.
+
+**The van range.** Every van on `/vans` is editable: its name, web address, length,
+category, blurb, description paragraphs and spec chips, plus its main photo, its floorplan
+blueprint and its photo gallery. Vans can be added, reordered and deleted. Deleting one
+removes `/vans/<slug>` for good — including whatever search ranking that page had — so it
+asks for the van's name to be typed first. Changing a van's web address has the same effect
+on the old URL, with a warning rather than a gate.
 
 **Setup.** Generate a password hash and a session secret, then set them in Railway:
 

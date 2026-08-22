@@ -19,3 +19,9 @@ dist-ssr
 .lighthouseci/
 
 .data
+
+# Superpowers SDD scratch (ledger, briefs, review packages)
+.superpowers/
+
+# EnterWorktree isolated workspaces
+.claude/worktrees/

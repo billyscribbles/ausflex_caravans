@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { vans } from '../content/vans.js'
+import { useVans } from '../lib/contentStore.js'
 import { useScrollIn } from '../lib/motion.js'
 import './Range.css'
 
@@ -9,6 +9,7 @@ import './Range.css'
 // introduces the range.
 export default function Range({ limit, showHead = true }) {
   const scrollIn = useScrollIn()
+  const { vans } = useVans()
   const items = limit ? vans.items.slice(0, limit) : vans.items
 
   return (
@@ -29,10 +30,10 @@ export default function Range({ limit, showHead = true }) {
 
         <div className="range__grid">
           {items.map((van, i) => (
-            <motion.article key={van.slug} className="range__card" {...scrollIn(i % 2)}>
+            <motion.article key={van.id ?? van.slug} className="range__card" {...scrollIn(i % 2)}>
               <Link to={`/vans/${van.slug}`} className="range__card-link">
                 <div className="range__image">
-                  <img src={van.image} alt={van.imageAlt} loading="lazy" />
+                  {van.image && <img src={van.image} alt={van.imageAlt} loading="lazy" />}
                 </div>
 
                 <div className="range__body">

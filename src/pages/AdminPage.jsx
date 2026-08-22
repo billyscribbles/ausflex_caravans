@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Images, Sofa, Caravan, Compass, Download, LogOut } from 'lucide-react'
+import { Images, Sofa, Caravan, Compass, Download, LogOut, Truck, Type } from 'lucide-react'
 import Login from '../admin/Login.jsx'
 import PhotosTab from '../admin/PhotosTab.jsx'
 import ToursTab from '../admin/ToursTab.jsx'
+import VansTab from '../admin/VansTab.jsx'
+import VansPageTab from '../admin/VansPageTab.jsx'
 import { getSession, getContent, logout, exportUrl } from '../admin/api.js'
 import '../admin/admin.css'
 
@@ -50,13 +52,35 @@ const NAV = [
       },
     ],
   },
+  {
+    group: 'Range',
+    items: [
+      {
+        id: 'vans',
+        label: 'Vans',
+        icon: Truck,
+        kind: 'vans',
+        where: 'The cards on the home page and /vans.',
+      },
+      {
+        id: 'vans-page',
+        label: 'Page intro',
+        icon: Type,
+        kind: 'vansPage',
+        where: 'The heading above the range on /vans.',
+      },
+    ],
+  },
 ]
 
 const VIEWS = NAV.flatMap((section) => section.items)
 
 function countFor(view, content) {
   if (!content) return null
-  return view.kind === 'tours' ? content.tours.length : content.gallery[view.id].length
+  if (view.kind === 'tours') return content.tours.length
+  if (view.kind === 'vans') return content.vans.items.length
+  if (view.kind === 'vansPage') return null
+  return content.gallery[view.id].length
 }
 
 export default function AdminPage() {
@@ -187,7 +211,7 @@ export default function AdminPage() {
               </div>
               {count !== null && (
                 <p className="admin-topbar__count">
-                  {count} {view.kind === 'tours' ? 'tour' : 'photo'}
+                  {count} {view.kind === 'tours' ? 'tour' : view.kind === 'vans' ? 'van' : 'photo'}
                   {count === 1 ? '' : 's'}
                 </p>
               )}
@@ -214,6 +238,14 @@ export default function AdminPage() {
 
               {content && view.kind === 'tours' && (
                 <ToursTab tours={content.tours} onChange={refresh} />
+              )}
+
+              {content && view.kind === 'vans' && (
+                <VansTab vans={content.vans} onChange={refresh} />
+              )}
+
+              {content && view.kind === 'vansPage' && (
+                <VansPageTab page={content.vans} onChange={refresh} />
               )}
             </div>
           </main>
