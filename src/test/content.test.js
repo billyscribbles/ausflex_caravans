@@ -93,6 +93,31 @@ describe('content — section copy contract', () => {
     expect(tour.poster).toMatch(/^\/images\//)
   })
 
+  it('tour ships every Kuula collection with a distinct picker title', () => {
+    expect(tour.items.length).toBeGreaterThan(1)
+    for (const item of tour.items) {
+      expect(item.src).toMatch(/^https:\/\/kuula\.co\/share\//)
+      expect(item.title).toBeTruthy()
+      expect(existsSync(join('public', item.poster)), `${item.poster} is missing`).toBe(true)
+    }
+    // These titles are the /360 picker's button labels, so two the same would
+    // give the visitor two buttons they cannot tell apart.
+    expect(new Set(tour.items.map((i) => i.title)).size).toBe(tour.items.length)
+    // The flattened fields the home band and the seed read are the first one.
+    expect(tour.src).toBe(tour.items[0].src)
+    expect(tour.title).toBe(tour.items[0].title)
+    expect(tour.poster).toBe(tour.items[0].poster)
+  })
+
+  it('tour carries the owner walkthrough block the /360 page closes on', () => {
+    expect(tour.video.youtubeId).toMatch(/^[\w-]{11}$/)
+    expect(tour.video.title).toBeTruthy()
+    expect(tour.video.heading).toBeTruthy()
+    expect(tour.video.headingAccent).toBeTruthy()
+    // The spec plate is a product card, and this van is not ours to spec.
+    expect(tour.video.model).toBeUndefined()
+  })
+
   it('tour has hero copy for the dedicated /360 page', () => {
     expect(tour.page.eyebrow).toBeTruthy()
     expect(tour.page.heading).toBeTruthy()
