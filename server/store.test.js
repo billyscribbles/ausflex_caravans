@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { SEED_VERSION, seededCaptions } from './seed.js'
+import { LEGACY_TOUR_TITLE, SEED_VERSION, seededCaptions, seededTours } from './seed.js'
 
 let dir
 
@@ -167,7 +167,12 @@ describe('store', () => {
     expect(content.vans.items.length).toBeGreaterThan(0)
     // ...without rebuilding the file from scratch, which would orphan this.
     expect(content.photos.find((p) => p.id === 'kept-photo')).toEqual(uploaded)
-    expect(content.tours).toEqual([])
+    // A rebuild would also have reseeded the base gallery collections, so the
+    // upload should still be the only photo outside the van rows just added.
+    expect(content.photos.filter((p) => !p.collection.startsWith('van:'))).toEqual([uploaded])
+    // The version bump does fill in the tours this file never had — that is
+    // the v3 backfill running on top, not a rebuild.
+    expect(content.tours.map((t) => t.embedUrl)).toEqual(seededTours().map((t) => t.embedUrl))
 
     // And it persists, so the next boot does no work.
     const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
@@ -201,5 +206,69 @@ describe('store', () => {
     // Stamped and persisted, so the next boot leaves the client's edits alone.
     const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
     expect(onDisk.version).toBe(SEED_VERSION)
+  })
+
+  it('appends Kuula collections a store seeded under an older version never got', async () => {
+    const seeded = seededTours()
+    expect(seeded.length).toBeGreaterThan(1)
+
+    const stale = {
+      id: 'seeded-tour',
+      title: LEGACY_TOUR_TITLE,
+      embedUrl: seeded[0].embedUrl,
+      poster: '/images/interior-galley.jpg',
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    // One the client added in the dashboard, under a title of their own.
+    const theirs = {
+      ...stale,
+      id: 'their-tour',
+      title: 'Our best build',
+      embedUrl: 'https://kuula.co/share/collection/THEIRS',
+      sortOrder: 1,
+    }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: 2, photos: [], tours: [stale, theirs] }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    // Every shipped collection is present...
+    const urls = content.tours.map((t) => t.embedUrl)
+    for (const t of seeded) expect(urls).toContain(t.embedUrl)
+    // ...the client's own tour is untouched...
+    expect(content.tours.find((t) => t.id === 'their-tour')).toEqual(theirs)
+    // ...the stale seeded row is renamed in place rather than duplicated...
+    expect(content.tours.filter((t) => t.embedUrl === seeded[0].embedUrl).length).toBe(1)
+    expect(content.tours.find((t) => t.id === 'seeded-tour').title).toBe(seeded[0].title)
+    // ...and the new one lands after everything already there, so the /360
+    // picker does not reshuffle under the client.
+    expect(content.tours.map((t) => t.sortOrder)).toEqual([0, 1, 2])
+
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.version).toBe(SEED_VERSION)
+    expect(onDisk.tours.length).toBe(content.tours.length)
+  })
+
+  it('leaves a seeded tour the client retitled alone', async () => {
+    const seeded = seededTours()
+    const renamed = seeded.map((t, i) => ({
+      ...t,
+      id: `tour-${i}`,
+      title: `Their name ${i}`,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }))
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: 2, photos: [], tours: renamed }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.tours).toEqual(renamed)
   })
 })

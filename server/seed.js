@@ -8,9 +8,28 @@ import { vans } from '../src/content/vans.js'
 
 const COLLECTIONS = ['interiors', 'exteriors', 'page']
 
-// Bumped whenever a shipped photo gains copy that a store seeded under an
+// Bumped whenever the content files gain something a store seeded under an
 // earlier version would never see. store.js migrates forward to this number.
-export const SEED_VERSION = 2
+export const SEED_VERSION = 3
+
+// What v1 and v2 seeded the single Kuula collection as. v3 renames it, because
+// the /360 picker now shows tour titles as its buttons and "Ausflex Caravans
+// 360° virtual tour" says nothing next to a second van. Only a row still
+// carrying this exact string is renamed, so a title the client set stands.
+export const LEGACY_TOUR_TITLE = 'Ausflex Caravans 360° virtual tour'
+
+// The tours shipped in the content files, for buildSeed and for the backfill
+// in store.js.
+export function seededTours(now = new Date().toISOString()) {
+  return tour.items.map((item, i) => ({
+    id: randomUUID(),
+    title: item.title,
+    embedUrl: item.src,
+    poster: item.poster ?? null,
+    sortOrder: i,
+    createdAt: now,
+  }))
+}
 
 // Captions keyed by src, for the backfill in store.js. Every seeded photo the
 // content files caption is in here, whichever collection it belongs to.
@@ -74,19 +93,8 @@ export function buildSeed() {
     })
   }
 
-  const tours = [
-    {
-      id: randomUUID(),
-      title: tour.title,
-      embedUrl: tour.src,
-      poster: tour.poster ?? null,
-      sortOrder: 0,
-      createdAt: now,
-    },
-  ]
-
   const seededVans = buildVans(now)
   photos.push(...seededVans.photos)
 
-  return { version: SEED_VERSION, photos, tours, vans: seededVans.vans }
+  return { version: SEED_VERSION, photos, tours: seededTours(now), vans: seededVans.vans }
 }

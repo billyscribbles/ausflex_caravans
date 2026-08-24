@@ -3,7 +3,14 @@
 // crash mid-write can never leave a truncated file.
 import { readFile, writeFile, rename, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { buildSeed, buildVans, SEED_VERSION, seededCaptions } from './seed.js'
+import {
+  buildSeed,
+  buildVans,
+  LEGACY_TOUR_TITLE,
+  SEED_VERSION,
+  seededCaptions,
+  seededTours,
+} from './seed.js'
 
 const DATA_DIR = process.env.DATA_DIR || './.data'
 const FILE = join(DATA_DIR, 'content.json')
@@ -64,15 +71,31 @@ export async function load() {
     await persist()
   }
 
-  // Photos seeded before their collection had captions carry an empty one, and
-  // a rebuild here would discard the client's uploads. Fill the blanks from the
-  // content files instead — gated on the seed version so a caption the client
-  // deliberately clears in the dashboard stays cleared.
+  // Everything below runs once per version bump, never on a rebuild — a
+  // rebuild here would discard the client's uploads and dashboard edits.
   if ((cache.version ?? 0) < SEED_VERSION) {
+    // v2: photos seeded before their collection had captions carry an empty
+    // one. Fill the blanks from the content files, but only the blanks, so a
+    // caption the client deliberately clears in the dashboard stays cleared.
     const captions = seededCaptions()
     for (const photo of cache.photos) {
       if (!photo.caption && captions.has(photo.src)) photo.caption = captions.get(photo.src)
     }
+
+    // v3: the content files ship more than one Kuula collection now. Match on
+    // embed URL and append what is missing, so tours the client added keep
+    // their place and order. A seeded tour the client deleted does come back —
+    // same one-shot trade-off the caption backfill makes.
+    let order = cache.tours.length ? Math.max(...cache.tours.map((t) => t.sortOrder)) + 1 : 0
+    for (const seeded of seededTours()) {
+      const match = cache.tours.find((t) => t.embedUrl === seeded.embedUrl)
+      if (!match) {
+        cache.tours.push({ ...seeded, sortOrder: order++ })
+      } else if (match.title === LEGACY_TOUR_TITLE) {
+        match.title = seeded.title
+      }
+    }
+
     cache.version = SEED_VERSION
     await persist()
   }
