@@ -5,8 +5,9 @@
  * what stops this reading as a 50/50 blog split — but the two sit side by side
  * on the container grid rather than one lapping over the other.
  *
- * Without `--band` (the /360 page) the copy is gone and the player runs the
- * full container width. */
+ * `.tour--solo` is the /360 page: one section per tour, each with its own
+ * head and a full-container-width frame, stacked down the page and alternating
+ * ground so the stack has a beat. */
 
 .tour.section {
   padding-block: var(--space-4xl);
@@ -189,36 +190,25 @@
   }
 }
 
-/* Tour picker: one button per tour, only the active one has a mounted player.
-   Mono + uppercase matches .section-eyebrow, so it reads as part of the
-   existing system rather than a new control style. */
-.tour__picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2xs);
+/* /360 stack. Tighter than the standard ladder: at --space-4xl a pair of
+   these put two frame-heights of air between two frames, and the page read as
+   separate pages rather than one list. */
+.tour--solo.section {
+  padding-block: var(--space-3xl);
+}
+
+/* Warm off-white on every second section, so the stack alternates rather than
+   running as one flat field down to the dark closing bands. */
+.tour--solo-alt {
+  background: var(--color-bg-alt);
+}
+
+.tour__solo-head {
   margin-bottom: var(--space-md);
 }
 
-.tour__pick {
-  padding: var(--space-2xs) var(--space-xs);
-  border: 1px solid var(--color-rule);
-  background: transparent;
-  color: var(--color-text-soft);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    border-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.tour__pick:hover {
-  border-color: var(--color-border-strong);
-}
-
-.tour__pick--active {
-  border-color: var(--color-accent-dark);
-  color: var(--color-accent-dark);
+/* A step under .section-label's own clamp: these are the names of vans inside
+   a list, not the page's argument — the hero above already made that. */
+.tour__solo-heading {
+  font-size: clamp(26px, 2.6vw, 38px);
 }

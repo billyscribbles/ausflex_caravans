@@ -1,0 +1,7 @@
+/* The owner walkthrough and the dealer band are one dark closing chapter, so
+ * the video drops its own bottom padding and the dealer band's top padding
+ * carries the seam — otherwise the two ladders stack into a dead gap. Same
+ * treatment the Tough Test band gets on /why-ausflex. */
+.tour-page__video.section {
+  padding-bottom: 0;
+}

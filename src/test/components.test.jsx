@@ -58,46 +58,58 @@ describe('VirtualTour with multiple tours', () => {
       </MemoryRouter>,
     )
 
-  it('renders a picker with one button per tour and one iframe', () => {
+  it('gives every tour its own labelled section, with one player mounted', () => {
     renderTour({ tours, full: true })
 
-    expect(screen.getByRole('button', { name: /Explorer 21/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Sea Breeze/ })).toBeInTheDocument()
+    for (const t of tours) {
+      expect(screen.getByRole('region', { name: t.title })).toBeInTheDocument()
+    }
     // Mounting several Kuula players at once would be punishing.
     expect(document.querySelectorAll('iframe').length).toBe(1)
+    expect(document.querySelector('iframe').getAttribute('src')).toBe(tours[0].embedUrl)
   })
 
-  it('swaps the iframe src when another tour is picked, keeping one iframe', async () => {
+  it('hands the single player to whichever section is launched', async () => {
     const user = userEvent.setup()
     renderTour({ tours, full: true })
-
-    expect(document.querySelector('iframe').getAttribute('src')).toBe(tours[0].embedUrl)
 
     await user.click(screen.getByRole('button', { name: /Sea Breeze/ }))
 
     expect(document.querySelectorAll('iframe').length).toBe(1)
     expect(document.querySelector('iframe').getAttribute('src')).toBe(tours[1].embedUrl)
+    // The section that gave the player up goes back behind its poster, so it
+    // can be launched again rather than being left empty.
+    expect(screen.getByRole('button', { name: /Explorer 21/ })).toBeInTheDocument()
   })
 
-  it('marks the active tour for assistive tech', async () => {
-    const user = userEvent.setup()
+  it('names each launch button after its own tour', () => {
     renderTour({ tours, full: true })
 
-    expect(screen.getByRole('button', { name: /Explorer 21/ })).toHaveAttribute(
-      'aria-current',
-      'true',
-    )
-    await user.click(screen.getByRole('button', { name: /Sea Breeze/ }))
-    expect(screen.getByRole('button', { name: /Sea Breeze/ })).toHaveAttribute(
-      'aria-current',
-      'true',
-    )
+    // Every section carries the same launch copy, so without the tour name a
+    // screen reader's button list is a row of identical entries.
+    expect(screen.getByRole('button', { name: /Sea Breeze/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Explorer 21/ })).not.toBeInTheDocument()
   })
 
-  it('renders no picker and stays behind the poster on the home band', () => {
+  it('renders one band with no sections and stays behind the poster on home', () => {
     renderTour({ tours })
-    expect(screen.queryByRole('button', { name: /Sea Breeze/ })).not.toBeInTheDocument()
+
+    expect(screen.queryByRole('region', { name: 'Sea Breeze' })).not.toBeInTheDocument()
     expect(document.querySelectorAll('iframe').length).toBe(0)
+    expect(screen.getByRole('heading', { name: tour.heading })).toBeInTheDocument()
+  })
+
+  it('sections the content file collections before live tours arrive', () => {
+    // No `tours` prop: this is the first paint on /360, before /api/content
+    // resolves. The sections have to be complete already, or the page grows
+    // another van under the visitor as they scroll.
+    renderTour({ full: true })
+
+    for (const item of tour.items) {
+      expect(screen.getByRole('region', { name: item.title })).toBeInTheDocument()
+    }
+    expect(document.querySelectorAll('iframe').length).toBe(1)
+    expect(document.querySelector('iframe').getAttribute('src')).toBe(tour.items[0].src)
   })
 })
 
