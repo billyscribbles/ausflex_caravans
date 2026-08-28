@@ -231,4 +231,11 @@
   .navbar__logo-img {
     height: 28px;
   }
+  /* The mark shrinks to 28px here, which made the home link a 28px-tall tap
+   * target in a 64px bar. The box grows to a thumb-sized 44px; the mark itself
+   * is unchanged. */
+  .navbar__logo {
+    align-items: center;
+    min-height: 44px;
+  }
 }

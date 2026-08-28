@@ -559,3 +559,46 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+/* Touch-target floor.
+ *
+ * The site's inline text links and micro-type controls are set as text boxes
+ * between 18px and 36px tall — correct for a cursor, under the 44px a thumb
+ * needs. Rather than padding each one and disturbing the vertical rhythm the
+ * desktop layout is set to, the whole set is lifted to a 44px box on the
+ * widths that are actually touched. inline-flex rather than more padding, so
+ * the box grows around the text without moving the baseline above it.
+ *
+ * Each selector carries its section ancestor: the component stylesheets load
+ * after this file and every one of these already declares its own `display`,
+ * so a bare single-class rule here sets min-height and loses the rest.
+ *
+ * The list is the site's full set of inline links that fell short; a new one
+ * has to be added here to be thumb-sized like the rest. */
+@media (max-width: 1024px) {
+  .footer .footer__link,
+  .footer .footer__phone,
+  .footer .footer__email,
+  .footer .footer__legal-btn,
+  .footer .footer__credit-link,
+  .video .video__cta,
+  .feature .feature__cta,
+  .about .about__cta,
+  .tour .tour__cta,
+  .cta .cta__detail dd a,
+  .contact .contact__detail dd a,
+  .van .van__breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Stacked, the footer's link columns are full-width rows, so the row is the
+   * target rather than the 36px of text inside it. "Home" was a 36x36 box, and
+   * its <li> is not a flex container, so the row has to come from the link's
+   * own width rather than from align-self. */
+  .footer .footer__link {
+    display: flex;
+    width: 100%;
+  }
+}
