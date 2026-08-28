@@ -11,6 +11,18 @@ export default function Navbar() {
     setMenuOpen(false)
   }, [pathname])
 
+  // Escape closes the panel. Tapping outside it already did — the hamburger is
+  // the only thing that reopens it — but a keyboard user who tabbed in had no
+  // way out except tabbing through every link.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen])
+
   const { brand, nav, cta } = site
 
   // "/" only matches itself; every other entry also owns its children, so
