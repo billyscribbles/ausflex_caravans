@@ -6,6 +6,7 @@ import './Contact.css'
 
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
+  const [mapLive, setMapLive] = useState(false)
   const formspreeId = site.integrations.formspreeId
 
   async function handleSubmit(e) {
@@ -168,6 +169,20 @@ export default function Contact() {
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
+            {/* Google's embed takes the vertical drag a phone scrolls with, so
+                a thumb landing on the map pans it instead of moving the page.
+                The shield absorbs that first touch and hands the map over on a
+                tap. CSS drops it on pointer devices, where the map has always
+                been directly usable. */}
+            {!mapLive && (
+              <button
+                type="button"
+                className="contact__map-shield"
+                onClick={() => setMapLive(true)}
+              >
+                <span>Tap to use the map</span>
+              </button>
+            )}
           </div>
         )}
       </div>

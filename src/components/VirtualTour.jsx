@@ -22,10 +22,23 @@ import './VirtualTour.css'
 // Kuula players at once would be punishing.
 //
 // `tours` is the managed list from the admin dashboard.
+
+// A live Kuula player swallows the vertical drag that a phone uses to scroll:
+// the frame runs the full column with ~25px of page either side, so a thumb
+// landing on it pans the panorama instead of moving the page, and the visitor
+// is stuck on the embed. On touch, every section waits behind its poster —
+// tapping one is then the visitor asking for the panning, and the sections
+// they have not asked for stay scrollable. Pointer devices are unaffected.
+function prefersTapToLaunch() {
+  if (typeof window === 'undefined' || !window.matchMedia) return false
+  return window.matchMedia('(hover: none), (pointer: coarse)').matches
+}
+
 export default function VirtualTour({ content = tour, tours = [], full = false }) {
   const scrollIn = useScrollIn()
   const [active, setActive] = useState(full)
-  const [index, setIndex] = useState(0)
+  // -1 leaves every section on its poster; 0 opens the first, as before.
+  const [index, setIndex] = useState(() => (prefersTapToLaunch() ? -1 : 0))
 
   // Falls back to the collections in the content file before live data lands,
   // so the sections are right on first paint rather than appearing later.

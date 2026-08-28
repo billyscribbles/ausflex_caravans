@@ -238,11 +238,42 @@
  * instead means both columns bottom out on the same line. The stacked layouts
  * below have no second column to answer to, so they take a ratio again. */
 .contact__map {
+  position: relative;
   grid-column: 1;
   grid-row: 3;
   align-self: stretch;
   min-height: 240px;
   border: 1px solid var(--color-border-strong);
+}
+
+/* Touch-only shield over the embed — see the note in Contact.jsx. A mouse
+ * never meets it: on a pointer device the map stays directly interactive, the
+ * way it always was. */
+.contact__map-shield {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--space-md);
+  background: var(--color-scrim-none);
+}
+
+.contact__map-shield span {
+  padding: var(--space-2xs) var(--space-md);
+  border-radius: var(--radius-full);
+  background: var(--color-dark-deep);
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact__map-shield {
+    display: none;
+  }
 }
 
 .contact__map iframe {
