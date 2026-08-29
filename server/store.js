@@ -1,8 +1,9 @@
 // content.json lives on the Railway volume. Reads come from an in-memory cache;
 // writes go through a single queue and land via write-temp-then-rename, so a
 // crash mid-write can never leave a truncated file.
-import { readFile, writeFile, rename, mkdir } from 'node:fs/promises'
-import { join } from 'node:path'
+import { readFile, writeFile, rename, mkdir, readdir, unlink } from 'node:fs/promises'
+import { join, resolve, sep } from 'node:path'
+import { randomUUID } from 'node:crypto'
 import {
   buildSeed,
   buildVans,
@@ -15,6 +16,11 @@ import {
 const DATA_DIR = process.env.DATA_DIR || './.data'
 const FILE = join(DATA_DIR, 'content.json')
 const UPLOADS = join(DATA_DIR, 'uploads')
+const BACKUPS = join(DATA_DIR, 'backups')
+
+// Boots are rare (a deploy or a restart), the file is small, and it is the only
+// copy of work the client cannot reproduce, so keep a long tail.
+export const BACKUP_RETENTION = 30
 
 let cache = null
 let queue = Promise.resolve()
@@ -33,19 +39,87 @@ async function persist() {
   await rename(tmp, FILE)
 }
 
+// Railway's container filesystem is ephemeral. Without a volume the server
+// still starts, still accepts uploads and still reports success — then the next
+// deploy throws all of it away and reseeds, with nothing in the logs to say so.
+// That silence cost the client two days of dashboard work, so a misconfigured
+// service now refuses to start instead of pretending to save anything.
+function assertDurableStorage() {
+  if (!process.env.RAILWAY_ENVIRONMENT) return
+
+  const mount = process.env.RAILWAY_VOLUME_MOUNT_PATH
+  if (!mount) {
+    throw new Error(
+      'Refusing to boot: no Railway volume is attached to this service, so content.json and ' +
+        'uploads/ would be written to ephemeral container disk and silently lost on the next ' +
+        'deploy. Attach a volume mounted at /data and set DATA_DIR=/data — see docs/ENVIRONMENTS.md.',
+    )
+  }
+
+  const data = resolve(DATA_DIR)
+  const volume = resolve(mount)
+  if (data !== volume && !data.startsWith(volume + sep)) {
+    throw new Error(
+      `Refusing to boot: DATA_DIR (${data}) is outside the mounted volume (${volume}), so it is ` +
+        'ephemeral container disk and is lost on the next deploy. Point DATA_DIR at the volume ' +
+        'mount path — see docs/ENVIRONMENTS.md.',
+    )
+  }
+}
+
+// Copy content.json aside before this boot touches it, so a deploy that
+// migrates badly leaves the previous state recoverable rather than overwritten.
+async function snapshot(raw) {
+  await mkdir(BACKUPS, { recursive: true })
+
+  // ':' is not portable in filenames. The ISO stamp still dominates the sort,
+  // so a plain lexicographic sort is chronological; the uuid only breaks ties
+  // between two boots inside the same millisecond.
+  const stamp = new Date().toISOString().replace(/:/g, '-')
+  await writeFile(join(BACKUPS, `content-${stamp}-${randomUUID().slice(0, 8)}.json`), raw)
+
+  const kept = (await readdir(BACKUPS)).filter((f) => f.startsWith('content-')).sort()
+  for (const stale of kept.slice(0, Math.max(0, kept.length - BACKUP_RETENTION))) {
+    await unlink(join(BACKUPS, stale)).catch(() => {})
+  }
+}
+
+// An unreadable content.json is still the only record of the client's work —
+// half of it may be salvageable by hand. Never let the reseed below be the
+// thing that destroys it.
+async function quarantine(raw) {
+  const stamp = new Date().toISOString().replace(/:/g, '-')
+  await writeFile(join(DATA_DIR, `content.corrupt-${stamp}.json`), raw)
+}
+
 function hasVans(parsed) {
   return Boolean(parsed?.vans) && Array.isArray(parsed.vans.items)
 }
 
 export async function load() {
+  assertDurableStorage()
   await mkdir(UPLOADS, { recursive: true })
 
-  let parsed = null
+  let raw = null
   try {
-    parsed = JSON.parse(await readFile(FILE, 'utf8'))
-    if (!Array.isArray(parsed.photos) || !Array.isArray(parsed.tours)) parsed = null
+    raw = await readFile(FILE, 'utf8')
   } catch {
-    parsed = null
+    raw = null
+  }
+
+  let parsed = null
+  if (raw !== null) {
+    try {
+      parsed = JSON.parse(raw)
+      if (!Array.isArray(parsed.photos) || !Array.isArray(parsed.tours)) parsed = null
+    } catch {
+      parsed = null
+    }
+
+    // A corrupt file goes to quarantine, not to backups/ — everything in
+    // backups/ should be something you can restore by copying it back.
+    if (parsed) await snapshot(raw)
+    else await quarantine(raw)
   }
 
   if (!parsed) {

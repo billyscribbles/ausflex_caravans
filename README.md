@@ -143,8 +143,10 @@ Ready for Railway out of the box (`railway.json` included). `yarn start` boots t
 server (`server/index.js`), which serves the production build on port 4173 with baseline
 security headers and the admin API.
 
-**This site needs a Railway volume mounted at `/data`** — without it the client's uploaded
-photos are silently discarded on every deploy. See [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md).
+**This site needs a Railway volume mounted at `/data`, plus `DATA_DIR=/data`** — without it
+the client's uploaded photos are discarded on every deploy. The server now refuses to boot
+in that state rather than losing the work quietly, and snapshots `content.json` to
+`/data/backups/` on every boot. See [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md).
 
 Ask Claude to "deploy to Railway" — the `railway-deploy` skill drives project creation, env
 vars, deploy, and domain generation via the Railway MCP.

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { LEGACY_TOUR_TITLE, SEED_VERSION, seededCaptions, seededTours } from './seed.js'
@@ -270,5 +270,107 @@ describe('store', () => {
     const content = await store.load()
 
     expect(content.tours).toEqual(renamed)
+  })
+})
+
+// The failure these cover cost the client two days of dashboard work: the
+// service ran with no volume attached, so DATA_DIR fell back to ephemeral
+// container disk and every deploy silently reseeded the site.
+describe('durability', () => {
+  const railwayKeys = ['RAILWAY_ENVIRONMENT', 'RAILWAY_VOLUME_MOUNT_PATH']
+
+  afterEach(() => {
+    for (const key of railwayKeys) delete process.env[key]
+  })
+
+  it('refuses to boot on Railway with no volume attached', async () => {
+    process.env.RAILWAY_ENVIRONMENT = 'production'
+    const store = await freshStore()
+    await expect(store.load()).rejects.toThrow(/volume/i)
+  })
+
+  it('refuses to boot when DATA_DIR sits outside the mounted volume', async () => {
+    process.env.RAILWAY_ENVIRONMENT = 'production'
+    process.env.RAILWAY_VOLUME_MOUNT_PATH = join(dir, 'volume')
+    process.env.DATA_DIR = join(dir, 'not-the-volume')
+    const store = await freshStore()
+    await expect(store.load()).rejects.toThrow(/ephemeral|outside/i)
+  })
+
+  it('boots when DATA_DIR is the mounted volume', async () => {
+    process.env.RAILWAY_ENVIRONMENT = 'production'
+    process.env.RAILWAY_VOLUME_MOUNT_PATH = dir
+    const store = await freshStore()
+    await expect(store.load()).resolves.toBeTruthy()
+  })
+
+  it('writes no backup on the very first boot, when there is nothing to keep', async () => {
+    const store = await freshStore()
+    await store.load()
+    expect(await readdir(join(dir, 'backups')).catch(() => [])).toEqual([])
+  })
+
+  it('snapshots the existing content.json on every subsequent boot', async () => {
+    const first = await freshStore()
+    await first.load()
+    await first.mutate((c) => {
+      c.tours.push({
+        id: 'theirs',
+        title: 'Client tour',
+        embedUrl: 'https://kuula.co/share/theirs',
+        poster: null,
+        sortOrder: 99,
+        createdAt: new Date().toISOString(),
+      })
+    })
+
+    vi.resetModules()
+    const second = await freshStore()
+    await second.load()
+
+    const backups = await readdir(join(dir, 'backups'))
+    expect(backups.length).toBe(1)
+    const snapshot = JSON.parse(await readFile(join(dir, 'backups', backups[0]), 'utf8'))
+    expect(snapshot.tours.some((t) => t.id === 'theirs')).toBe(true)
+  })
+
+  it('snapshots before a version migration runs, so a bad migration is recoverable', async () => {
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: 1, photos: [], tours: [], vans: { heading: 'x', items: [] } }),
+    )
+
+    const store = await freshStore()
+    await store.load()
+
+    const backups = await readdir(join(dir, 'backups'))
+    expect(backups.length).toBe(1)
+    const snapshot = JSON.parse(await readFile(join(dir, 'backups', backups[0]), 'utf8'))
+    // Pre-migration state: still v1, before store.js migrated it forward.
+    expect(snapshot.version).toBe(1)
+  })
+
+  it('prunes backups to the retention limit, keeping the newest', async () => {
+    const store = await freshStore()
+    await store.load()
+
+    for (let i = 0; i < store.BACKUP_RETENTION + 5; i++) {
+      vi.resetModules()
+      const boot = await freshStore()
+      await boot.load()
+    }
+
+    const backups = await readdir(join(dir, 'backups'))
+    expect(backups.length).toBe(store.BACKUP_RETENTION)
+  })
+
+  it('preserves a malformed content.json instead of overwriting it with the seed', async () => {
+    await writeFile(join(dir, 'content.json'), '{ this is not json')
+    const store = await freshStore()
+    await store.load()
+
+    const quarantined = (await readdir(dir)).filter((f) => f.startsWith('content.corrupt-'))
+    expect(quarantined.length).toBe(1)
+    expect(await readFile(join(dir, quarantined[0]), 'utf8')).toBe('{ this is not json')
   })
 })

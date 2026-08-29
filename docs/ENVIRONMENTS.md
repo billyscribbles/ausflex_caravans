@@ -32,17 +32,47 @@ Both environments need a **Railway volume mounted at `/data`**, plus
 `ADMIN_PASSWORD_HASH`, `SESSION_SECRET` and `DATA_DIR=/data`.
 
 Without the volume the server writes to ephemeral container disk and **every
-photo the client uploads is lost on the next deploy**, silently. Create the
-volume before the first deploy of this feature.
+photo the client uploads is lost on the next deploy**. Create the volume before
+the first deploy of this feature.
+
+This is no longer silent: `assertDurableStorage()` in `server/store.js` refuses
+to boot when `RAILWAY_ENVIRONMENT` is set but no volume is mounted, or when
+`DATA_DIR` points outside the mount. A misconfigured service now fails its
+deploy loudly instead of coming up healthy and quietly discarding the client's
+work on the next push.
 
 Staging and production have separate volumes and therefore separate content.
 Each self-seeds from the static content files on first boot, so a fresh
 environment opens with the photo set that ships in the repo. The client edits
 production.
 
-Railway volumes are not backed up automatically. The dashboard's export link
-downloads `content.json`; the uploaded image files themselves would need manual
-recovery, so tell the client to keep their originals.
+### Backups
+
+Railway volumes are not backed up automatically, so the server keeps its own
+rolling history. Every boot — which means every deploy and every restart —
+copies the existing `content.json` to `/data/backups/content-<timestamp>.json`
+_before_ any migration touches it, keeping the newest `BACKUP_RETENTION` (30)
+snapshots. A deploy that migrates badly is therefore always recoverable.
+
+A `content.json` that fails to parse is never overwritten by the reseed: it is
+moved to `/data/content.corrupt-<timestamp>.json` first.
+
+To restore a snapshot:
+
+```sh
+railway ssh --project ausflex_caravans --environment production
+ls /data/backups                                    # newest last
+cp /data/backups/content-<timestamp>.json /data/content.json
+exit
+```
+
+Then restart the service so it reloads the file.
+
+Backups cover the **metadata** — photo rows, captions, ordering, tours, van
+copy. The uploaded image bytes live in `/data/uploads/` and are not snapshotted
+(they are content-addressed and never rewritten, so only volume loss endangers
+them). The dashboard's export link downloads the current `content.json` for an
+off-Railway copy; tell the client to keep their original images regardless.
 
 ---
 
