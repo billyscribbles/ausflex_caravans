@@ -75,10 +75,22 @@ async function snapshot(raw) {
   // ':' is not portable in filenames. The ISO stamp still dominates the sort,
   // so a plain lexicographic sort is chronological; the uuid only breaks ties
   // between two boots inside the same millisecond.
-  const stamp = new Date().toISOString().replace(/:/g, '-')
-  await writeFile(join(BACKUPS, `content-${stamp}-${randomUUID().slice(0, 8)}.json`), raw)
+  const existing = (await readdir(BACKUPS)).filter((f) => f.startsWith('content-')).sort()
 
-  const kept = (await readdir(BACKUPS)).filter((f) => f.startsWith('content-')).sort()
+  // A crashlooping or frequently-restarted container would otherwise write the
+  // same bytes 30 times over and push every genuinely older state out of the
+  // window. Snapshot only what differs from the newest one already held.
+  const newest = existing.at(-1)
+  if (newest) {
+    const previous = await readFile(join(BACKUPS, newest), 'utf8').catch(() => null)
+    if (previous === raw) return
+  }
+
+  const stamp = new Date().toISOString().replace(/:/g, '-')
+  const name = `content-${stamp}-${randomUUID().slice(0, 8)}.json`
+  await writeFile(join(BACKUPS, name), raw)
+
+  const kept = [...existing, name].sort()
   for (const stale of kept.slice(0, Math.max(0, kept.length - BACKUP_RETENTION))) {
     await unlink(join(BACKUPS, stale)).catch(() => {})
   }

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises'
+import { mkdtemp, rm, readFile, writeFile, readdir, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { LEGACY_TOUR_TITLE, SEED_VERSION, seededCaptions, seededTours } from './seed.js'
@@ -350,18 +350,59 @@ describe('durability', () => {
     expect(snapshot.version).toBe(1)
   })
 
-  it('prunes backups to the retention limit, keeping the newest', async () => {
-    const store = await freshStore()
-    await store.load()
+  it('does not stack identical snapshots, so restart churn cannot evict real history', async () => {
+    const first = await freshStore()
+    await first.load()
+    await first.mutate((c) => {
+      c.tours.push({
+        id: 'theirs',
+        title: 'Client tour',
+        embedUrl: 'https://kuula.co/share/theirs',
+        poster: null,
+        sortOrder: 99,
+        createdAt: new Date().toISOString(),
+      })
+    })
 
-    for (let i = 0; i < store.BACKUP_RETENTION + 5; i++) {
+    // Three boots with no edits between them: the client's state is worth one
+    // snapshot, not three.
+    for (let i = 0; i < 3; i++) {
       vi.resetModules()
       const boot = await freshStore()
       await boot.load()
     }
 
-    const backups = await readdir(join(dir, 'backups'))
+    expect((await readdir(join(dir, 'backups'))).length).toBe(1)
+  })
+
+  it('prunes backups to the retention limit, keeping the newest', async () => {
+    // Seeding the directory directly rather than booting 35 times: the boots
+    // are slow enough under a full parallel suite to time out neighbouring
+    // test files, and the pruning logic is what this is actually about.
+    await mkdir(join(dir, 'backups'), { recursive: true })
+    const stale = []
+    for (let i = 0; i < 35; i++) {
+      const name = `content-2020-01-01T00-00-${String(i).padStart(2, '0')}.000Z-old.json`
+      stale.push(name)
+      await writeFile(join(dir, 'backups', name), JSON.stringify({ marker: i }))
+    }
+
+    // There has to be something on disk for the boot to snapshot.
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({ version: SEED_VERSION, photos: [], tours: [], vans: { items: [] } }),
+    )
+
+    const store = await freshStore()
+    await store.load()
+
+    const backups = (await readdir(join(dir, 'backups'))).sort()
     expect(backups.length).toBe(store.BACKUP_RETENTION)
+    // The oldest went first and the newest survived...
+    expect(backups).not.toContain(stale[0])
+    expect(backups).toContain(stale.at(-1))
+    // ...and this boot's own snapshot is the newest of all.
+    expect(backups.at(-1).startsWith('content-2020')).toBe(false)
   })
 
   it('preserves a malformed content.json instead of overwriting it with the seed', async () => {
