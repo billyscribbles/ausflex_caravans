@@ -17,6 +17,7 @@ export const site = {
     { label: 'About Us', to: '/about' },
     { label: 'Gallery', to: '/gallery' },
     { label: '360', to: '/360' },
+    { label: 'Dealers', to: '/dealers' },
   ],
 
   cta: {
@@ -35,6 +36,7 @@ export const site = {
           { label: 'About Us', to: '/about' },
           { label: 'Gallery', to: '/gallery' },
           { label: '360 Tour', to: '/360' },
+          { label: 'Dealers', to: '/dealers' },
           { label: 'Contact', to: '/contact' },
         ],
       },

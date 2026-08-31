@@ -4,5 +4,5 @@ export const dealer = {
   eyebrow: 'Australia & New Zealand',
   heading: 'Find Ausflex at a dealer near you.',
   body: 'We have a network of dealer partners across Australia and New Zealand, so you can see the Ausflex range near you. To spec your own, come to us in Campbellfield and build it with the people who make it.',
-  cta: { label: 'Contact us', to: '/contact' },
+  cta: { label: 'Find a dealer', to: '/dealers' },
 }

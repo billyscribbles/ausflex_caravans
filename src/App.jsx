@@ -32,6 +32,7 @@ if (typeof window !== 'undefined') {
 const VansPage = lazyWithRetry(() => import('./pages/VansPage.jsx'))
 const VanPage = lazyWithRetry(() => import('./pages/VanPage.jsx'))
 const WhyPage = lazyWithRetry(() => import('./pages/WhyPage.jsx'))
+const DealersPage = lazyWithRetry(() => import('./pages/DealersPage.jsx'))
 const GalleryPage = lazyWithRetry(() => import('./pages/GalleryPage.jsx'))
 const TourPage = lazyWithRetry(() => import('./pages/TourPage.jsx'))
 const AboutPage = lazyWithRetry(() => import('./pages/AboutPage.jsx'))
@@ -89,6 +90,7 @@ export default function App() {
               <Route path="/vans" element={<VansPage />} />
               <Route path="/vans/:slug" element={<VanPage />} />
               <Route path="/why-ausflex" element={<WhyPage />} />
+              <Route path="/dealers" element={<DealersPage />} />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/360" element={<TourPage />} />
               <Route path="/about" element={<AboutPage />} />

@@ -9,6 +9,7 @@
   <url><loc>https://example.com/vans/extreme-family</loc><priority>0.8</priority></url>
   <url><loc>https://example.com/vans/on-site</loc><priority>0.8</priority></url>
   <url><loc>https://example.com/why-ausflex</loc><priority>0.8</priority></url>
+  <url><loc>https://example.com/dealers</loc><priority>0.7</priority></url>
   <url><loc>https://example.com/about</loc><priority>0.7</priority></url>
   <url><loc>https://example.com/gallery</loc><priority>0.6</priority></url>
   <url><loc>https://example.com/360</loc><priority>0.6</priority></url>

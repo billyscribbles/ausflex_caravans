@@ -18,6 +18,7 @@ import { contactSection } from '../content/contact.js'
 import { contactCta } from '../content/cta.js'
 import { gallery } from '../content/gallery.js'
 import { vans } from '../content/vans.js'
+import { dealersPage } from '../content/dealers.js'
 import { site } from '../config/site.config.js'
 
 describe('content — section copy contract', () => {
@@ -199,6 +200,27 @@ describe('gallery — collection grouping contract', () => {
       for (const item of gallery[name].items) {
         expect(existsSync(join('public', item.src)), `${name}: ${item.src} is missing`).toBe(true)
       }
+    }
+  })
+})
+
+describe('content — dealers page contract', () => {
+  it('has a heading, an intro, and at least one dealer', () => {
+    expect(dealersPage.heading).toBeTruthy()
+    expect(dealersPage.intro).toBeTruthy()
+    expect(dealersPage.dealers.length).toBeGreaterThan(0)
+  })
+
+  it('every dealer carries full contact details', () => {
+    for (const dealer of dealersPage.dealers) {
+      expect(dealer.name).toBeTruthy()
+      expect(dealer.region).toBeTruthy()
+      expect(dealer.address).toBeTruthy()
+      expect(dealer.mapUrl, dealer.name).toMatch(/^https:\/\//)
+      expect(dealer.phone.label).toBeTruthy()
+      expect(dealer.phone.href, dealer.name).toMatch(/^tel:\+\d+$/)
+      expect(dealer.website.label).toBeTruthy()
+      expect(dealer.website.href, dealer.name).toMatch(/^https:\/\//)
     }
   })
 })
