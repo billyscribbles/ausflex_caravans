@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { login } from './api.js'
 
-export default function Login({ onSuccess }) {
+export default function Login({ onSuccess, notice }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -25,6 +25,12 @@ export default function Login({ onSuccess }) {
       <form className="admin-login" onSubmit={onSubmit}>
         <p className="admin-login__kicker">Ausflex</p>
         <h1 className="admin-login__title">Content manager</h1>
+
+        {notice && (
+          <p className="admin-status" role="status">
+            {notice}
+          </p>
+        )}
 
         <label className="admin-field" htmlFor="admin-password">
           Password

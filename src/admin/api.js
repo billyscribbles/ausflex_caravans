@@ -1,9 +1,20 @@
 // Thin wrappers over /api. Every one rejects with an Error carrying .status so
 // callers can distinguish 401 (session expired) from 429 (rate limited).
+//
+// A 401 additionally announces itself on the window: /api/content is public,
+// so a dashboard whose session has died keeps rendering and refreshing as if
+// nothing were wrong — every write just quietly fails. AdminPage listens for
+// this event and drops back to the login screen. Dispatched here, in the one
+// place every call goes through, so no tab can forget to handle it. (On the
+// login screen itself a wrong password also 401s; AdminPage is already logged
+// out then, so the event is a no-op.)
+export const UNAUTHORISED_EVENT = 'admin:unauthorised'
+
 async function request(url, options) {
   const res = await fetch(url, options)
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
+    if (res.status === 401) window.dispatchEvent(new Event(UNAUTHORISED_EVENT))
     throw Object.assign(new Error(body.error || `Request failed (${res.status})`), {
       status: res.status,
     })

@@ -213,6 +213,36 @@ describe('AdminPage', () => {
     )
   })
 
+  it('drops to the login screen when a write comes back 401', async () => {
+    // /api/content is public, so a dashboard whose session has expired keeps
+    // rendering and refreshing as if everything were fine — the only sign of
+    // trouble would be a small error line the user can easily miss. A 401 on
+    // any call must bounce back to the login screen instead.
+    const user = userEvent.setup()
+    vi.stubGlobal(
+      'fetch',
+      mockFetch({
+        'GET /api/auth/session': { ok: true, json: async () => ({ authed: true }) },
+        'GET /api/content': { ok: true, json: async () => ONE_PHOTO },
+        'DELETE /api/photos/p1': {
+          ok: false,
+          status: 401,
+          json: async () => ({ error: 'unauthorised' }),
+        },
+      }),
+    )
+    renderAdmin()
+
+    await waitFor(() => expect(screen.getByDisplayValue('A van')).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: /delete photo 1/i }))
+    await user.click(screen.getByRole('button', { name: /confirm delete/i }))
+
+    await waitFor(() => expect(screen.getByLabelText(/password/i)).toBeInTheDocument())
+    expect(screen.queryByRole('tab', { name: /gallery page/i })).not.toBeInTheDocument()
+    // The bounce explains itself — otherwise it reads as a random logout.
+    expect(screen.getByRole('status')).toHaveTextContent(/session expired/i)
+  })
+
   const TOURS_CONTENT = {
     gallery: { interiors: [], exteriors: [], page: [] },
     tours: [

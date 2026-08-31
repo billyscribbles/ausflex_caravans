@@ -6,7 +6,7 @@ import PhotosTab from '../admin/PhotosTab.jsx'
 import ToursTab from '../admin/ToursTab.jsx'
 import VansTab from '../admin/VansTab.jsx'
 import VansPageTab from '../admin/VansPageTab.jsx'
-import { getSession, getContent, logout, exportUrl } from '../admin/api.js'
+import { getSession, getContent, logout, exportUrl, UNAUTHORISED_EVENT } from '../admin/api.js'
 import '../admin/admin.css'
 
 // The sidebar is the whole information architecture: every destination is one
@@ -85,6 +85,7 @@ function countFor(view, content) {
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(null)
+  const [expired, setExpired] = useState(false)
   const [viewId, setViewId] = useState('page')
   const [content, setContent] = useState(null)
 
@@ -98,6 +99,18 @@ export default function AdminPage() {
     getSession()
       .then((s) => setAuthed(s.authed))
       .catch(() => setAuthed(false))
+  }, [])
+
+  // Any admin call answering 401 means the session died while the dashboard
+  // was open. Show the login screen — a dead-session dashboard otherwise looks
+  // fully alive (see the note in admin/api.js) while every save silently fails.
+  useEffect(() => {
+    const onUnauthorised = () => {
+      setAuthed(false)
+      setExpired(true)
+    }
+    window.addEventListener(UNAUTHORISED_EVENT, onUnauthorised)
+    return () => window.removeEventListener(UNAUTHORISED_EVENT, onUnauthorised)
   }, [])
 
   useEffect(() => {
@@ -137,7 +150,15 @@ export default function AdminPage() {
         </main>
       )}
 
-      {authed === false && <Login onSuccess={() => setAuthed(true)} />}
+      {authed === false && (
+        <Login
+          onSuccess={() => {
+            setAuthed(true)
+            setExpired(false)
+          }}
+          notice={expired ? 'Your session expired — sign in again to keep working.' : null}
+        />
+      )}
 
       {authed === true && (
         <div className="admin-shell">
