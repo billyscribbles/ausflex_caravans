@@ -10,7 +10,7 @@ const COLLECTIONS = ['interiors', 'exteriors', 'page']
 
 // Bumped whenever the content files gain something a store seeded under an
 // earlier version would never see. store.js migrates forward to this number.
-export const SEED_VERSION = 5
+export const SEED_VERSION = 6
 
 // What v1 and v2 seeded the single Kuula collection as. v3 renames it, because
 // the /360 picker now shows tour titles as its buttons and "Ausflex Caravans
@@ -58,6 +58,17 @@ export function seededCaptions() {
 export function seededVanVideos() {
   return new Map(vans.items.filter((v) => v.video).map((v) => [v.slug, v.video]))
 }
+
+// What v1–v5 seeded beside each van's 3D layout render. The van pages show the
+// render alone now — a stray camera photo under the plan read as clutter — so
+// the v6 step in store.js retires exactly these rows. A photo the client
+// uploaded lives under /uploads/ and can never match.
+export const RETIRED_VAN_PHOTO_SRCS = [
+  '/images/photo-little-wonder-front.jpg',
+  '/images/photo-family-adventurer.jpg',
+  '/images/photo-fierce-interior-1.jpg',
+  '/images/photo-extreme-build.jpg',
+]
 
 // The van range, split into the two places it is stored: the van records
 // themselves, and their gallery photos as ordinary rows in the photos array

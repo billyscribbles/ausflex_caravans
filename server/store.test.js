@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
   LEGACY_TOUR_TITLE,
+  RETIRED_VAN_PHOTO_SRCS,
   SEED_VERSION,
   seededCaptions,
   seededTours,
@@ -371,6 +372,43 @@ describe('store', () => {
       seeded.get('extreme-family'),
     )
     expect(content.vans.items.find((v) => v.id === 'their-van').video.youtubeId).toBe('their-film')
+
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.version).toBe(SEED_VERSION)
+  })
+
+  it('retires the seeded camera photos from van galleries, and only those', async () => {
+    const retiredSrc = RETIRED_VAN_PHOTO_SRCS[0]
+    const seededCamera = {
+      id: 'seeded-camera',
+      collection: 'van:some-van',
+      src: retiredSrc,
+      alt: 'Camera photo an earlier seed placed beside the render',
+      caption: 'Front toolbox & stone guard',
+      sortOrder: 1,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    // The render stays, an upload the client added to the same van stays, and
+    // the same file sitting in a base gallery collection stays.
+    const render = { ...seededCamera, id: 'render', src: '/images/van-little-wonder.jpg' }
+    const uploaded = { ...seededCamera, id: 'their-upload', src: '/uploads/theirs.webp' }
+    const inGallery = { ...seededCamera, id: 'gallery-copy', collection: 'exteriors' }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({
+        version: 5,
+        photos: [seededCamera, render, uploaded, inGallery],
+        tours: [],
+        vans: { eyebrow: '', heading: '', sub: '', items: [] },
+      }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    const ids = content.photos.map((p) => p.id)
+    expect(ids).not.toContain('seeded-camera')
+    expect(ids).toEqual(expect.arrayContaining(['render', 'their-upload', 'gallery-copy']))
 
     const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
     expect(onDisk.version).toBe(SEED_VERSION)

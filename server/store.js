@@ -9,6 +9,7 @@ import {
   buildVans,
   LEGACY_LENGTH_PHRASES,
   LEGACY_TOUR_TITLE,
+  RETIRED_VAN_PHOTO_SRCS,
   SEED_VERSION,
   seededCaptions,
   seededTours,
@@ -221,6 +222,17 @@ export async function load() {
       for (const van of cache.vans.items) {
         if (!van.video && videos.has(van.slug)) van.video = videos.get(van.slug)
       }
+    }
+
+    // v6: the van pages show the 3D layout render alone now. Drop only the
+    // exact camera photos earlier seeds placed beside it, and only from van
+    // galleries — the same files could sit in the base gallery collections,
+    // and a photo the client uploaded lives under /uploads/ so never matches.
+    if (from < 6) {
+      const retired = new Set(RETIRED_VAN_PHOTO_SRCS)
+      cache.photos = cache.photos.filter(
+        (p) => !(String(p.collection ?? '').startsWith('van:') && retired.has(p.src)),
+      )
     }
 
     cache.version = SEED_VERSION
