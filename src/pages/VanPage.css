@@ -156,6 +156,27 @@
   object-fit: cover;
 }
 
+/* Two zoomed-in-crop escapes, both shown whole at natural aspect instead of
+ * cover-cropped. A lone photo spans the entire track, so it also pulls in to
+ * a comfortable centred width; a panorama (the 3D layout renders, flagged
+ * .van__photo--wide on load) centres against its grid row. */
+.van__photo:only-child {
+  justify-self: center;
+  width: min(100%, 820px);
+}
+
+.van__photo--wide {
+  align-self: center;
+}
+
+.van__photo:only-child img,
+.van__photo--wide img {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+}
+
 /* Gradient ground rather than a text-shadow, so the caption holds its
  * contrast over a pale photo. Matches GalleryGrid. */
 .van__photo figcaption {

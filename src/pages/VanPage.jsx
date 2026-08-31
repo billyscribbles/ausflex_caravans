@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SEO from '../lib/seo.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
@@ -98,10 +99,7 @@ export default function VanPage() {
             <h2 className="section-label">In the flesh.</h2>
             <div className="van__photo-grid">
               {van.photos.map((photo) => (
-                <figure key={photo.src} className="van__photo">
-                  <img src={photo.src} alt={photo.alt} loading="lazy" />
-                  {photo.caption && <figcaption>{photo.caption}</figcaption>}
-                </figure>
+                <VanPhoto key={photo.src} photo={photo} />
               ))}
             </div>
           </div>
@@ -110,5 +108,27 @@ export default function VanPage() {
 
       <ContactCTA />
     </main>
+  )
+}
+
+// The 3D layout renders are far wider than camera photos, and cover-cropping
+// them into a grid tile reads as zoomed-in. Aspect is only knowable once the
+// image loads (photos also arrive via the dashboard), so flag panoramas here
+// and let the CSS show them whole.
+function VanPhoto({ photo }) {
+  const [wide, setWide] = useState(false)
+  return (
+    <figure className={wide ? 'van__photo van__photo--wide' : 'van__photo'}>
+      <img
+        src={photo.src}
+        alt={photo.alt}
+        loading="lazy"
+        onLoad={(e) => {
+          const { naturalWidth, naturalHeight } = e.currentTarget
+          if (naturalWidth > naturalHeight * 1.9) setWide(true)
+        }}
+      />
+      {photo.caption && <figcaption>{photo.caption}</figcaption>}
+    </figure>
   )
 }
