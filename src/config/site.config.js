@@ -56,8 +56,9 @@ export const site = {
   },
 
   social: {
-    facebook: 'https://www.facebook.com/profile.php?id=100083029877406',
-    instagram: 'https://instagram.com/ausflex.caravans',
+    facebook: 'https://www.facebook.com/people/Ausflex-caravans/100083029877406/',
+    instagram: 'https://www.instagram.com/ausflex.caravans',
+    tiktok: 'https://www.tiktok.com/@ausflexcaravans',
   },
 
   contact: {

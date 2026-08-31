@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
+import TikTokIcon from './TikTokIcon.jsx'
 import { site } from '../config/site.config.js'
 import './Footer.css'
 
@@ -89,6 +90,17 @@ export default function Footer() {
                 aria-label="Instagram"
               >
                 <Instagram size={18} strokeWidth={1.8} />
+              </a>
+            )}
+            {social.tiktok && (
+              <a
+                href={social.tiktok}
+                className="footer__social"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+              >
+                <TikTokIcon size={18} />
               </a>
             )}
             {social.twitter && (

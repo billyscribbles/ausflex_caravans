@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight, Facebook, Instagram } from 'lucide-react'
+import TikTokIcon from './TikTokIcon.jsx'
 import { site } from '../config/site.config.js'
 import { contactSection } from '../content/contact.js'
 import './Contact.css'
@@ -78,7 +79,7 @@ export default function Contact() {
               </dd>
             </div>
           )}
-          {(social.facebook || social.instagram) && (
+          {(social.facebook || social.instagram || social.tiktok) && (
             <div className="contact__detail">
               <dt>Follow us</dt>
               <dd className="contact__socials">
@@ -100,6 +101,16 @@ export default function Contact() {
                     aria-label="Instagram"
                   >
                     <Instagram size={17} strokeWidth={1.8} />
+                  </a>
+                )}
+                {social.tiktok && (
+                  <a
+                    href={social.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="TikTok"
+                  >
+                    <TikTokIcon size={17} />
                   </a>
                 )}
               </dd>
