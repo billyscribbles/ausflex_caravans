@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto'
 import {
   buildSeed,
   buildVans,
+  LEGACY_LENGTH_PHRASES,
   LEGACY_TOUR_TITLE,
   SEED_VERSION,
   seededCaptions,
@@ -157,28 +158,56 @@ export async function load() {
     await persist()
   }
 
-  // Everything below runs once per version bump, never on a rebuild — a
-  // rebuild here would discard the client's uploads and dashboard edits.
+  // Each step below runs only for stores seeded before that step's version,
+  // never on a rebuild or a later bump — a store already past a step carries
+  // the client's subsequent edits, and re-running the step would redo its
+  // one-shot trade-offs against them.
   if ((cache.version ?? 0) < SEED_VERSION) {
+    const from = cache.version ?? 0
+
     // v2: photos seeded before their collection had captions carry an empty
     // one. Fill the blanks from the content files, but only the blanks, so a
     // caption the client deliberately clears in the dashboard stays cleared.
-    const captions = seededCaptions()
-    for (const photo of cache.photos) {
-      if (!photo.caption && captions.has(photo.src)) photo.caption = captions.get(photo.src)
+    if (from < 2) {
+      const captions = seededCaptions()
+      for (const photo of cache.photos) {
+        if (!photo.caption && captions.has(photo.src)) photo.caption = captions.get(photo.src)
+      }
     }
 
     // v3: the content files ship more than one Kuula collection now. Match on
     // embed URL and append what is missing, so tours the client added keep
     // their place and order. A seeded tour the client deleted does come back —
     // same one-shot trade-off the caption backfill makes.
-    let order = cache.tours.length ? Math.max(...cache.tours.map((t) => t.sortOrder)) + 1 : 0
-    for (const seeded of seededTours()) {
-      const match = cache.tours.find((t) => t.embedUrl === seeded.embedUrl)
-      if (!match) {
-        cache.tours.push({ ...seeded, sortOrder: order++ })
-      } else if (match.title === LEGACY_TOUR_TITLE) {
-        match.title = seeded.title
+    if (from < 3) {
+      let order = cache.tours.length ? Math.max(...cache.tours.map((t) => t.sortOrder)) + 1 : 0
+      for (const seeded of seededTours()) {
+        const match = cache.tours.find((t) => t.embedUrl === seeded.embedUrl)
+        if (!match) {
+          cache.tours.push({ ...seeded, sortOrder: order++ })
+        } else if (match.title === LEGACY_TOUR_TITLE) {
+          match.title = seeded.title
+        }
+      }
+    }
+
+    // v4: the on-site range tops out at 32 feet — earlier seeds said 30.
+    // Rewrite only text still carrying the old phrases, so wording the client
+    // edited in the dashboard stands.
+    if (from < 4) {
+      const fix = (text) => {
+        if (typeof text !== 'string') return text
+        for (const [stale, corrected] of LEGACY_LENGTH_PHRASES) {
+          text = text.replaceAll(stale, corrected)
+        }
+        return text
+      }
+      cache.vans.sub = fix(cache.vans.sub)
+      for (const van of cache.vans.items) {
+        van.length = fix(van.length)
+        van.blurb = fix(van.blurb)
+        if (Array.isArray(van.description)) van.description = van.description.map(fix)
+        if (Array.isArray(van.specs)) van.specs = van.specs.map(fix)
       }
     }
 

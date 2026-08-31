@@ -271,6 +271,91 @@ describe('store', () => {
 
     expect(content.tours).toEqual(renamed)
   })
+
+  it('corrects the 30-foot on-site copy a store seeded under an older version still carries', async () => {
+    const stale = {
+      id: 'on-site-van',
+      slug: 'on-site',
+      name: 'On-Site Caravans',
+      length: 'Up to 30ft',
+      blurb: 'Custom-built on-site caravans designed around your unique needs, up to 30 feet.',
+      description: ['Up to thirty feet, designed around your block and the way you will use it.'],
+      specs: ['Up to 30ft', 'Custom layouts'],
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    // A van whose copy the client rewrote in the dashboard.
+    const theirs = {
+      ...stale,
+      id: 'their-van',
+      slug: 'tuff-mudder',
+      length: '12ft',
+      blurb: 'Their own words about their own van.',
+      description: ['Their paragraph, untouched.'],
+      specs: ['12ft body'],
+      sortOrder: 1,
+    }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({
+        version: 3,
+        photos: [],
+        tours: [],
+        vans: {
+          eyebrow: 'The Range',
+          heading: 'A van for every adventure.',
+          sub: 'From the 12-foot Tuff Mudder to on-site vans up to 30 feet — come and see them.',
+          items: [stale, theirs],
+        },
+      }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.vans.sub).toContain('on-site vans up to 32 feet')
+    const fixed = content.vans.items.find((v) => v.id === 'on-site-van')
+    expect(fixed.length).toBe('Up to 32ft')
+    expect(fixed.blurb).toContain('up to 32 feet')
+    expect(fixed.description[0]).toContain('Up to thirty-two feet')
+    expect(fixed.specs).toContain('Up to 32ft')
+    expect(fixed.specs).not.toContain('Up to 30ft')
+    // The client's own wording stands.
+    expect(content.vans.items.find((v) => v.id === 'their-van')).toEqual(theirs)
+
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.version).toBe(SEED_VERSION)
+  })
+
+  it('does not redo older one-shot migrations when bumping past them', async () => {
+    const [src] = [...seededCaptions()][0]
+    // A seeded photo whose caption the client cleared after the v2 backfill
+    // ran, and a tours list they emptied after the v3 append.
+    const cleared = {
+      id: 'cleared-seeded-photo',
+      collection: 'page',
+      src,
+      alt: 'Seeded photo, caption cleared on purpose',
+      caption: '',
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({
+        version: 3,
+        photos: [cleared],
+        tours: [],
+        vans: { eyebrow: '', heading: '', sub: '', items: [] },
+      }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.photos.find((p) => p.id === 'cleared-seeded-photo').caption).toBe('')
+    expect(content.tours).toEqual([])
+  })
 })
 
 // The failure these cover cost the client two days of dashboard work: the

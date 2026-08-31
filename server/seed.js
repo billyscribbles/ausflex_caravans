@@ -10,13 +10,22 @@ const COLLECTIONS = ['interiors', 'exteriors', 'page']
 
 // Bumped whenever the content files gain something a store seeded under an
 // earlier version would never see. store.js migrates forward to this number.
-export const SEED_VERSION = 3
+export const SEED_VERSION = 4
 
 // What v1 and v2 seeded the single Kuula collection as. v3 renames it, because
 // the /360 picker now shows tour titles as its buttons and "Ausflex Caravans
 // 360° virtual tour" says nothing next to a second van. Only a row still
 // carrying this exact string is renamed, so a title the client set stands.
 export const LEGACY_TOUR_TITLE = 'Ausflex Caravans 360° virtual tour'
+
+// What v1–v3 seeded the on-site range's length as. The real ceiling is 32
+// feet, not 30. v4 rewrites only text still carrying these exact phrases, so
+// wording the client edited in the dashboard stands.
+export const LEGACY_LENGTH_PHRASES = [
+  ['up to 30 feet', 'up to 32 feet'],
+  ['Up to 30ft', 'Up to 32ft'],
+  ['Up to thirty feet', 'Up to thirty-two feet'],
+]
 
 // The tours shipped in the content files, for buildSeed and for the backfill
 // in store.js.
