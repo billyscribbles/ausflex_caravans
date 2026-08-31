@@ -53,6 +53,17 @@
   object-fit: cover;
 }
 
+/* Studio cutouts (flagged --plate on load in VanPage.jsx) show the van whole,
+ * centred on a card-white ground the photo's own white blends into — cover
+ * would crop the product itself. */
+.van__main-image--plate {
+  background: var(--color-bg-card);
+}
+
+.van__main-image--plate img {
+  object-fit: contain;
+}
+
 .van__specs {
   display: flex;
   flex-wrap: wrap;

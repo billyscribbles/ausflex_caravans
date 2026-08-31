@@ -11,6 +11,7 @@ export default function VanPage() {
   const { slug } = useParams()
   const { vans, loading } = useVans()
   const van = vans.items.find((v) => v.slug === slug)
+  const [plate, setPlate] = useState(false)
 
   // A van added in the dashboard is not in the static fallback, so a direct
   // load would flash NotFoundPage for one frame before the fetch lands. Hold
@@ -53,8 +54,15 @@ export default function VanPage() {
 
       <section className="van__showcase">
         <div className="container">
-          <div className="van__main-image">
-            {van.image && <img src={van.image} alt={van.imageAlt} fetchpriority="high" />}
+          <div className={plate ? 'van__main-image van__main-image--plate' : 'van__main-image'}>
+            {van.image && (
+              <img
+                src={van.image}
+                alt={van.imageAlt}
+                fetchpriority="high"
+                onLoad={(e) => setPlate(isStudioPlate(e.currentTarget))}
+              />
+            )}
           </div>
           {van.specs?.length > 0 && (
             <ul className="van__specs">
@@ -121,6 +129,30 @@ export default function VanPage() {
       <ContactCTA />
     </main>
   )
+}
+
+// Some hero shots are studio cutouts of the van on a pure-white ground, and
+// cover-cropping one clips the product itself — wheels, awning, drawbar. Which
+// kind an image is (they also arrive via the dashboard) is only knowable from
+// its pixels, so corner-sample on load: an all-white border means a cutout,
+// flagged so the CSS shows the van whole on a matching plate. Real photos —
+// sky, interiors, the grey-studio shot — keep the cover crop. Both ways on
+// setPlate, because the component stays mounted across van-to-van navigation.
+function isStudioPlate(img) {
+  if (img.naturalWidth <= img.naturalHeight) return false
+  try {
+    const size = 24
+    const canvas = document.createElement('canvas')
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, size, size)
+    const { data } = ctx.getImageData(0, 0, size, size)
+    const corners = [0, size - 1, size * (size - 1), size * size - 1]
+    return corners.every((i) => data[i * 4] > 245 && data[i * 4 + 1] > 245 && data[i * 4 + 2] > 245)
+  } catch {
+    return false
+  }
 }
 
 // The 3D layout renders are far wider than camera photos, and cover-cropping
