@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SEO from '../lib/seo.jsx'
 import ContactCTA from '../components/ContactCTA.jsx'
+import VideoEmbed from '../components/VideoEmbed.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import { useVans } from '../lib/contentStore.js'
 import './VanPage.css'
@@ -92,6 +93,17 @@ export default function VanPage() {
           )}
         </div>
       </section>
+
+      {/* When photos follow, the film and the photo band form one dark chapter,
+          so the flush class hands the seam to the photos band's top padding —
+          same move the Tough Test chapter makes on /why-ausflex. */}
+      {van.video && (
+        <VideoEmbed
+          content={van.video}
+          className={van.photos?.length > 0 ? 'van__video--flush' : ''}
+          id="walkthrough"
+        />
+      )}
 
       {van.photos?.length > 0 && (
         <section className="van__photos section section--dark">

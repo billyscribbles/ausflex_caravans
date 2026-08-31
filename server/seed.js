@@ -10,7 +10,7 @@ const COLLECTIONS = ['interiors', 'exteriors', 'page']
 
 // Bumped whenever the content files gain something a store seeded under an
 // earlier version would never see. store.js migrates forward to this number.
-export const SEED_VERSION = 4
+export const SEED_VERSION = 5
 
 // What v1 and v2 seeded the single Kuula collection as. v3 renames it, because
 // the /360 picker now shows tour titles as its buttons and "Ausflex Caravans
@@ -50,6 +50,13 @@ export function seededCaptions() {
     }
   }
   return byCaption
+}
+
+// The walkthrough films shipped in the content files, keyed by van slug — for
+// the v5 backfill in store.js. Fresh seeds pick them up through buildVans'
+// field spread without going through here.
+export function seededVanVideos() {
+  return new Map(vans.items.filter((v) => v.video).map((v) => [v.slug, v.video]))
 }
 
 // The van range, split into the two places it is stored: the van records

@@ -160,6 +160,14 @@ describe('content — section copy contract', () => {
       expect(Array.isArray(van.description)).toBe(true)
       expect(Array.isArray(van.specs)).toBe(true)
       expect(Array.isArray(van.photos)).toBe(true)
+      // A van's walkthrough film is optional, but one that exists must carry
+      // what VideoEmbed renders.
+      if (van.video) {
+        expect(van.video.youtubeId, van.slug).toBeTruthy()
+        expect(van.video.title, van.slug).toBeTruthy()
+        expect(van.video.heading, van.slug).toBeTruthy()
+        expect(van.video.headingAccent, van.slug).toBeTruthy()
+      }
     }
     const slugs = vans.items.map((v) => v.slug)
     expect(new Set(slugs).size).toBe(slugs.length)

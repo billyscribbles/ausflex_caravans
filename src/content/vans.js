@@ -147,6 +147,14 @@ export const vans = {
         },
       ],
       specs: ['21.6ft body', 'Dual axle', 'Queen/double + bunks', 'Sleeps 4–6'],
+      video: {
+        eyebrow: 'Video tour',
+        heading: 'Walk through the',
+        headingAccent: 'Extreme 21.6ft.',
+        sub: 'Tough Tested Australia takes a proper look through the Extreme Family.',
+        youtubeId: 'n30BFExqiPg',
+        title: 'NCE Abyss — Ausflex Caravans Extreme 21\'6" — Tough Tested Australia',
+      },
     },
     {
       slug: 'on-site',

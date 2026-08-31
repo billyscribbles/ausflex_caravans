@@ -211,3 +211,10 @@
     width: 100%;
   }
 }
+
+/* The walkthrough film runs flush into the dark photos band below it, so the
+ * two read as one chapter — two full section paddings would stack into a dead
+ * gap between bands sharing the same ground. */
+.van__video--flush.section {
+  padding-bottom: 0;
+}

@@ -3,7 +3,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mkdtemp, rm, readFile, writeFile, readdir, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { LEGACY_TOUR_TITLE, SEED_VERSION, seededCaptions, seededTours } from './seed.js'
+import {
+  LEGACY_TOUR_TITLE,
+  SEED_VERSION,
+  seededCaptions,
+  seededTours,
+  seededVanVideos,
+} from './seed.js'
 
 let dir
 
@@ -322,6 +328,49 @@ describe('store', () => {
     expect(fixed.specs).not.toContain('Up to 30ft')
     // The client's own wording stands.
     expect(content.vans.items.find((v) => v.id === 'their-van')).toEqual(theirs)
+
+    const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
+    expect(onDisk.version).toBe(SEED_VERSION)
+  })
+
+  it('backfills the seeded walkthrough film onto vans from before videos existed', async () => {
+    const seeded = seededVanVideos()
+    expect(seeded.has('extreme-family')).toBe(true)
+
+    const bare = {
+      id: 'extreme-van',
+      slug: 'extreme-family',
+      name: 'Extreme Family',
+      description: [],
+      specs: [],
+      sortOrder: 0,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    // A van already carrying its own film keeps it.
+    const theirs = {
+      ...bare,
+      id: 'their-van',
+      slug: 'tuff-mudder',
+      video: { youtubeId: 'their-film', title: 'Their film' },
+      sortOrder: 1,
+    }
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({
+        version: 4,
+        photos: [],
+        tours: [],
+        vans: { eyebrow: '', heading: '', sub: '', items: [bare, theirs] },
+      }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.vans.items.find((v) => v.id === 'extreme-van').video).toEqual(
+      seeded.get('extreme-family'),
+    )
+    expect(content.vans.items.find((v) => v.id === 'their-van').video.youtubeId).toBe('their-film')
 
     const onDisk = JSON.parse(await readFile(join(dir, 'content.json'), 'utf8'))
     expect(onDisk.version).toBe(SEED_VERSION)

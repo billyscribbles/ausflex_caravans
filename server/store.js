@@ -12,6 +12,7 @@ import {
   SEED_VERSION,
   seededCaptions,
   seededTours,
+  seededVanVideos,
 } from './seed.js'
 
 const DATA_DIR = process.env.DATA_DIR || './.data'
@@ -208,6 +209,17 @@ export async function load() {
         van.blurb = fix(van.blurb)
         if (Array.isArray(van.description)) van.description = van.description.map(fix)
         if (Array.isArray(van.specs)) van.specs = van.specs.map(fix)
+      }
+    }
+
+    // v5: some vans ship a walkthrough film now. Match on slug and fill only
+    // vans without one, so a film the client somehow carries already stands —
+    // and a seeded van whose slug the client changed simply stays filmless,
+    // the same one-shot trade-off the tour append makes.
+    if (from < 5) {
+      const videos = seededVanVideos()
+      for (const van of cache.vans.items) {
+        if (!van.video && videos.has(van.slug)) van.video = videos.get(van.slug)
       }
     }
 
