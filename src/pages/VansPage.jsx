@@ -11,7 +11,7 @@ export default function VansPage() {
     <main>
       <SEO
         title="Our Vans"
-        description="The Ausflex range: from the 12ft Tuff Mudder to the 21.6ft Extreme Family and custom on-site vans up to 30 feet. Every van made to order in Campbellfield, Victoria."
+        description="The Ausflex range: from the 12ft Tuff Mudder to the 21.6ft Extreme Family and custom on-site vans up to 32 feet. Every van made to order in Campbellfield, Victoria."
         path="/vans"
       />
       <header className="page-hero">

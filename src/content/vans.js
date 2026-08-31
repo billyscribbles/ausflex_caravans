@@ -4,7 +4,7 @@
 export const vans = {
   eyebrow: 'The Range',
   heading: 'A van for every adventure.',
-  sub: 'Single axle or dual, off-roading or highway cruising, couples or families. From the 12-foot Tuff Mudder to on-site vans up to 30 feet — and every one a starting point, not a finished product. Come and see them in Campbellfield, then change whatever you like.',
+  sub: 'Single axle or dual, off-roading or highway cruising, couples or families. From the 12-foot Tuff Mudder to on-site vans up to 32 feet — and every one a starting point, not a finished product. Come and see them in Campbellfield, then change whatever you like.',
   items: [
     {
       slug: 'tuff-mudder',
@@ -151,20 +151,20 @@ export const vans = {
     {
       slug: 'on-site',
       name: 'On-Site Caravans',
-      length: 'Up to 30ft',
+      length: 'Up to 32ft',
       tag: 'On-site living',
       meta: 'Custom layouts · Permanent siting',
-      blurb: 'Custom-built on-site caravans designed around your unique needs, up to 30 feet.',
+      blurb: 'Custom-built on-site caravans designed around your unique needs, up to 32 feet.',
       description: [
         'Not every van needs to chase the horizon. Our on-site caravans are custom built for permanent and semi-permanent living: holiday parks, granny flats, site offices and weekenders.',
-        'Up to thirty feet, designed around your block and the way you will use it, with the same build quality as our touring range.',
+        'Up to thirty-two feet, designed around your block and the way you will use it, with the same build quality as our touring range.',
       ],
       image: '/images/van-onsite.jpg',
       imageAlt: 'Ausflex on-site caravan render with fold-out deck',
       floorplan: null,
       floorplanAlt: null,
       photos: [],
-      specs: ['Up to 30ft', 'Custom layouts', 'Permanent siting', 'Built to order'],
+      specs: ['Up to 32ft', 'Custom layouts', 'Permanent siting', 'Built to order'],
     },
   ],
 }
