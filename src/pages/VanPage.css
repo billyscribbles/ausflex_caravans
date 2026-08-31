@@ -133,11 +133,14 @@
   margin-bottom: var(--gap-section-head);
 }
 
-/* min() on the track floor: at 320px a hard 300px minimum overflowed the
- * container instead of collapsing to one column. */
+/* The 420px track floor caps the grid at two columns on the 1280px measure —
+ * the full-row 3D render below spans every track and so holds them all open,
+ * and four open tracks would shrink the camera photos to thumbnails. min() on
+ * the floor: at 320px a hard minimum overflowed the container instead of
+ * collapsing to one column. */
 .van__photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: var(--space-sm);
 }
 
@@ -157,16 +160,15 @@
 }
 
 /* Two zoomed-in-crop escapes, both shown whole at natural aspect instead of
- * cover-cropped. A lone photo spans the entire track, so it also pulls in to
- * a comfortable centred width; a panorama (the 3D layout renders, flagged
- * .van__photo--wide on load) centres against its grid row. */
-.van__photo:only-child {
+ * cover-cropped. A lone photo and a panorama (the 3D layout renders, flagged
+ * .van__photo--wide on load) each take a full row to themselves, pulled in to
+ * a comfortable centred width — a layout render squeezed into a shared row
+ * beside a camera photo reads as a thumbnail, not a plan. */
+.van__photo:only-child,
+.van__photo--wide {
+  grid-column: 1 / -1;
   justify-self: center;
   width: min(100%, 820px);
-}
-
-.van__photo--wide {
-  align-self: center;
 }
 
 .van__photo:only-child img,
