@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { ArrowLeft, Plus, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowLeft, Plus, Save, X } from 'lucide-react'
 import { patchVan, uploadVanImage } from './api.js'
 import { resizeImage } from './resizeImage.js'
 import PhotosTab from './PhotosTab.jsx'
@@ -21,9 +21,29 @@ const TEXT_FIELDS = [
   { field: 'meta', label: 'Sleeps / axles line', hint: null },
 ]
 
+// Every field the Save button owns. Typing edits a local draft; nothing
+// reaches the database until Save sends the changed fields in one PATCH.
+const DRAFT_FIELDS = ['name', 'slug', 'length', 'tag', 'meta', 'blurb', 'imageAlt', 'floorplanAlt']
+
+const toDraft = (van) => ({
+  ...Object.fromEntries(DRAFT_FIELDS.map((field) => [field, van[field] ?? ''])),
+  description: toText(van.description),
+})
+
 // The hero and the floorplan are the same widget twice — a framed slot beside
 // its own file input and alt-text field — so it is written once.
-function SingleImage({ van, field, title, label, altLabel, hint, onUpload, onAlt, busy }) {
+function SingleImage({
+  van,
+  field,
+  title,
+  label,
+  altLabel,
+  hint,
+  onUpload,
+  altValue,
+  onAlt,
+  busy,
+}) {
   const input = useRef(null)
   const src = van[field]
   const altField = `${field}Alt`
@@ -61,10 +81,8 @@ function SingleImage({ van, field, title, label, altLabel, hint, onUpload, onAlt
           <input
             id={`van-${altField}`}
             className="admin-input"
-            defaultValue={van[altField] ?? ''}
-            onBlur={(event) => {
-              if (event.target.value !== (van[altField] ?? '')) onAlt(event.target.value)
-            }}
+            value={altValue}
+            onChange={(event) => onAlt(event.target.value)}
           />
           <p className="admin-hint">{hint}</p>
         </div>
@@ -77,6 +95,29 @@ export default function VanEditor({ van, onChange, onBack }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [spec, setSpec] = useState('')
+  // null means "no edits yet" — the inputs then show the van as saved. A
+  // refresh after an upload or spec change swaps the van prop without
+  // remounting, so an in-progress draft survives those.
+  const [draft, setDraft] = useState(null)
+  const [savedFlash, setSavedFlash] = useState(false)
+  const [confirmingBack, setConfirmingBack] = useState(false)
+
+  const base = toDraft(van)
+  const current = draft ?? base
+  const dirty = Object.keys(base).some((field) => current[field] !== base[field])
+
+  const edit = (field) => (value) => {
+    setSavedFlash(false)
+    setConfirmingBack(false)
+    setDraft({ ...current, [field]: value })
+  }
+
+  useEffect(() => {
+    if (!dirty) return undefined
+    const warn = (event) => event.preventDefault()
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [dirty])
 
   async function save(patch) {
     setBusy(true)
@@ -84,15 +125,28 @@ export default function VanEditor({ van, onChange, onBack }) {
     try {
       await patchVan(van.id, patch)
       await onChange()
+      return true
     } catch (err) {
       setError(err.message)
+      return false
     } finally {
       setBusy(false)
     }
   }
 
-  const onBlurField = (field) => (event) => {
-    if (event.target.value !== (van[field] ?? '')) save({ [field]: event.target.value })
+  async function saveDraft() {
+    const patch = {}
+    for (const field of DRAFT_FIELDS) {
+      if (current[field] !== base[field]) patch[field] = current[field]
+    }
+    if (current.description !== base.description) {
+      patch.description = toParagraphs(current.description)
+    }
+    // A failed write keeps the draft on screen so nothing typed is lost.
+    if (await save(patch)) {
+      setDraft(null)
+      setSavedFlash(true)
+    }
   }
 
   async function upload(field, original) {
@@ -113,9 +167,19 @@ export default function VanEditor({ van, onChange, onBack }) {
 
   return (
     <>
-      <button type="button" className="admin-backlink" onClick={onBack}>
+      <button
+        type="button"
+        className="admin-backlink"
+        onClick={() => {
+          if (dirty && !confirmingBack) {
+            setConfirmingBack(true)
+            return
+          }
+          onBack()
+        }}
+      >
         <ArrowLeft size={15} aria-hidden="true" />
-        All vans
+        {dirty && confirmingBack ? 'Discard unsaved changes?' : 'All vans'}
       </button>
 
       <p className="admin-editor__url">
@@ -139,8 +203,8 @@ export default function VanEditor({ van, onChange, onBack }) {
             <input
               id={`van-${field}`}
               className="admin-input"
-              defaultValue={van[field] ?? ''}
-              onBlur={onBlurField(field)}
+              value={current[field]}
+              onChange={(event) => edit(field)(event.target.value)}
             />
             {hint && <p className="admin-hint">{hint}</p>}
           </div>
@@ -157,8 +221,8 @@ export default function VanEditor({ van, onChange, onBack }) {
           <input
             id="van-blurb"
             className="admin-input"
-            defaultValue={van.blurb ?? ''}
-            onBlur={onBlurField('blurb')}
+            value={current.blurb}
+            onChange={(event) => edit('blurb')(event.target.value)}
           />
           <p className="admin-hint">One sentence, shown under the van name.</p>
         </div>
@@ -171,11 +235,8 @@ export default function VanEditor({ van, onChange, onBack }) {
             id="van-description"
             className="admin-input admin-textarea"
             rows={8}
-            defaultValue={toText(van.description)}
-            onBlur={(event) => {
-              const next = toParagraphs(event.target.value)
-              if (toText(next) !== toText(van.description)) save({ description: next })
-            }}
+            value={current.description}
+            onChange={(event) => edit('description')(event.target.value)}
           />
           <p className="admin-hint">Leave a blank line between paragraphs.</p>
         </div>
@@ -242,7 +303,8 @@ export default function VanEditor({ van, onChange, onBack }) {
         hint="Shown on the range cards and at the top of the van's page."
         busy={busy}
         onUpload={(file) => upload('image', file)}
-        onAlt={(value) => save({ imageAlt: value })}
+        altValue={current.imageAlt}
+        onAlt={edit('imageAlt')}
       />
 
       <SingleImage
@@ -254,7 +316,8 @@ export default function VanEditor({ van, onChange, onBack }) {
         hint="The blueprint drawing beside the description. Leave empty to hide it."
         busy={busy}
         onUpload={(file) => upload('floorplan', file)}
-        onAlt={(value) => save({ floorplanAlt: value })}
+        altValue={current.floorplanAlt}
+        onAlt={edit('floorplanAlt')}
       />
 
       <section className="admin-card">
@@ -268,6 +331,25 @@ export default function VanEditor({ van, onChange, onBack }) {
           onChange={onChange}
         />
       </section>
+
+      {/* Sticky, so the button and the draft's status stay in view however far
+          down the editor the last edit happened. */}
+      <div className="admin-savebar">
+        <button
+          type="button"
+          className="admin-button"
+          onClick={saveDraft}
+          disabled={busy || !dirty}
+        >
+          <Save size={15} aria-hidden="true" />
+          Save changes
+        </button>
+        {(dirty || savedFlash) && (
+          <p className="admin-status admin-savebar__status" role="status">
+            {busy ? 'Saving…' : dirty ? 'Unsaved changes' : 'Saved'}
+          </p>
+        )}
+      </div>
     </>
   )
 }

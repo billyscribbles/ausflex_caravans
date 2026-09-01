@@ -396,7 +396,12 @@ describe('AdminPage — vans', () => {
     )
   })
 
-  it('saves a text field on blur', async () => {
+  const editorPatches = () =>
+    global.fetch.mock.calls.filter(
+      ([url, options]) => url === '/api/vans/van-1' && options?.method === 'PATCH',
+    )
+
+  it('holds typed edits as a draft instead of writing on click-away', async () => {
     await openEditor({
       'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: VAN }) },
     })
@@ -406,12 +411,42 @@ describe('AdminPage — vans', () => {
     await userEvent.type(field, '13ft')
     await userEvent.tab()
 
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        '/api/vans/van-1',
-        expect.objectContaining({ method: 'PATCH', body: JSON.stringify({ length: '13ft' }) }),
-      ),
-    )
+    expect(editorPatches()).toHaveLength(0)
+    expect(screen.getByText(/unsaved changes/i)).toBeInTheDocument()
+  })
+
+  it('disables Save until something changes', async () => {
+    await openEditor()
+
+    expect(await screen.findByRole('button', { name: /save changes/i })).toBeDisabled()
+
+    const field = screen.getByLabelText(/van length/i)
+    await userEvent.clear(field)
+    await userEvent.type(field, '13ft')
+
+    expect(screen.getByRole('button', { name: /save changes/i })).toBeEnabled()
+  })
+
+  it('saves every edited field in one request when Save changes is clicked', async () => {
+    await openEditor({
+      'PATCH /api/vans/van-1': { ok: true, json: async () => ({ van: VAN }) },
+    })
+
+    const length = await screen.findByLabelText(/van length/i)
+    await userEvent.clear(length)
+    await userEvent.type(length, '13ft')
+    const alt = screen.getByLabelText(/describe the main photo/i)
+    await userEvent.clear(alt)
+    await userEvent.type(alt, 'Tuff Mudder at camp')
+
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }))
+
+    await waitFor(() => expect(editorPatches()).toHaveLength(1))
+    expect(JSON.parse(editorPatches()[0][1].body)).toEqual({
+      length: '13ft',
+      imageAlt: 'Tuff Mudder at camp',
+    })
+    expect(await screen.findByText('Saved')).toBeInTheDocument()
   })
 
   it('splits the description textarea into paragraphs on save', async () => {
@@ -422,7 +457,7 @@ describe('AdminPage — vans', () => {
     const field = await screen.findByLabelText(/full description/i)
     await userEvent.clear(field)
     await userEvent.type(field, 'One.{Enter}{Enter}Two.')
-    await userEvent.tab()
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }))
 
     await waitFor(() =>
       expect(global.fetch).toHaveBeenCalledWith(
@@ -430,6 +465,33 @@ describe('AdminPage — vans', () => {
         expect.objectContaining({ body: JSON.stringify({ description: ['One.', 'Two.'] }) }),
       ),
     )
+  })
+
+  it('asks before discarding unsaved changes when leaving the editor', async () => {
+    await openEditor()
+
+    const field = await screen.findByLabelText(/van length/i)
+    await userEvent.clear(field)
+    await userEvent.type(field, '13ft')
+
+    await userEvent.click(screen.getByRole('button', { name: /all vans/i }))
+    // First click warns instead of leaving — the draft is still on screen.
+    expect(screen.getByLabelText(/van name/i)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /discard unsaved changes/i }))
+    expect(await screen.findByRole('button', { name: /edit tuff mudder/i })).toBeInTheDocument()
+  })
+
+  it('warns the browser before closing the tab with unsaved changes', async () => {
+    await openEditor()
+
+    const field = await screen.findByLabelText(/van length/i)
+    await userEvent.clear(field)
+    await userEvent.type(field, '13ft')
+
+    const leave = new Event('beforeunload', { cancelable: true })
+    window.dispatchEvent(leave)
+    expect(leave.defaultPrevented).toBe(true)
   })
 
   it('adds and removes a spec', async () => {
