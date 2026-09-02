@@ -219,16 +219,29 @@ describe('content — dealers page contract', () => {
     expect(dealersPage.dealers.length).toBeGreaterThan(0)
   })
 
-  it('every dealer carries full contact details', () => {
+  it('every dealer carries the contact details the page renders', () => {
     for (const dealer of dealersPage.dealers) {
       expect(dealer.name).toBeTruthy()
       expect(dealer.region).toBeTruthy()
-      expect(dealer.address).toBeTruthy()
-      expect(dealer.mapUrl, dealer.name).toMatch(/^https:\/\//)
+      expect(dealer.blurb).toBeTruthy()
       expect(dealer.phone.label).toBeTruthy()
       expect(dealer.phone.href, dealer.name).toMatch(/^tel:\+\d+$/)
-      expect(dealer.website.label).toBeTruthy()
-      expect(dealer.website.href, dealer.name).toMatch(/^https:\/\//)
+      // A fixed dealer has a mappable address; a mobile one has a location line instead.
+      if (dealer.address) {
+        expect(dealer.mapUrl, dealer.name).toMatch(/^https:\/\//)
+      } else {
+        expect(dealer.location, dealer.name).toBeTruthy()
+      }
+      if (dealer.website) {
+        expect(dealer.website.label).toBeTruthy()
+        expect(dealer.website.href, dealer.name).toMatch(/^https:\/\//)
+      }
+      if (dealer.email) {
+        expect(dealer.email.label).toBeTruthy()
+        expect(dealer.email.href, dealer.name).toMatch(/^mailto:.+@.+$/)
+      }
+      // Beyond the phone, every dealer needs at least one written way to reach them.
+      expect(dealer.website || dealer.email, dealer.name).toBeTruthy()
     }
   })
 })

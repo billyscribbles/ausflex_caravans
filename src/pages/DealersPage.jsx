@@ -5,13 +5,42 @@ import { dealersPage } from '../content/dealers.js'
 import { useScrollIn } from '../lib/motion.js'
 import './DealersPage.css'
 
+const external = { target: '_blank', rel: 'noopener noreferrer' }
+
+// A dealer's detail rows in display order. Only the phone is guaranteed: a
+// fixed dealer has an address and a website, the mobile dealer has a location
+// line and an email, so each row is included only when its field is present.
+function dealerDetails(d) {
+  return [
+    d.address && {
+      label: 'Address',
+      value: (
+        <a href={d.mapUrl} {...external}>
+          {d.address}
+        </a>
+      ),
+    },
+    !d.address && d.location && { label: 'Where', value: d.location },
+    { label: 'Phone', value: <a href={d.phone.href}>{d.phone.label}</a> },
+    d.email && { label: 'Email', value: <a href={d.email.href}>{d.email.label}</a> },
+    d.website && {
+      label: 'Website',
+      value: (
+        <a href={d.website.href} {...external}>
+          {d.website.label}
+        </a>
+      ),
+    },
+  ].filter(Boolean)
+}
+
 export default function DealersPage() {
   const scrollIn = useScrollIn()
   return (
     <main>
       <SEO
         title="Dealers"
-        description="Find an Ausflex dealer near you — Sunrise Caravans in Burpengary East QLD and Rugged Kiwi Caravans in Hamilton NZ — or buy direct from the factory in Campbellfield."
+        description="Find an Ausflex dealer — Sunrise Caravans in Burpengary East QLD, Rugged Kiwi Caravans in Hamilton NZ, or our mobile dealer Australia wide — or buy direct from the factory in Campbellfield."
         path="/dealers"
       />
 
@@ -32,28 +61,12 @@ export default function DealersPage() {
                 <h2 className="dealers-page__name">{d.name}</h2>
                 <p className="dealers-page__blurb">{d.blurb}</p>
                 <dl className="dealers-page__details">
-                  <div className="dealers-page__detail">
-                    <dt>Address</dt>
-                    <dd>
-                      <a href={d.mapUrl} target="_blank" rel="noopener noreferrer">
-                        {d.address}
-                      </a>
-                    </dd>
-                  </div>
-                  <div className="dealers-page__detail">
-                    <dt>Phone</dt>
-                    <dd>
-                      <a href={d.phone.href}>{d.phone.label}</a>
-                    </dd>
-                  </div>
-                  <div className="dealers-page__detail">
-                    <dt>Website</dt>
-                    <dd>
-                      <a href={d.website.href} target="_blank" rel="noopener noreferrer">
-                        {d.website.label}
-                      </a>
-                    </dd>
-                  </div>
+                  {dealerDetails(d).map((row) => (
+                    <div key={row.label} className="dealers-page__detail">
+                      <dt>{row.label}</dt>
+                      <dd>{row.value}</dd>
+                    </div>
+                  ))}
                 </dl>
               </motion.li>
             ))}
