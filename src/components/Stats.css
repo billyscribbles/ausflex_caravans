@@ -51,7 +51,7 @@
 }
 
 /* A half column on a small phone is ~150px, and mono at this tracking breaks a
- * label like "manufacturing heritage" across three lines in it. */
+ * label like "chassis & suspension warranty" across three lines in it. */
 @media (max-width: 480px) {
   .stats__grid {
     grid-template-columns: 1fr;
