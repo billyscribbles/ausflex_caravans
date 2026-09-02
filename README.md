@@ -128,9 +128,24 @@ Login is a single shared password, rate-limited to 10 attempts per IP per 15 min
 server boots fine without a hash configured — logins simply always fail — so CI needs no
 secrets.
 
-**Local development** needs two terminals: `yarn dev` for the SPA and `yarn dev:api` for the
-server. Vite proxies `/api` and `/uploads` to port 3001, and the store defaults to a
-gitignored `./.data`.
+**Local development** is one command: `yarn dev` runs both halves — vite for the SPA and the
+Express server for `/api` and `/uploads` — and stops both if either exits. Vite proxies to
+port 3001, and the store defaults to a gitignored `./.data`. (`yarn dev:web` and `yarn
+dev:api` still run them separately.) Running vite alone is what produces
+`http proxy error: /api/content ECONNREFUSED` and a homepage with no vans, gallery or tours.
+
+A fresh `./.data` self-seeds from `server/seed.js`, so **local starts out showing different
+images from production** — the client's dashboard uploads only exist on the Railway volume.
+To work against what they actually have:
+
+```sh
+yarn pull:prod            # mirror production's content.json + referenced uploads into ./.data
+yarn pull:prod <url>      # or any other environment
+```
+
+It only ever GETs from the remote, and refuses to run if `DATA_DIR` looks like a live volume.
+It preserves the remote's seed version, so a pending migration can be rehearsed against a copy
+of the client's real data before the deploy that runs it for keeps.
 
 Uploads are resized and re-encoded to WebP in the browser before they are sent, so a 9MB
 phone photo arrives as roughly 300KB. Alt text is optional; a photo without it renders

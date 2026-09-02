@@ -35,16 +35,48 @@ Without the volume the server writes to ephemeral container disk and **every
 photo the client uploads is lost on the next deploy**. Create the volume before
 the first deploy of this feature.
 
-This is no longer silent: `assertDurableStorage()` in `server/store.js` refuses
-to boot when `RAILWAY_ENVIRONMENT` is set but no volume is mounted, or when
-`DATA_DIR` points outside the mount. A misconfigured service now fails its
-deploy loudly instead of coming up healthy and quietly discarding the client's
-work on the next push.
+This is no longer silent. `server/store.js` refuses to boot rather than reseed
+over the client's work in any of three cases:
+
+| Refusal                                  | What it catches                                                                                                                                                                                 |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assertDurableStorage()`                 | `RAILWAY_ENVIRONMENT` is set but no volume is mounted, or `DATA_DIR` points outside the mount — the store would be on ephemeral disk.                                                           |
+| `content.json` unreadable                | The read failed with anything other than `ENOENT` (`EACCES`, `EIO`, a read-only or still-mounting volume). The file is probably intact and reseeding would write the template straight over it. |
+| `content.json` missing, volume populated | The file is gone but `uploads/` or `backups/` have entries, so this is not a first boot. Seeding would orphan every uploaded image and republish the site as the template.                      |
+
+The last two are the difference between a deploy that fails visibly and one that
+comes up green having quietly replaced the client's site with the seed. A
+refused boot leaves `/data` untouched — restore from `backups/` (below) and
+redeploy.
+
+Seeding still happens normally on a genuinely empty volume, and a `content.json`
+that merely fails to parse is quarantined and reseeded as before.
 
 Staging and production have separate volumes and therefore separate content.
 Each self-seeds from the static content files on first boot, so a fresh
 environment opens with the photo set that ships in the repo. The client edits
-production.
+production — which is why local and staging show different images from the live
+site, and why `yarn pull:prod` exists to mirror production's store into a local
+`./.data` before you work on anything that renders it.
+
+### What a push to `main` does to the client's data
+
+Nothing, in the ordinary case. The container is rebuilt; the volume is not. On
+boot the server reads the existing `content.json`, snapshots it to `backups/`,
+and applies only the migration steps numbered above the store's own `version`.
+A deploy where `SEED_VERSION` is unchanged runs no migration at all.
+
+The care is needed when you **bump `SEED_VERSION`**: that step runs once against
+the client's live store on the next deploy, and it cannot be re-run or undone.
+Every existing step is deliberately one-shot and narrow — it fills blanks, or
+rewrites only text still matching the old seed — so dashboard edits survive.
+Two rules for any new step:
+
+- **Never touch a row whose `src` starts with `/uploads/`.** Those are files the
+  client uploaded and this repo cannot rebuild. `server/store.test.js` has a
+  regression test that fails if a migration drops them.
+- **Rehearse it first:** `yarn pull:prod` then `yarn dev`, which runs the
+  migration against a copy of production's real store and shows you the result.
 
 ### Backups
 
