@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "vite",
     "build": "vite build && node scripts/gen-seo-files.mjs",
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
@@ -15,7 +16,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "pull:prod": "yarn node scripts/pull-prod.mjs"
   },
   "dependencies": {
     "compression": "^1.7.4",

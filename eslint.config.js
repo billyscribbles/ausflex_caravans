@@ -9,7 +9,18 @@ import prettier from 'eslint-config-prettier'
 export default [
   {
     // Build output, Yarn internals, and vendored skill code are not ours to lint.
-    ignores: ['dist', '.yarn', '.pnp.cjs', '.pnp.loader.mjs', '.agents', '.claude'],
+    // vite.config.js.timestamp-*.mjs is vite's compiled config, written next to the
+    // real one while the dev server runs. Linting it fails on `process`, so a lint
+    // run during `yarn dev` reports an error in a file nobody wrote.
+    ignores: [
+      'dist',
+      '.yarn',
+      '.pnp.cjs',
+      '.pnp.loader.mjs',
+      '.agents',
+      '.claude',
+      'vite.config.js.timestamp-*.mjs',
+    ],
   },
   js.configs.recommended,
   {

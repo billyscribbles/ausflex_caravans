@@ -7,3 +7,4 @@ yarn.lock
 public
 .agents
 .claude
+vite.config.js.timestamp-*.mjs

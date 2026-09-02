@@ -12,6 +12,10 @@ router.get('/content', (req, res) => {
   const of = (collection) => content.photos.filter((p) => p.collection === collection).sort(byOrder)
 
   const body = JSON.stringify({
+    // The seed version the store is on. Cheap to publish and it is what lets
+    // `yarn pull:prod` mirror production exactly, so a migration can be
+    // rehearsed against the client's real data before the deploy that runs it.
+    version: content.version ?? 0,
     gallery: {
       interiors: of('interiors'),
       exteriors: of('exteriors'),
