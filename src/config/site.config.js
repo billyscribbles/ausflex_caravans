@@ -62,10 +62,15 @@ export const site = {
     phoneAlt: '0425 828 994',
     location: '1/27 Metrolink Cct, Campbellfield VIC 3061',
     hours: ['Mon – Fri: 7am – 5pm', 'Sat: 7am – 12pm'],
-    mapUrl: 'https://maps.google.com/maps?ll=-37.651657,144.969702&z=14',
+    // Name first, address second: Google resolves this to the Ausflex business
+    // listing (rating and all) rather than a bare address pin, and falls back
+    // to the address if the listing is ever renamed. The unit number is
+    // percent-encoded so the slash survives the query string.
+    mapUrl:
+      'https://maps.google.com/maps?q=Ausflex+Caravans,+1%2F27+Metrolink+Cct,+Campbellfield+VIC+3061',
     // Keyless Google embed — q= keeps the marker + place card on the pin.
     mapEmbedUrl:
-      'https://maps.google.com/maps?q=27+Metrolink+Cct,+Campbellfield+VIC+3061&z=14&output=embed',
+      'https://maps.google.com/maps?q=Ausflex+Caravans,+1%2F27+Metrolink+Cct,+Campbellfield+VIC+3061&z=16&output=embed',
   },
 
   seo: {
