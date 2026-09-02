@@ -4,6 +4,7 @@ import compression from 'compression'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { uploadsDir, read } from './store.js'
+import { legacyTargetFor } from './legacyRedirects.js'
 import contentRoutes from './routes/content.js'
 import authRoutes, { requireAuth } from './routes/auth.js'
 import photoRoutes from './routes/photos.js'
@@ -37,6 +38,17 @@ export function createApp() {
       res.redirect(301, `https://${canonicalHost}${req.originalUrl}`)
     })
   }
+
+  // Old WordPress URLs that are still indexed. This has to run before the SPA
+  // fallback, which would otherwise answer them 200 with index.html.
+  app.use((req, res, next) => {
+    const target = legacyTargetFor(req.path)
+    if (!target) {
+      next()
+      return
+    }
+    res.redirect(301, `${target}${req.originalUrl.slice(req.path.length)}`)
+  })
 
   // vite preview compressed responses; this server replaces it, so it has to
   // do the same or the HTML/JS/CSS ship uncompressed.
