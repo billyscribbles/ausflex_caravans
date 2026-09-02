@@ -12,20 +12,20 @@
   padding-bottom: var(--space-2xl);
 }
 
-/* Pinned to the top edge: the crop carries ~20% of shed roof above the
- * tallest head, so the fixed navbar covers roof and never a face, and the
- * copy below lands on the van's dark roofline. */
+/* Anchored just below centre: the band is wider than the frame, so something
+ * has to go. Holding at 55% keeps the van whole — awning line to tyres — and
+ * spends the crop on sky instead, which is the half that carries no subject. */
 .about__hero-image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 55%;
 }
 
 /* Scrim is confined to the bottom half — just enough to seat the copy on the
- * van roof. It clears entirely by 55%, so the crew up top stays untouched. */
+ * dark foreground. It clears entirely by 55%, so the night sky stays untouched. */
 .about__hero-scrim {
   position: absolute;
   inset: 0;
@@ -125,9 +125,9 @@
   }
 }
 
-/* Phones can't hold a 16:9 group shot behind copy without cropping half the
- * crew out of frame, so the hero unstacks: photo full-bleed at its own aspect,
- * copy below it on the flat dark band. No scrim needed once nothing overlaps. */
+/* Phones can't hold a landscape frame behind copy without cropping the van down
+ * to a sliver, so the hero unstacks: photo full-bleed at its own aspect, copy
+ * below it on the flat dark band. No scrim needed once nothing overlaps. */
 @media (max-width: 768px) {
   .page-hero.about__hero {
     display: block;

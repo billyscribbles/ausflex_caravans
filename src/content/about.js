@@ -12,13 +12,14 @@ export const about = {
   ],
   highlight:
     'Our vans aren’t just Aussie tough, they’re Kiwi tough too. The Ausflex range is available throughout Australia and New Zealand.',
-  // Hero band photo: the workshop team on the roof of the 20th van they built.
+  // Hero band photo: a finished Ausflex parked up under the Milky Way. The frame
+  // is already dark, so the scrim only has to seat the copy, not rescue it.
   hero: {
-    image: '/images/about-team.jpg',
-    imageSrcset: '/images/about-team-960.jpg 960w, /images/about-team.jpg 1600w',
+    image: '/images/about-hero-night.jpg',
+    imageSrcset: '/images/about-hero-night-960.jpg 960w, /images/about-hero-night.jpg 1320w',
     imageSizes: '100vw',
     imageAlt:
-      'The Ausflex workshop team sitting together on the roof of a caravan they built, inside the Victorian factory',
+      'An Ausflex caravan parked beside a lake at night, awning out and lights on, under a star-filled sky with mountains behind',
   },
   image: '/images/interior-club-dinette.jpg',
   imageAlt:
