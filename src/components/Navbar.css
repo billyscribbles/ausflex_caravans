@@ -96,6 +96,102 @@
   background: var(--color-accent);
 }
 
+/* A nav item that carries a dropdown: label and caret sit on one full-height
+ * row so there is no dead gap for the pointer to fall through between the
+ * trigger and the panel hanging off the bar below it. */
+.navbar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: var(--nav-h);
+  color: var(--color-bone-muted);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.navbar__item:hover .navbar__caret,
+.navbar__caret:hover,
+.navbar__caret:focus-visible {
+  color: var(--color-accent);
+}
+
+.navbar__caret[aria-expanded='true'] {
+  transform: rotate(180deg);
+}
+
+/* Hangs off the bottom of the bar on the item's left edge, in the bar's own
+ * black with a hairline instead of a shadow — same language as every other
+ * dark surface on the site. */
+.navbar__menu {
+  position: absolute;
+  top: var(--nav-h);
+  left: calc(var(--space-md) * -1);
+  min-width: 260px;
+  background: var(--color-dark-deep);
+  border: 1px solid var(--color-hairline-dark);
+  border-top: 1px solid var(--color-accent);
+  padding: var(--space-2xs) 0;
+  animation: navbar-menu-in var(--transition-fast);
+}
+
+/* The base rule sets `position`, which would otherwise beat the UA's
+ * `[hidden] { display: none }` and leave the panel on screen when closed. */
+.navbar__menu[hidden] {
+  display: none;
+}
+
+@keyframes navbar-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar__menu {
+    animation: none;
+  }
+}
+
+.navbar__menu-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-2xs) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-bone-soft);
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.navbar__menu-link:hover {
+  color: var(--color-accent);
+}
+
+.navbar__menu-link[aria-current='page'] {
+  color: var(--color-bone);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+/* The measurement is the scanning aid in this list — right-aligned so the
+ * lengths form their own column to read down. */
+.navbar__menu-length {
+  color: var(--color-bone-faint);
+  font-variant-numeric: tabular-nums;
+}
+
 .navbar__cta {
   display: inline-flex;
   align-items: center;
@@ -162,8 +258,12 @@
   transition: max-height 300ms ease;
 }
 
+/* The range is expandable in here, and the dashboard decides how long it is,
+ * so the open height is the screen rather than a number tuned to today's six
+ * vans. It scrolls once the rows outrun the viewport. */
 .navbar__mobile.open {
-  max-height: 500px;
+  max-height: calc(100dvh - var(--nav-h));
+  overflow-y: auto;
   border-bottom: 1px solid var(--color-hairline-dark);
 }
 
@@ -190,6 +290,74 @@
 .navbar__mobile-link[aria-current='page'] {
   color: var(--color-bone);
   box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+/* An expandable nav item on mobile. The label keeps its own tap target and
+ * still goes to the section index; the caret beside it opens the list. The
+ * rule moves onto the row, or it would cut between label and caret. */
+.navbar__mobile-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--color-hairline-dark);
+}
+
+.navbar__mobile-row .navbar__mobile-link {
+  flex: 1;
+  border-bottom: 0;
+}
+
+/* Sits in the right gutter so the two carets in the panel line up under the
+ * hamburger that opened it. Full-row height clears the 44px minimum. */
+.navbar__mobile-caret {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding-right: calc(var(--gutter) - var(--space-md));
+  color: var(--color-bone-muted);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.navbar__mobile-caret.open {
+  color: var(--color-accent);
+  transform: rotate(180deg);
+}
+
+.navbar__mobile-sub {
+  background: var(--color-dark);
+  border-bottom: 1px solid var(--color-hairline-dark);
+}
+
+.navbar__mobile-sublink {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  /* Indented one step past the gutter, so the range reads as living under
+   * "Our Vans" rather than as six more top-level pages. */
+  padding: var(--space-xs) var(--gutter) var(--space-xs) calc(var(--gutter) + var(--space-md));
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-bone-muted);
+  transition: color var(--transition-fast);
+}
+
+.navbar__mobile-sublink:hover {
+  color: var(--color-accent);
+}
+
+.navbar__mobile-sublink[aria-current='page'] {
+  color: var(--color-bone);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+.navbar__mobile-sublength {
+  color: var(--color-bone-faint);
+  font-variant-numeric: tabular-nums;
 }
 
 .navbar__mobile-cta {

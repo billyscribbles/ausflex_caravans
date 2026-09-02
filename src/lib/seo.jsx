@@ -21,7 +21,11 @@ const organizationLd = (() => {
       '@type': 'ContactPoint',
       contactType: 'customer support',
       email: site.contact.email,
-      ...(site.contact.phone && { telephone: site.contact.phone }),
+      ...(site.contact.phone && {
+        telephone: site.contact.phoneAlt
+          ? [site.contact.phone, site.contact.phoneAlt]
+          : site.contact.phone,
+      }),
     }
   }
   return JSON.stringify(schema)

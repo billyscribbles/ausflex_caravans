@@ -56,6 +56,11 @@ export default function Contact() {
               <dd>
                 <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
               </dd>
+              {contact.phoneAlt && (
+                <dd>
+                  <a href={`tel:${contact.phoneAlt.replace(/\s/g, '')}`}>{contact.phoneAlt}</a>
+                </dd>
+              )}
               {contact.hours?.map((line) => (
                 <dd key={line}>{line}</dd>
               ))}

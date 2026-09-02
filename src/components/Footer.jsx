@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
 import TikTokIcon from './TikTokIcon.jsx'
 import { site } from '../config/site.config.js'
+import { useVans } from '../lib/contentStore.js'
+import { vanLinks } from '../lib/vanLinks.js'
 import './Footer.css'
 
 // One block: the mark, the site map and the way to reach a human across a
@@ -10,6 +12,14 @@ import './Footer.css'
 // micro-type, and a two-group bottom row instead of three.
 export default function Footer() {
   const { brand, footer, social, contact } = site
+  const { vans } = useVans()
+
+  // A column declaring `source` is filled from live content rather than from
+  // its own list in site.config, so the range here is whatever the dashboard
+  // currently holds. Empty columns drop out instead of leaving a bare heading.
+  const columns = footer.columns
+    .map((col) => (col.source === 'vans' ? { ...col, links: vanLinks(vans.items) } : col))
+    .filter((col) => col.links?.length)
 
   return (
     <footer className="footer">
@@ -28,7 +38,7 @@ export default function Footer() {
           <p className="footer__tagline">{brand.tagline}</p>
         </div>
 
-        {footer.columns.map((col) => (
+        {columns.map((col) => (
           <nav key={col.title} className="footer__group" aria-label={col.title}>
             <div className="footer__col-title">{col.title}</div>
             <ul className="footer__links">
@@ -50,6 +60,11 @@ export default function Footer() {
             {contact.phone && (
               <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="footer__phone">
                 {contact.phone}
+              </a>
+            )}
+            {contact.phoneAlt && (
+              <a href={`tel:${contact.phoneAlt.replace(/\s/g, '')}`} className="footer__phone">
+                {contact.phoneAlt}
               </a>
             )}
             {contact.email && (

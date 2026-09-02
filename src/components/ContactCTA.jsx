@@ -43,6 +43,11 @@ export default function ContactCTA() {
                 <dd>
                   <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
                 </dd>
+                {contact.phoneAlt && (
+                  <dd>
+                    <a href={`tel:${contact.phoneAlt.replace(/\s/g, '')}`}>{contact.phoneAlt}</a>
+                  </dd>
+                )}
               </div>
             )}
             {contact.email && (

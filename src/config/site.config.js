@@ -12,7 +12,9 @@ export const site = {
   },
 
   nav: [
-    { label: 'Our Vans', to: '/vans' },
+    // `menu` hangs a dropdown off this item, filled from live content rather
+    // than a list here — see src/lib/vanLinks.js.
+    { label: 'Our Vans', to: '/vans', menu: 'vans' },
     { label: 'Why Ausflex', to: '/why-ausflex' },
     { label: 'About Us', to: '/about' },
     { label: 'Gallery', to: '/gallery' },
@@ -40,17 +42,10 @@ export const site = {
           { label: 'Contact', to: '/contact' },
         ],
       },
-      {
-        title: 'The Range',
-        links: [
-          { label: '12ft Tuff Mudder', to: '/vans/tuff-mudder' },
-          { label: '17ft Little Wonder', to: '/vans/little-wonder' },
-          { label: '18.6ft Family Adventurer', to: '/vans/family-adventurer' },
-          { label: '19.6ft Fierce Couple', to: '/vans/fierce-couple' },
-          { label: '21.6ft Extreme Family', to: '/vans/extreme-family' },
-          { label: 'On-Site Caravans', to: '/vans/on-site' },
-        ],
-      },
+      // `source` instead of `links`: the column is built from the live range,
+      // so adding or deleting a van in the dashboard updates the footer with
+      // it. The column disappears on its own if the range is ever empty.
+      { title: 'The Range', source: 'vans' },
     ],
     copyright: '© 2026 Ausflex Caravans. All rights reserved.',
   },
@@ -64,7 +59,8 @@ export const site = {
   contact: {
     email: 'ausflexcaravans@gmail.com',
     phone: '0451 712 116',
-    location: '27 Metrolink Cct, Campbellfield VIC 3061',
+    phoneAlt: '0425 828 994',
+    location: '1/27 Metrolink Cct, Campbellfield VIC 3061',
     hours: ['Mon – Fri: 7am – 5pm', 'Sat: 7am – 12pm'],
     mapUrl: 'https://maps.google.com/maps?ll=-37.651657,144.969702&z=14',
     // Keyless Google embed — q= keeps the marker + place card on the pin.

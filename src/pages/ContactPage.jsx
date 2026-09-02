@@ -7,7 +7,7 @@ export default function ContactPage() {
     <main>
       <SEO
         title="Contact"
-        description="Come and see the Ausflex range in person at 27 Metrolink Cct, Campbellfield VIC, then spec your own van — layout, finishes and features. Call 0451 712 116 or send us a message."
+        description="Come and see the Ausflex range in person at 1/27 Metrolink Cct, Campbellfield VIC, then spec your own van — layout, finishes and features. Call 0451 712 116 or send us a message."
         path="/contact"
       />
 

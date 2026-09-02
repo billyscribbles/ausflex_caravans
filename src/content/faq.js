@@ -4,7 +4,7 @@ export const faq = {
   items: [
     {
       q: 'Can I come and see the vans in person?',
-      a: 'Please do — it is how every build starts. Give us a call or send us a message and we will have the vans you want to see ready to walk through at 27 Metrolink Cct, Campbellfield. Then we sit down and spec yours.',
+      a: 'Please do — it is how every build starts. Give us a call or send us a message and we will have the vans you want to see ready to walk through at 1/27 Metrolink Cct, Campbellfield. Then we sit down and spec yours.',
     },
     {
       q: 'How much can I actually change?',
