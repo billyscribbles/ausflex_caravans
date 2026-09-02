@@ -68,9 +68,13 @@ export const site = {
     // percent-encoded so the slash survives the query string.
     mapUrl:
       'https://maps.google.com/maps?q=Ausflex+Caravans,+1%2F27+Metrolink+Cct,+Campbellfield+VIC+3061',
-    // Keyless Google embed — q= keeps the marker + place card on the pin.
+    // Keyless Google embed. Deliberately queried by address, NOT by business
+    // name: a name match makes Google draw its own place card, which prints the
+    // address held on the Google Business Profile ("27 Metrolink Cct") and
+    // ignores anything we pass. Querying "Unit 1/27 …" geocodes to the unit
+    // itself, so the card reads 1/27 and the pin lands on our door.
     mapEmbedUrl:
-      'https://maps.google.com/maps?q=Ausflex+Caravans,+1%2F27+Metrolink+Cct,+Campbellfield+VIC+3061&z=16&output=embed',
+      'https://maps.google.com/maps?q=Unit+1%2F27+Metrolink+Cct,+Campbellfield+VIC+3061&z=16&output=embed',
   },
 
   seo: {
