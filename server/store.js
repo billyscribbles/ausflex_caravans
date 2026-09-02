@@ -107,6 +107,26 @@ async function quarantine(raw) {
   await writeFile(join(DATA_DIR, `content.corrupt-${stamp}.json`), raw)
 }
 
+// Seeding is right on a fresh volume and catastrophic on a populated one. A
+// volume that already holds uploads or backups has been written to before, so
+// a content.json that is *absent* there did not fail to be created — it went
+// away. Reseeding would strand every uploaded image behind rows that no longer
+// reference it and bring the site back as the template, with a green deploy to
+// say so. Prefer a failed deploy that someone has to look at.
+async function assertNothingToLose() {
+  const uploaded = await readdir(UPLOADS).catch(() => [])
+  const kept = await readdir(BACKUPS).catch(() => [])
+  if (!uploaded.length && !kept.length) return
+
+  throw new Error(
+    `Refusing to boot: ${FILE} is missing, but this volume holds ${uploaded.length} upload(s) ` +
+      `and ${kept.length} backup(s), so it is not a first boot — the file has gone away. ` +
+      'Seeding now would abandon those uploads and republish the site as the template. Restore ' +
+      'the newest backups/content-*.json over content.json (see docs/ENVIRONMENTS.md); to ' +
+      'genuinely rebuild from the content files, move uploads/ and backups/ aside first.',
+  )
+}
+
 function hasVans(parsed) {
   return Boolean(parsed?.vans) && Array.isArray(parsed.vans.items)
 }
@@ -118,8 +138,21 @@ export async function load() {
   let raw = null
   try {
     raw = await readFile(FILE, 'utf8')
-  } catch {
-    raw = null
+  } catch (err) {
+    // ENOENT is the only failure that means "nothing here yet". Every other
+    // one — EACCES after a permissions change, EIO, a volume mounted
+    // read-only or not finished coming up — leaves the client's content.json
+    // sitting on disk intact, and the reseed below would write the template
+    // straight over it and report a healthy boot. That is the same silent
+    // wipe assertDurableStorage() exists to prevent, reached through a
+    // different door, so refuse here too.
+    if (err.code !== 'ENOENT') {
+      throw new Error(
+        `Refusing to boot: cannot read ${FILE} (${err.code}). The file may still hold the ` +
+          "client's content, so this boot will not reseed over it. Fix the volume mount or the " +
+          'file permissions and redeploy — see docs/ENVIRONMENTS.md.',
+      )
+    }
   }
 
   let parsed = null
@@ -139,7 +172,9 @@ export async function load() {
 
   if (!parsed) {
     // Missing or corrupt — rebuild from the static content files rather than
-    // booting with an empty site.
+    // booting with an empty site. A corrupt file has already been quarantined
+    // above; a missing one first has to prove this is really a first boot.
+    if (raw === null) await assertNothingToLose()
     cache = buildSeed()
     await persist()
     return cache

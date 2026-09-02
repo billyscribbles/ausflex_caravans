@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { mkdtemp, rm, readFile, writeFile, readdir, mkdir } from 'node:fs/promises'
+import { mkdtemp, rm, readFile, writeFile, readdir, mkdir, chmod } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -585,5 +585,107 @@ describe('durability', () => {
     const quarantined = (await readdir(dir)).filter((f) => f.startsWith('content.corrupt-'))
     expect(quarantined.length).toBe(1)
     expect(await readFile(join(dir, quarantined[0]), 'utf8')).toBe('{ this is not json')
+  })
+
+  // readFile fails for reasons other than "not there yet": EACCES after a
+  // permissions change, EIO, a volume mounted read-only or still coming up.
+  // Treating those as a first boot writes the seed over a content.json that
+  // is sitting right there, intact — the exact silent wipe the volume guard
+  // above exists to prevent, reached by a different door.
+  it('refuses to boot when content.json exists but cannot be read', async () => {
+    if (process.getuid?.() === 0) return // root ignores the mode bits
+
+    const file = join(dir, 'content.json')
+    const original = JSON.stringify({
+      version: SEED_VERSION,
+      photos: [],
+      tours: [],
+      vans: { items: [] },
+    })
+    await writeFile(file, original)
+    await chmod(file, 0o000)
+
+    try {
+      const store = await freshStore()
+      await expect(store.load()).rejects.toThrow(/cannot read/i)
+      // And crucially, it is still the client's bytes on disk.
+      await chmod(file, 0o600)
+      expect(await readFile(file, 'utf8')).toBe(original)
+    } finally {
+      await chmod(file, 0o600).catch(() => {})
+    }
+  })
+
+  // A volume holding uploads has been written to before, so a *missing*
+  // content.json there is not a first boot — it is a file that went away.
+  // Reseeding would strand every uploaded image behind rows that no longer
+  // reference them, and report a healthy deploy while doing it.
+  it('refuses to reseed when content.json is missing but uploads already exist', async () => {
+    await mkdir(join(dir, 'uploads'), { recursive: true })
+    await writeFile(join(dir, 'uploads', 'a1b2.webp'), 'not really an image')
+
+    const store = await freshStore()
+    await expect(store.load()).rejects.toThrow(/missing/i)
+  })
+
+  it('still seeds normally on a genuinely empty volume', async () => {
+    const store = await freshStore()
+    await expect(store.load()).resolves.toBeTruthy()
+  })
+
+  // Every SEED_VERSION bump runs its migration against the client's live
+  // production store on the next deploy. Seeded '/images/' rows are fair game
+  // for a migration to retire; an '/uploads/' row is a file the client put
+  // there by hand and can never be rebuilt from this repo.
+  it('never drops uploaded photos when migrating an old store forward', async () => {
+    const uploads = [
+      { id: 'u1', collection: 'interiors', src: '/uploads/u1.webp' },
+      { id: 'u2', collection: 'exteriors', src: '/uploads/u2.webp' },
+      { id: 'u3', collection: 'page', src: '/uploads/u3.webp' },
+      { id: 'u4', collection: 'van:their-van', src: '/uploads/u4.webp' },
+    ].map((p, i) => ({
+      ...p,
+      alt: '',
+      caption: '',
+      sortOrder: i,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }))
+
+    await writeFile(
+      join(dir, 'content.json'),
+      JSON.stringify({
+        version: 1,
+        photos: uploads,
+        tours: [],
+        vans: {
+          eyebrow: 'The Range',
+          heading: 'A van for every adventure.',
+          sub: '',
+          items: [
+            {
+              id: 'their-van',
+              slug: 'their-van',
+              name: 'Their Van',
+              length: '18ft',
+              blurb: '',
+              description: [],
+              specs: [],
+              image: '/uploads/hero.webp',
+              sortOrder: 0,
+              createdAt: '2026-01-01T00:00:00.000Z',
+            },
+          ],
+        },
+      }),
+    )
+
+    const store = await freshStore()
+    const content = await store.load()
+
+    expect(content.version).toBe(SEED_VERSION)
+    for (const photo of uploads) {
+      expect(content.photos.find((p) => p.id === photo.id)?.src).toBe(photo.src)
+    }
+    expect(content.vans.items.find((v) => v.id === 'their-van').image).toBe('/uploads/hero.webp')
   })
 })
