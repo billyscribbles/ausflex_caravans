@@ -21,6 +21,23 @@ export function createApp() {
   app.set('trust proxy', 1)
   app.disable('x-powered-by')
 
+  // Both the apex and its www. sibling resolve to this service, so without a
+  // redirect the site answers on two hostnames and gets indexed twice.
+  // CANONICAL_HOST names the one that wins. Only that host's www. sibling is
+  // redirected — the *.up.railway.app URL and localhost are deliberately left
+  // alone so staging checks and Lighthouse still hit the app directly.
+  const canonicalHost = process.env.CANONICAL_HOST?.trim()
+  if (canonicalHost) {
+    const wwwHost = `www.${canonicalHost}`
+    app.use((req, res, next) => {
+      if (req.hostname !== wwwHost) {
+        next()
+        return
+      }
+      res.redirect(301, `https://${canonicalHost}${req.originalUrl}`)
+    })
+  }
+
   // vite preview compressed responses; this server replaces it, so it has to
   // do the same or the HTML/JS/CSS ship uncompressed.
   app.use(compression())
