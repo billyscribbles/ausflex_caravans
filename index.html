@@ -49,7 +49,17 @@
     <meta name="twitter:image" content="/brand/og-image.jpg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Pre-hydration studio credit: lives in the served HTML so crawlers that
+           read the raw source (not the rendered DOM) see the link before any
+           script runs. React replaces this on mount; the live footer
+           (src/components/Footer.jsx) carries the same link. -->
+      <footer class="prehydrate-credit" style="padding: 1rem 1.5rem; font-size: 0.8rem">
+        <a href="https://onraistudio.com/" target="_blank" rel="noopener noreferrer"
+          >Site by Onrai Studio</a
+        >
+      </footer>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

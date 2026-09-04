@@ -146,14 +146,13 @@ export default function Footer() {
               Terms
             </Link>
             <span className="footer__credit">
-              site by{' '}
               <a
-                href="https://www.onraistudio.com"
+                href="https://onraistudio.com/"
                 className="footer__credit-link"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Onrai Studio
+                Site by Onrai Studio
               </a>
             </span>
           </div>
